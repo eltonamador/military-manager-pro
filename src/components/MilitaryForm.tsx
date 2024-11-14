@@ -1,0 +1,130 @@
+import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+interface MilitaryFormProps {
+  selectedGBM: string;
+  selectedVTR: string;
+  selectedMilitary: string;
+  militaryFunction: string;
+  gbmOptions: string[];
+  vtrOptions: Record<string, string[]>;
+  militaryOptions: Record<string, string[]>;
+  onGBMChange: (value: string) => void;
+  onVTRChange: (value: string) => void;
+  onMilitaryChange: (value: string) => void;
+  onFunctionChange: (value: string) => void;
+  onAddMilitary: () => void;
+}
+
+const militaryFunctionOptions = [
+  "Condutor",
+  "Adjunto do Oficial",
+  "Resgateiro",
+  "Cmdt de GU",
+  "Cmdt de 1º linha",
+  "ajudante de 1º linha",
+  "Cmdt de 2º linha",
+  "ajudante de 2º linha"
+];
+
+const MilitaryForm = ({
+  selectedGBM,
+  selectedVTR,
+  selectedMilitary,
+  militaryFunction,
+  gbmOptions,
+  vtrOptions,
+  militaryOptions,
+  onGBMChange,
+  onVTRChange,
+  onMilitaryChange,
+  onFunctionChange,
+  onAddMilitary,
+}: MilitaryFormProps) => {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <Label htmlFor="gbm">GBM</Label>
+        <Select onValueChange={onGBMChange} value={selectedGBM}>
+          <SelectTrigger id="gbm">
+            <SelectValue placeholder="Selecione o GBM" />
+          </SelectTrigger>
+          <SelectContent>
+            {gbmOptions.map((gbm) => (
+              <SelectItem key={gbm} value={gbm}>
+                {gbm}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div>
+        <Label htmlFor="vtr">VTR</Label>
+        <Select onValueChange={onVTRChange} value={selectedVTR} disabled={!selectedGBM}>
+          <SelectTrigger id="vtr">
+            <SelectValue placeholder="Selecione a VTR" />
+          </SelectTrigger>
+          <SelectContent>
+            {selectedGBM &&
+              vtrOptions[selectedGBM].map((vtr) => (
+                <SelectItem key={vtr} value={vtr}>
+                  {vtr}
+                </SelectItem>
+              ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div>
+        <Label htmlFor="military">Nome do Militar</Label>
+        <Select onValueChange={onMilitaryChange} value={selectedMilitary} disabled={!selectedGBM}>
+          <SelectTrigger id="military">
+            <SelectValue placeholder="Selecione o Militar" />
+          </SelectTrigger>
+          <SelectContent>
+            {selectedGBM &&
+              militaryOptions[selectedGBM].map((military) => (
+                <SelectItem key={military} value={military}>
+                  {military}
+                </SelectItem>
+              ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div>
+        <Label htmlFor="function">Função</Label>
+        <Select onValueChange={onFunctionChange} value={militaryFunction}>
+          <SelectTrigger id="function">
+            <SelectValue placeholder="Selecione a Função" />
+          </SelectTrigger>
+          <SelectContent>
+            {militaryFunctionOptions.map((func) => (
+              <SelectItem key={func} value={func}>
+                {func}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="md:col-span-2">
+        <Button
+          onClick={onAddMilitary}
+          className="w-full bg-military-orange hover:bg-military-red transition-colors"
+          disabled={!selectedMilitary || !militaryFunction}
+        >
+          <Plus className="mr-2 h-4 w-4" /> Adicionar Militar
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+export default MilitaryForm;

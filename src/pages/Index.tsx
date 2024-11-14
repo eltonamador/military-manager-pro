@@ -1,24 +1,9 @@
 import { useState } from "react";
-import { ChevronDown, LogIn, Plus, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
+import LoginForm from "@/components/LoginForm";
+import MilitaryForm from "@/components/MilitaryForm";
+import MilitaryTable from "@/components/MilitaryTable";
 
 interface Military {
   name: string;
@@ -87,48 +72,7 @@ const Index = () => {
   };
 
   if (!isLoggedIn) {
-    return (
-      <div className="min-h-screen military-gradient flex flex-col items-center justify-center p-4 animate-fadeIn">
-        <div className="w-full max-w-md bg-white rounded-lg shadow-xl overflow-hidden">
-          <div className="bg-military-red p-4 text-white text-center font-bold">
-            COMANDO OPERACIONAL / CBMAP
-          </div>
-          <div className="p-6">
-            <div className="mb-6 flex justify-center">
-              <div className="w-24 h-24 rounded-full bg-military-orange flex items-center justify-center">
-                <User className="w-12 h-12 text-white" />
-              </div>
-            </div>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <Label htmlFor="email">E-mail</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="seu@email.com"
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="password">Senha</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="********"
-                  required
-                />
-              </div>
-              <Button
-                type="submit"
-                className="w-full bg-military-orange hover:bg-military-red transition-colors"
-              >
-                <LogIn className="mr-2 h-4 w-4" /> Entrar
-              </Button>
-            </form>
-          </div>
-        </div>
-      </div>
-    );
+    return <LoginForm onSubmit={handleLogin} />;
   }
 
   return (
@@ -139,104 +83,21 @@ const Index = () => {
         </h1>
       </header>
       <main className="flex-grow bg-white rounded-lg shadow-md p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div>
-            <Label htmlFor="gbm">GBM</Label>
-            <Select onValueChange={setSelectedGBM} value={selectedGBM}>
-              <SelectTrigger id="gbm">
-                <SelectValue placeholder="Selecione o GBM" />
-              </SelectTrigger>
-              <SelectContent>
-                {gbmOptions.map((gbm) => (
-                  <SelectItem key={gbm} value={gbm}>
-                    {gbm}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="vtr">VTR</Label>
-            <Select
-              onValueChange={setSelectedVTR}
-              value={selectedVTR}
-              disabled={!selectedGBM}
-            >
-              <SelectTrigger id="vtr">
-                <SelectValue placeholder="Selecione a VTR" />
-              </SelectTrigger>
-              <SelectContent>
-                {selectedGBM &&
-                  vtrOptions[selectedGBM].map((vtr) => (
-                    <SelectItem key={vtr} value={vtr}>
-                      {vtr}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="military">Nome do Militar</Label>
-            <Select
-              onValueChange={setSelectedMilitary}
-              value={selectedMilitary}
-              disabled={!selectedGBM}
-            >
-              <SelectTrigger id="military">
-                <SelectValue placeholder="Selecione o Militar" />
-              </SelectTrigger>
-              <SelectContent>
-                {selectedGBM &&
-                  militaryOptions[selectedGBM].map((military) => (
-                    <SelectItem key={military} value={military}>
-                      {military}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="function">Função</Label>
-            <Input
-              id="function"
-              value={militaryFunction}
-              onChange={(e) => setMilitaryFunction(e.target.value)}
-              placeholder="Digite a função"
-            />
-          </div>
-        </div>
-        <Button
-          onClick={handleAddMilitary}
-          className="mb-6 bg-military-orange hover:bg-military-red transition-colors"
-          disabled={!selectedMilitary || !militaryFunction}
-        >
-          <Plus className="mr-2 h-4 w-4" /> Adicionar Militar
-        </Button>
-        <div className="rounded-lg border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nome</TableHead>
-                <TableHead>Função</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {militaryList.map((military, index) => (
-                <TableRow key={index}>
-                  <TableCell className="font-medium">{military.name}</TableCell>
-                  <TableCell>{military.function}</TableCell>
-                </TableRow>
-              ))}
-              {militaryList.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={2} className="text-center text-muted-foreground">
-                    Nenhum militar adicionado
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+        <MilitaryForm
+          selectedGBM={selectedGBM}
+          selectedVTR={selectedVTR}
+          selectedMilitary={selectedMilitary}
+          militaryFunction={militaryFunction}
+          gbmOptions={gbmOptions}
+          vtrOptions={vtrOptions}
+          militaryOptions={militaryOptions}
+          onGBMChange={setSelectedGBM}
+          onVTRChange={setSelectedVTR}
+          onMilitaryChange={setSelectedMilitary}
+          onFunctionChange={setMilitaryFunction}
+          onAddMilitary={handleAddMilitary}
+        />
+        <MilitaryTable militaryList={militaryList} />
       </main>
       <footer className="mt-6">
         <Button
