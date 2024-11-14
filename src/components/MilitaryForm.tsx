@@ -9,12 +9,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface MilitaryFormProps {
   selectedGBM: string;
   selectedVTR: string;
   selectedMilitary: string;
   militaryFunction: string;
+  selectedDate: Date | undefined;
   gbmOptions: string[];
   vtrOptions: Record<string, string[]>;
   militaryOptions: Record<string, string[]>;
@@ -22,6 +29,7 @@ interface MilitaryFormProps {
   onVTRChange: (value: string) => void;
   onMilitaryChange: (value: string) => void;
   onFunctionChange: (value: string) => void;
+  onDateChange: (date: Date | undefined) => void;
   onAddMilitary: () => void;
 }
 
@@ -41,6 +49,7 @@ const MilitaryForm = ({
   selectedVTR,
   selectedMilitary,
   militaryFunction,
+  selectedDate,
   gbmOptions,
   vtrOptions,
   militaryOptions,
@@ -48,6 +57,7 @@ const MilitaryForm = ({
   onVTRChange,
   onMilitaryChange,
   onFunctionChange,
+  onDateChange,
   onAddMilitary,
 }: MilitaryFormProps) => {
   return (
@@ -114,11 +124,36 @@ const MilitaryForm = ({
           </SelectContent>
         </Select>
       </div>
+      <div>
+        <Label>Data do Serviço</Label>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant={"outline"}
+              className={cn(
+                "w-full justify-start text-left font-normal",
+                !selectedDate && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {selectedDate ? format(selectedDate, "PPP", { locale: ptBR }) : <span>Selecione uma data</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={onDateChange}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
       <div className="md:col-span-2">
         <Button
           onClick={onAddMilitary}
           className="w-full bg-military-orange hover:bg-military-red transition-colors"
-          disabled={!selectedMilitary || !militaryFunction}
+          disabled={!selectedMilitary || !militaryFunction || !selectedDate}
         >
           <Plus className="mr-2 h-4 w-4" /> Adicionar Militar
         </Button>

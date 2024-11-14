@@ -8,12 +8,15 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 interface Military {
   name: string;
   function: string;
   gbm: string;
   vtr: string;
+  date: Date;
 }
 
 interface MilitaryTableProps {
@@ -28,6 +31,7 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>Data</TableHead>
             <TableHead>GBM</TableHead>
             <TableHead>Nome</TableHead>
             <TableHead>VTR</TableHead>
@@ -38,6 +42,7 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
         <TableBody>
           {militaryList.map((military, index) => (
             <TableRow key={index}>
+              <TableCell>{format(military.date, "dd/MM/yyyy", { locale: ptBR })}</TableCell>
               <TableCell className="font-medium">{military.gbm}</TableCell>
               <TableCell>{military.name}</TableCell>
               <TableCell>{military.vtr}</TableCell>
@@ -64,7 +69,7 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
           ))}
           {militaryList.length === 0 && (
             <TableRow>
-              <TableCell colSpan={5} className="text-center text-muted-foreground">
+              <TableCell colSpan={6} className="text-center text-muted-foreground">
                 Nenhum militar adicionado
               </TableCell>
             </TableRow>

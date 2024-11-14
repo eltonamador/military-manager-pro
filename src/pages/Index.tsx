@@ -10,6 +10,7 @@ interface Military {
   function: string;
   gbm: string;
   vtr: string;
+  date: Date;
 }
 
 const Index = () => {
@@ -18,6 +19,7 @@ const Index = () => {
   const [selectedVTR, setSelectedVTR] = useState("");
   const [selectedMilitary, setSelectedMilitary] = useState("");
   const [militaryFunction, setMilitaryFunction] = useState("");
+  const [selectedDate, setSelectedDate] = useState<Date>();
   const [militaryList, setMilitaryList] = useState<Military[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const { toast } = useToast();
@@ -50,7 +52,7 @@ const Index = () => {
   };
 
   const handleAddMilitary = () => {
-    if (selectedMilitary && militaryFunction) {
+    if (selectedMilitary && militaryFunction && selectedDate) {
       if (editingIndex !== null) {
         const updatedList = [...militaryList];
         updatedList[editingIndex] = {
@@ -58,6 +60,7 @@ const Index = () => {
           function: militaryFunction,
           gbm: selectedGBM,
           vtr: selectedVTR,
+          date: selectedDate,
         };
         setMilitaryList(updatedList);
         setEditingIndex(null);
@@ -73,6 +76,7 @@ const Index = () => {
             function: militaryFunction,
             gbm: selectedGBM,
             vtr: selectedVTR,
+            date: selectedDate,
           },
         ]);
         toast({
@@ -82,6 +86,7 @@ const Index = () => {
       }
       setSelectedMilitary("");
       setMilitaryFunction("");
+      setSelectedDate(undefined);
     }
   };
 
@@ -91,6 +96,7 @@ const Index = () => {
     setSelectedVTR(military.vtr);
     setSelectedMilitary(military.name);
     setMilitaryFunction(military.function);
+    setSelectedDate(military.date);
     setEditingIndex(index);
   };
 
@@ -130,6 +136,7 @@ const Index = () => {
           selectedVTR={selectedVTR}
           selectedMilitary={selectedMilitary}
           militaryFunction={militaryFunction}
+          selectedDate={selectedDate}
           gbmOptions={gbmOptions}
           vtrOptions={vtrOptions}
           militaryOptions={militaryOptions}
@@ -137,6 +144,7 @@ const Index = () => {
           onVTRChange={setSelectedVTR}
           onMilitaryChange={setSelectedMilitary}
           onFunctionChange={setMilitaryFunction}
+          onDateChange={setSelectedDate}
           onAddMilitary={handleAddMilitary}
         />
         <MilitaryTable 
