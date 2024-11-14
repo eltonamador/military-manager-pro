@@ -8,6 +8,8 @@ import MilitaryTable from "@/components/MilitaryTable";
 interface Military {
   name: string;
   function: string;
+  gbm: string;
+  vtr: string;
 }
 
 const Index = () => {
@@ -50,7 +52,12 @@ const Index = () => {
     if (selectedMilitary && militaryFunction) {
       setMilitaryList([
         ...militaryList,
-        { name: selectedMilitary, function: militaryFunction },
+        { 
+          name: selectedMilitary, 
+          function: militaryFunction,
+          gbm: selectedGBM,
+          vtr: selectedVTR
+        },
       ]);
       setSelectedMilitary("");
       setMilitaryFunction("");
