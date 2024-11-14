@@ -1,69 +1,39 @@
-# Welcome to your Lovable project
+# Sistema de Gestão de Militares
 
-## Project info
+## Sobre o Projeto
 
-**URL**: https://lovable.dev/projects/304d876a-9dc2-4db0-a046-1a62ea6e1613
+Sistema moderno para gestão de militares, desenvolvido com React e Tailwind CSS. O projeto oferece uma interface intuitiva para gerenciamento de pessoal militar, com funcionalidades de login e cadastro de operações.
 
-## How can I edit this code?
+## Tecnologias Utilizadas
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/304d876a-9dc2-4db0-a046-1a62ea6e1613) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
-
-- Vite
-- TypeScript
 - React
-- shadcn-ui
+- TypeScript
 - Tailwind CSS
+- Shadcn/UI
+- React Router
+- React Query
 
-## How can I deploy this project?
+## Funcionalidades
 
-Simply open [Lovable](https://lovable.dev/projects/304d876a-9dc2-4db0-a046-1a62ea6e1613) and click on Share -> Publish.
+- Sistema de autenticação
+- Seleção de GBM e VTR
+- Gestão de militares e suas funções
+- Interface responsiva e moderna
+- Notificações em tempo real
 
-## I want to use a custom domain - is that possible?
+## Como Usar
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+1. Faça login com suas credenciais
+2. Selecione o GBM desejado
+3. Escolha a VTR correspondente
+4. Adicione militares e suas funções
+5. Finalize a operação quando concluir
+
+## Desenvolvimento
+
+Este projeto foi desenvolvido com foco em:
+
+- UI/UX moderno e profissional
+- Responsividade
+- Feedback visual para ações do usuário
+- Código limpo e organizado
