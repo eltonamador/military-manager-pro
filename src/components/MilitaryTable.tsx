@@ -26,13 +26,25 @@ interface MilitaryTableProps {
 }
 
 const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) => {
+  // Group militaries by GBM and date
+  const groupedMilitaries = militaryList.reduce((acc, military, index) => {
+    const key = `${military.gbm}-${format(military.date, "dd/MM/yyyy")}`;
+    if (!acc[key]) {
+      acc[key] = {
+        gbm: military.gbm,
+        date: military.date,
+        militaries: []
+      };
+    }
+    acc[key].militaries.push({ ...military, originalIndex: index });
+    return acc;
+  }, {} as Record<string, { gbm: string; date: Date; militaries: (Military & { originalIndex: number })[] }>);
+
   return (
     <div className="rounded-lg border">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Data</TableHead>
-            <TableHead>GBM</TableHead>
             <TableHead>Nome</TableHead>
             <TableHead>VTR</TableHead>
             <TableHead>Função</TableHead>
@@ -40,36 +52,43 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
           </TableRow>
         </TableHeader>
         <TableBody>
-          {militaryList.map((military, index) => (
-            <TableRow key={index}>
-              <TableCell>{format(military.date, "dd/MM/yyyy", { locale: ptBR })}</TableCell>
-              <TableCell className="font-medium">{military.gbm}</TableCell>
-              <TableCell>{military.name}</TableCell>
-              <TableCell>{military.vtr}</TableCell>
-              <TableCell>{military.function}</TableCell>
-              <TableCell className="text-right space-x-2">
-                <Button
-                  onClick={() => onEdit(index)}
-                  variant="outline"
-                  size="sm"
-                  className="text-blue-600 hover:text-blue-700"
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-                <Button
-                  onClick={() => onDelete(index)}
-                  variant="outline"
-                  size="sm"
-                  className="text-red-600 hover:text-red-700"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </TableCell>
-            </TableRow>
+          {Object.entries(groupedMilitaries).map(([key, group]) => (
+            <>
+              <TableRow key={`header-${key}`} className="bg-muted/50">
+                <TableCell colSpan={4} className="font-medium">
+                  {group.gbm} - Dia: {format(group.date, "dd/MM/yyyy", { locale: ptBR })}
+                </TableCell>
+              </TableRow>
+              {group.militaries.map((military) => (
+                <TableRow key={`military-${military.originalIndex}`}>
+                  <TableCell>{military.name}</TableCell>
+                  <TableCell>{military.vtr}</TableCell>
+                  <TableCell>{military.function}</TableCell>
+                  <TableCell className="text-right space-x-2">
+                    <Button
+                      onClick={() => onEdit(military.originalIndex)}
+                      variant="outline"
+                      size="sm"
+                      className="text-blue-600 hover:text-blue-700"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      onClick={() => onDelete(military.originalIndex)}
+                      variant="outline"
+                      size="sm"
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </>
           ))}
           {militaryList.length === 0 && (
             <TableRow>
-              <TableCell colSpan={6} className="text-center text-muted-foreground">
+              <TableCell colSpan={4} className="text-center text-muted-foreground">
                 Nenhum militar adicionado
               </TableCell>
             </TableRow>
