@@ -6,7 +6,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import firefighterCalendar from "/firefighter-calendar-2024.jpg";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -60,8 +59,8 @@ const LoginForm = () => {
         
         <div className="relative">
           <img 
-            src={firefighterCalendar} 
-            alt="Calendário Bombeiros 2024" 
+            src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d" 
+            alt="Imagem de Login" 
             className="w-full h-48 object-cover"
           />
           <div className="absolute inset-0 bg-black/30" />
