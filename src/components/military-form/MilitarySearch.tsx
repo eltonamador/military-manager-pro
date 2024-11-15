@@ -12,6 +12,10 @@ interface MilitarySearchProps {
   onMilitaryChange: (value: string) => void;
 }
 
+interface MilitaryData {
+  nome_guerra: string | null;
+}
+
 export const MilitarySearch = ({
   selectedMilitary,
   onMilitaryChange,
@@ -27,11 +31,11 @@ export const MilitarySearch = ({
         try {
           const { data, error } = await supabase
             .from('militares_1gbm')
-            .select('nome_guerra')
-            .ilike('nome_guerra', `%${searchQuery}%`)
-            .not('nome_guerra', 'is', null);
+            .select('nome_guerra');
 
           if (error) {
+            console.error('Supabase error:', error);
+            setMilitaryOptions([]);
             toast({
               variant: "destructive",
               title: "Erro ao buscar militares",
@@ -40,22 +44,26 @@ export const MilitarySearch = ({
             return;
           }
 
-          // Ensure data is an array and handle null/undefined values
-          const names = Array.isArray(data) 
-            ? data
-              .map(item => item?.nome_guerra)
+          // Ensure data is an array and process it safely
+          if (Array.isArray(data)) {
+            const validNames = data
+              .filter((item): item is MilitaryData => item !== null && typeof item === 'object')
+              .map(item => item.nome_guerra)
               .filter((name): name is string => typeof name === 'string' && name.length > 0)
-            : [];
-            
-          setMilitaryOptions(names);
+              .filter(name => name.toLowerCase().includes(searchQuery.toLowerCase()));
+
+            setMilitaryOptions(validNames);
+          } else {
+            setMilitaryOptions([]);
+          }
         } catch (error) {
           console.error('Error fetching military names:', error);
+          setMilitaryOptions([]);
           toast({
             variant: "destructive",
             title: "Erro ao buscar militares",
             description: "Ocorreu um erro ao buscar a lista de militares.",
           });
-          setMilitaryOptions([]); // Set empty array on error
         }
       } else {
         setMilitaryOptions([]);
