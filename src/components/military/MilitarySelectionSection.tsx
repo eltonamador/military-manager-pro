@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface MilitarySelectionSectionProps {
   selectedMilitary: string;
@@ -14,16 +14,26 @@ interface MilitarySelectionSectionProps {
 
 export const MilitarySelectionSection = ({
   selectedMilitary,
-  militaryOptions,
+  militaryOptions = [], // Provide default empty array
   onMilitaryChange,
   disabled = false,
 }: MilitarySelectionSectionProps) => {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [filteredOptions, setFilteredOptions] = useState<string[]>([]);
 
-  const filteredMilitaryOptions = militaryOptions.filter((military) =>
-    military.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Update filtered options whenever militaryOptions or searchQuery changes
+  useEffect(() => {
+    if (!militaryOptions) {
+      setFilteredOptions([]);
+      return;
+    }
+
+    const filtered = militaryOptions.filter((military) =>
+      military.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredOptions(filtered);
+  }, [militaryOptions, searchQuery]);
 
   return (
     <div>
@@ -51,7 +61,7 @@ export const MilitarySelectionSection = ({
             />
             <CommandEmpty>Nenhum militar encontrado.</CommandEmpty>
             <CommandGroup>
-              {filteredMilitaryOptions.map((military) => (
+              {filteredOptions.map((military) => (
                 <CommandItem
                   key={military}
                   value={military}
