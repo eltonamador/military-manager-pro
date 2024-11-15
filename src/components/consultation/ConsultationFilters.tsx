@@ -24,11 +24,11 @@ const gbmOptions = [
 ];
 
 const vtrOptions = [
-  { prefix: "ABT", description: "ABT (ex: ABT-123)" },
-  { prefix: "ABS", description: "ABS (ex: ABS-123)" },
-  { prefix: "USB", description: "USB (ex: USB-123)" },
-  { prefix: "AEM", description: "AEM (ex: AEM-01)" },
-  { prefix: "ACA", description: "ACA (ex: ACA-123)" }
+  { prefix: "ABT", description: "ABT" },
+  { prefix: "ABS", description: "ABS" },
+  { prefix: "USB", description: "USB" },
+  { prefix: "AEM", description: "AEM" },
+  { prefix: "ACA", description: "ACA" }
 ];
 
 export const ConsultationFilters = ({
