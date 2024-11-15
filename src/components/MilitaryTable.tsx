@@ -7,9 +7,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, ArrowUpDown } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useState } from "react";
 
 interface Military {
   name: string;
@@ -26,23 +27,72 @@ interface MilitaryTableProps {
   onDelete: (index: number) => void;
 }
 
+type SortField = 'name' | 'vtr' | 'function' | 'gbm' | 'date' | 'shiftDuration';
+type SortOrder = 'asc' | 'desc';
+
 const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) => {
+  const [sortField, setSortField] = useState<SortField>('name');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
+  };
+
+  const sortedList = [...militaryList].sort((a, b) => {
+    const multiplier = sortOrder === 'asc' ? 1 : -1;
+    
+    switch (sortField) {
+      case 'date':
+        return multiplier * (new Date(a.date).getTime() - new Date(b.date).getTime());
+      default:
+        return multiplier * (a[sortField] < b[sortField] ? -1 : a[sortField] > b[sortField] ? 1 : 0);
+    }
+  });
+
+  const SortButton = ({ field, label }: { field: SortField; label: string }) => (
+    <Button
+      variant="ghost"
+      onClick={() => handleSort(field)}
+      className="hover:bg-transparent"
+    >
+      {label}
+      <ArrowUpDown className="ml-2 h-4 w-4" />
+    </Button>
+  );
+
   return (
     <div className="rounded-lg border">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Nome</TableHead>
-            <TableHead>VTR</TableHead>
-            <TableHead>Função</TableHead>
-            <TableHead>GBM</TableHead>
-            <TableHead>Data</TableHead>
-            <TableHead>Jornada</TableHead>
+            <TableHead>
+              <SortButton field="name" label="Nome" />
+            </TableHead>
+            <TableHead>
+              <SortButton field="vtr" label="VTR" />
+            </TableHead>
+            <TableHead>
+              <SortButton field="function" label="Função" />
+            </TableHead>
+            <TableHead>
+              <SortButton field="gbm" label="GBM" />
+            </TableHead>
+            <TableHead>
+              <SortButton field="date" label="Data" />
+            </TableHead>
+            <TableHead>
+              <SortButton field="shiftDuration" label="Jornada" />
+            </TableHead>
             <TableHead className="text-right">Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {militaryList.map((military, index) => (
+          {sortedList.map((military, index) => (
             <TableRow key={index}>
               <TableCell>{military.name}</TableCell>
               <TableCell>{military.vtr}</TableCell>
@@ -70,7 +120,7 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
               </TableCell>
             </TableRow>
           ))}
-          {militaryList.length === 0 && (
+          {sortedList.length === 0 && (
             <TableRow>
               <TableCell colSpan={7} className="text-center text-muted-foreground">
                 Nenhum militar adicionado
