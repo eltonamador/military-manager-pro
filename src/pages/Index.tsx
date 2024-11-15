@@ -38,7 +38,6 @@ const Index = () => {
     "MCPB": ["VTR-11", "VTR-12"],
   };
 
-  // Default military options for other GBMs
   const defaultMilitaryOptions: Record<string, string[]> = {
     "2º GBM": ["Pedro Santos", "Ana Rodrigues"],
     "GAPH": ["Carlos Ferreira", "Juliana Costa"],
@@ -148,15 +147,41 @@ const Index = () => {
     });
   };
 
-  const handleFinishOperation = () => {
-    toast({
-      title: "Operação finalizada",
-      description: "Todos os dados foram salvos com sucesso",
-    });
-    setMilitaryList([]);
-    setSelectedGBM("");
-    setSelectedVTR("");
-    navigate("/vehicle-receiving");
+  const handleFinishOperation = async () => {
+    try {
+      // Save each military service record to Supabase
+      for (const military of militaryList) {
+        const { error } = await supabase
+          .from('servico_militar')
+          .insert({
+            nome_de_guerra: military.name,
+            viatura: military.vtr,
+            funcao: military.function,
+            GBM: military.gbm,
+            data: military.date.toISOString().split('T')[0], // Format date as YYYY-MM-DD
+          });
+
+        if (error) {
+          throw error;
+        }
+      }
+
+      toast({
+        title: "Operação finalizada",
+        description: "Todos os dados foram salvos com sucesso",
+      });
+      setMilitaryList([]);
+      setSelectedGBM("");
+      setSelectedVTR("");
+      navigate("/vehicle-receiving");
+    } catch (error) {
+      console.error('Error saving military service:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao salvar",
+        description: "Ocorreu um erro ao salvar os dados do serviço",
+      });
+    }
   };
 
   return (
