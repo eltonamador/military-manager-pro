@@ -19,7 +19,7 @@ interface MilitarySearchProps {
 }
 
 const MilitarySearch = ({ selectedMilitary, onMilitaryChange }: MilitarySearchProps) => {
-  const [openMilitaryCommand, setOpenMilitaryCommand] = useState(false);
+  const [openMilitaryCommand, setOpenMilitaryCommand] = useState(true);
   const [militaryOptions, setMilitaryOptions] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
