@@ -8,8 +8,16 @@ interface Vehicle {
   description: string;
 }
 
-const getTableNameForGBM = (gbm: string): string => {
-  const tableMap: { [key: string]: string } = {
+type VehicleTableName = 
+  | "servico_vtrs_1gbm"
+  | "servico_vtrs_2gbm"
+  | "servico_vtrs_mcpb"
+  | "servico_vtrs_5gbm"
+  | "servico_vtrs_gaph"
+  | "servico_vtrs_gmaf";
+
+const getTableNameForGBM = (gbm: string): VehicleTableName => {
+  const tableMap: { [key: string]: VehicleTableName } = {
     "1º GBM": "servico_vtrs_1gbm",
     "2º GBM": "servico_vtrs_2gbm",
     "MCPB": "servico_vtrs_mcpb",
@@ -17,7 +25,7 @@ const getTableNameForGBM = (gbm: string): string => {
     "GAPH": "servico_vtrs_gaph",
     "GMAF": "servico_vtrs_gmaf"
   };
-  return tableMap[gbm] || '';
+  return tableMap[gbm] as VehicleTableName;
 };
 
 export const useVehicleService = () => {

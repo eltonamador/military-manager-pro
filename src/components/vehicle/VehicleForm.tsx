@@ -22,8 +22,8 @@ interface VehicleFormProps {
   selectedDate: Date;
   status: string;
   description: string;
-  vtrOptions: string[];
-  gbmOptions: string[];
+  vtrOptions?: string[];
+  gbmOptions?: string[];
   onGBMChange: (value: string) => void;
   onVTRChange: (value: string) => void;
   onDateChange: (date: Date) => void;
@@ -39,8 +39,8 @@ const VehicleForm = ({
   selectedDate,
   status,
   description,
-  vtrOptions,
-  gbmOptions,
+  vtrOptions = [],
+  gbmOptions = [],
   onGBMChange,
   onVTRChange,
   onDateChange,

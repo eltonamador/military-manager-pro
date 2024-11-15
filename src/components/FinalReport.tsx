@@ -38,8 +38,24 @@ interface FinalReportProps {
   selectedDate: Date;
 }
 
-const getTableNameForGBM = (gbm: string) => {
-  const tableMap: { [key: string]: string } = {
+type TableName = 
+  | "servico_militar_1gbm"
+  | "servico_militar_2gbm"
+  | "servico_militar_mcpb"
+  | "servico_militar_5gbm"
+  | "servico_militar_gaph"
+  | "servico_militar_gmaf";
+
+type VehicleTableName = 
+  | "servico_vtrs_1gbm"
+  | "servico_vtrs_2gbm"
+  | "servico_vtrs_mcpb"
+  | "servico_vtrs_5gbm"
+  | "servico_vtrs_gaph"
+  | "servico_vtrs_gmaf";
+
+const getTableNameForGBM = (gbm: string): TableName => {
+  const tableMap: { [key: string]: TableName } = {
     "1º GBM": "servico_militar_1gbm",
     "2º GBM": "servico_militar_2gbm",
     "MCPB": "servico_militar_mcpb",
@@ -47,7 +63,19 @@ const getTableNameForGBM = (gbm: string) => {
     "GAPH": "servico_militar_gaph",
     "GMAF": "servico_militar_gmaf"
   };
-  return tableMap[gbm];
+  return tableMap[gbm] as TableName;
+};
+
+const getVehicleTableNameForGBM = (gbm: string): VehicleTableName => {
+  const tableMap: { [key: string]: VehicleTableName } = {
+    "1º GBM": "servico_vtrs_1gbm",
+    "2º GBM": "servico_vtrs_2gbm",
+    "MCPB": "servico_vtrs_mcpb",
+    "5º GBM": "servico_vtrs_5gbm",
+    "GAPH": "servico_vtrs_gaph",
+    "GMAF": "servico_vtrs_gmaf"
+  };
+  return tableMap[gbm] as VehicleTableName;
 };
 
 const FinalReport = ({
@@ -102,7 +130,7 @@ const FinalReport = ({
         // Fetch vehicle service data from all GBM tables
         const vehicleData = [];
         for (const gbm of ["1º GBM", "2º GBM", "MCPB", "5º GBM", "GAPH", "GMAF"]) {
-          const tableName = `servico_vtrs_${getTableNameForGBM(gbm).split('_')[2]}`;
+          const tableName = getVehicleTableNameForGBM(gbm);
           
           const { data, error } = await supabase
             .from(tableName)
