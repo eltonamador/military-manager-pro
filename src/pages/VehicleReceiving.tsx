@@ -1,18 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Plus } from "lucide-react";
 import VehicleTable from "@/components/VehicleTable";
+import VehicleForm from "@/components/vehicle/VehicleForm";
 import FinalReport from "@/components/FinalReport";
 import { supabase } from "@/integrations/supabase/client";
 import { useVehicleService } from "@/hooks/useVehicleService";
@@ -32,11 +22,10 @@ const VehicleReceiving = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [vtrOptions, setVtrOptions] = useState<string[]>([]);
+  const [selectedDate] = useState<Date>(new Date()); // Using current date as default
   const { toast } = useToast();
-  const navigate = useNavigate();
   const { saveVehicleService } = useVehicleService();
 
-  // Fetch VTR prefixes from Supabase
   useEffect(() => {
     const fetchVTRs = async () => {
       try {
@@ -63,16 +52,7 @@ const VehicleReceiving = () => {
   }, [toast]);
 
   const handleAddVehicle = () => {
-    if (!selectedVTR || !status) {
-      toast({
-        title: "Erro",
-        description: "Por favor, preencha todos os campos obrigatórios",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const gbm = selectedVTR.split('-')[0]; // Extract GBM from VTR prefix
+    const gbm = selectedVTR.split('-')[0];
 
     const newVehicle = {
       gbm,
@@ -124,7 +104,6 @@ const VehicleReceiving = () => {
     const success = await saveVehicleService(vehicles);
     
     if (success) {
-      // Format the report text for WhatsApp
       const reportText = `*Relatório de VTRs*\n\n${vehicles
         .map(
           (v) =>
@@ -132,11 +111,9 @@ const VehicleReceiving = () => {
         )
         .join("\n")}`;
 
-      // Encode the text for WhatsApp URL
       const encodedText = encodeURIComponent(reportText);
       window.open(`https://wa.me/?text=${encodedText}`, "_blank");
       
-      // Reset form
       setVehicles([]);
       setSelectedVTR("");
       setStatus("");
@@ -154,58 +131,17 @@ const VehicleReceiving = () => {
       </header>
 
       <main className="flex-grow bg-white rounded-lg shadow-md p-6">
-        <div className="grid grid-cols-1 gap-6 mb-6">
-          <div>
-            <Label htmlFor="vtr">VTR</Label>
-            <Select onValueChange={setSelectedVTR} value={selectedVTR}>
-              <SelectTrigger id="vtr">
-                <SelectValue placeholder="Selecione a VTR" />
-              </SelectTrigger>
-              <SelectContent>
-                {vtrOptions.map((vtr) => (
-                  <SelectItem key={vtr} value={vtr}>
-                    {vtr}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label htmlFor="status">Status</Label>
-            <Select onValueChange={setStatus} value={status}>
-              <SelectTrigger id="status">
-                <SelectValue placeholder="Selecione o status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="operante">Operante</SelectItem>
-                <SelectItem value="parcialmente">
-                  Parcialmente Operante
-                </SelectItem>
-                <SelectItem value="inoperante">Inoperante</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label htmlFor="description">Descrição das Alterações</Label>
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Descreva as alterações ou observações sobre a VTR"
-              className="min-h-[100px]"
-            />
-          </div>
-
-          <Button
-            onClick={handleAddVehicle}
-            className="w-full bg-military-orange hover:bg-military-red transition-colors"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            {editingIndex !== null ? "Atualizar VTR" : "Adicionar VTR"}
-          </Button>
-        </div>
+        <VehicleForm
+          selectedVTR={selectedVTR}
+          status={status}
+          description={description}
+          vtrOptions={vtrOptions}
+          onVTRChange={setSelectedVTR}
+          onStatusChange={setStatus}
+          onDescriptionChange={setDescription}
+          onAddVehicle={handleAddVehicle}
+          editingIndex={editingIndex}
+        />
 
         <VehicleTable
           vehicleList={vehicles}
@@ -229,6 +165,7 @@ const VehicleReceiving = () => {
         vehicleList={vehicles}
         onEdit={() => setShowFinalReport(false)}
         onSend={handleSendReport}
+        selectedDate={selectedDate}
       />
     </div>
   );
