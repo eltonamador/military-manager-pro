@@ -8,12 +8,15 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 interface Vehicle {
   gbm: string;
   vtr: string;
   status: string;
   description: string;
+  date: Date;
 }
 
 interface VehicleTableProps {
@@ -32,6 +35,7 @@ const VehicleTable = ({ vehicleList, onEdit, onDelete }: VehicleTableProps) => {
             <TableHead>VTR</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Descrição</TableHead>
+            <TableHead>Data</TableHead>
             <TableHead className="text-right">Ações</TableHead>
           </TableRow>
         </TableHeader>
@@ -42,6 +46,7 @@ const VehicleTable = ({ vehicleList, onEdit, onDelete }: VehicleTableProps) => {
               <TableCell>{vehicle.vtr}</TableCell>
               <TableCell>{vehicle.status}</TableCell>
               <TableCell>{vehicle.description}</TableCell>
+              <TableCell>{vehicle.date ? format(vehicle.date, "dd/MM/yyyy", { locale: ptBR }) : ""}</TableCell>
               <TableCell className="text-right space-x-2">
                 <Button
                   onClick={() => onEdit(index)}
@@ -64,7 +69,7 @@ const VehicleTable = ({ vehicleList, onEdit, onDelete }: VehicleTableProps) => {
           ))}
           {vehicleList.length === 0 && (
             <TableRow>
-              <TableCell colSpan={5} className="text-center text-muted-foreground">
+              <TableCell colSpan={6} className="text-center text-muted-foreground">
                 Nenhuma VTR adicionada
               </TableCell>
             </TableRow>

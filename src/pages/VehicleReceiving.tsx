@@ -12,6 +12,7 @@ interface Vehicle {
   vtr: string;
   status: string;
   description: string;
+  date: Date;
 }
 
 const VehicleReceiving = () => {
@@ -64,6 +65,7 @@ const VehicleReceiving = () => {
       vtr: selectedVTR,
       status,
       description,
+      date: selectedDate,
     };
 
     if (editingIndex !== null) {
