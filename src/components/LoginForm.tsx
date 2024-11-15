@@ -25,10 +25,16 @@ const LoginForm = () => {
       });
 
       if (error) {
+        let errorMessage = "Erro ao fazer login";
+        
+        if (error.message === "Invalid login credentials") {
+          errorMessage = "Email ou senha inválidos";
+        }
+
         toast({
           variant: "destructive",
           title: "Erro ao fazer login",
-          description: error.message,
+          description: errorMessage,
         });
       } else {
         toast({
