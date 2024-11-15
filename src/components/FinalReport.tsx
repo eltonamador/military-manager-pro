@@ -11,7 +11,8 @@ import { Send, Edit } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { format, parse } from "date-fns";
+import { format } from "date-fns";
+import { getServiceMilitaryTableName, getServiceVTRTableName } from "@/utils/supabase-utils";
 
 interface Military {
   name: string;
@@ -54,7 +55,6 @@ const FinalReport = ({
 
   const handleEditMilitary = async (index: number) => {
     const military = serviceMilitaryList[index];
-    // Implement edit logic here
     toast({
       title: "Edição iniciada",
       description: `Editando militar: ${military.name}`,
@@ -65,9 +65,10 @@ const FinalReport = ({
     try {
       const military = serviceMilitaryList[index];
       const formattedDate = format(military.date, 'yyyy-MM-dd');
+      const tableName = getServiceMilitaryTableName(military.gbm);
       
       const { error } = await supabase
-        .from('servico_militar')
+        .from(tableName)
         .delete()
         .eq('nome_de_guerra', military.name)
         .eq('data', formattedDate);
@@ -93,7 +94,6 @@ const FinalReport = ({
 
   const handleEditVehicle = async (index: number) => {
     const vehicle = serviceVehicleList[index];
-    // Implement edit logic here
     toast({
       title: "Edição iniciada",
       description: `Editando VTR: ${vehicle.vtr}`,
@@ -104,9 +104,10 @@ const FinalReport = ({
     try {
       const vehicle = serviceVehicleList[index];
       const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+      const tableName = getServiceVTRTableName(vehicle.gbm);
       
       const { error } = await supabase
-        .from('servico_vtrs')
+        .from(tableName)
         .delete()
         .eq('vtr', vehicle.vtr)
         .eq('data', formattedDate);
@@ -141,43 +142,50 @@ const FinalReport = ({
 
         const formattedDate = format(selectedDate, 'yyyy-MM-dd');
 
-        const { data: militaryData, error: militaryError } = await supabase
-          .from('servico_militar')
-          .select('*')
-          .eq('data', formattedDate)
-          .order('created_at', { ascending: false });
+        // Fetch military data from all GBM tables
+        const gbmList = ['1gbm', '2gbm', '5gbm', 'gaph', 'gmaf', 'mcpb'];
+        const militaryData = [];
+        const vehicleData = [];
 
-        if (militaryError) throw militaryError;
+        for (const gbm of gbmList) {
+          const militaryTableName = `servico_militar_${gbm}`;
+          const vtrTableName = `servico_vtrs_${gbm}`;
 
-        if (militaryData) {
-          const formattedMilitaryData: Military[] = militaryData.map(item => ({
-            name: item.nome_de_guerra || '',
-            function: item.funcao || '',
-            gbm: item.GBM || '',
-            vtr: item.viatura || '',
-            date: parse(item.data, 'yyyy-MM-dd', new Date()),
-            shiftDuration: '24',
-          }));
-          setServiceMilitaryList(formattedMilitaryData);
+          const { data: mData, error: mError } = await supabase
+            .from(militaryTableName)
+            .select('*')
+            .eq('data', formattedDate);
+
+          if (mError) throw mError;
+          if (mData) militaryData.push(...mData);
+
+          const { data: vData, error: vError } = await supabase
+            .from(vtrTableName)
+            .select('*')
+            .eq('data', formattedDate);
+
+          if (vError) throw vError;
+          if (vData) vehicleData.push(...vData);
         }
 
-        const { data: vehicleData, error: vehicleError } = await supabase
-          .from('servico_vtrs')
-          .select('*')
-          .eq('data', formattedDate)
-          .order('created_at', { ascending: false });
+        const formattedMilitaryData: Military[] = militaryData.map(item => ({
+          name: item.nome_de_guerra || '',
+          function: item.funcao || '',
+          gbm: item.GBM || '',
+          vtr: item.viatura || '',
+          date: new Date(item.data),
+          shiftDuration: '24',
+        }));
 
-        if (vehicleError) throw vehicleError;
+        const formattedVehicleData: Vehicle[] = vehicleData.map(item => ({
+          gbm: item.gbm || '',
+          vtr: item.vtr || '',
+          status: item.status || '',
+          description: item.alteracao || '',
+        }));
 
-        if (vehicleData) {
-          const formattedVehicleData: Vehicle[] = vehicleData.map(item => ({
-            gbm: item.gbm || '',
-            vtr: item.vtr || '',
-            status: item.status || '',
-            description: item.alteracao || '',
-          }));
-          setServiceVehicleList(formattedVehicleData);
-        }
+        setServiceMilitaryList(formattedMilitaryData);
+        setServiceVehicleList(formattedVehicleData);
       } catch (error) {
         console.error('Error fetching data:', error);
         toast({

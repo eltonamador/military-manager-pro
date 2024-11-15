@@ -6,6 +6,7 @@ import MilitaryForm from "@/components/MilitaryForm";
 import MilitaryTable from "@/components/MilitaryTable";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { getServiceMilitaryTableName } from "@/utils/supabase-utils";
 
 interface Military {
   name: string;
@@ -18,7 +19,7 @@ interface Military {
 
 const fetchMilitaryNames = async () => {
   const { data, error } = await supabase
-    .from('militares_1gbm')
+    .from('militares_geral')
     .select('nome_guerra')
     .not('nome_guerra', 'is', null);
 
@@ -116,16 +117,16 @@ const Index = () => {
 
   const handleFinishOperation = async () => {
     try {
-      // Save each military service record to Supabase
       for (const military of militaryList) {
+        const tableName = getServiceMilitaryTableName(military.gbm);
         const { error } = await supabase
-          .from('servico_militar')
+          .from(tableName)
           .insert({
             nome_de_guerra: military.name,
             viatura: military.vtr,
             funcao: military.function,
             GBM: military.gbm,
-            data: military.date.toISOString().split('T')[0], // Format date as YYYY-MM-DD
+            data: military.date.toISOString().split('T')[0],
           });
 
         if (error) {
