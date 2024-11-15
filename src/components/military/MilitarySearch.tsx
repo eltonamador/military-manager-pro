@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Select } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface MilitarySearchProps {
   onSelect: (military: string) => void;
@@ -23,7 +29,7 @@ const MilitarySearch = ({ onSelect, selectedMilitary }: MilitarySearchProps) => 
       }
 
       if (data) {
-        const names = data.map(item => item.nome_guerra);
+        const names = data.map(item => item.nome_guerra || '');
         setMilitaryOptions(names);
       }
     };
@@ -32,16 +38,17 @@ const MilitarySearch = ({ onSelect, selectedMilitary }: MilitarySearchProps) => 
   }, []);
 
   return (
-    <Select
-      value={selectedMilitary}
-      onChange={onSelect}
-      placeholder="Selecione um militar"
-    >
-      {militaryOptions.map((military) => (
-        <Select.Option key={military} value={military}>
-          {military}
-        </Select.Option>
-      ))}
+    <Select value={selectedMilitary} onValueChange={onSelect}>
+      <SelectTrigger>
+        <SelectValue placeholder="Selecione um militar" />
+      </SelectTrigger>
+      <SelectContent>
+        {militaryOptions.map((military) => (
+          <SelectItem key={military} value={military}>
+            {military}
+          </SelectItem>
+        ))}
+      </SelectContent>
     </Select>
   );
 };
