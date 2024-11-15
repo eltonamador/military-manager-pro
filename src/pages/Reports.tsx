@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Select,
@@ -17,11 +16,24 @@ import {
 } from "@/components/ui/card";
 import { ReportTables } from "@/components/report/ReportTables";
 import { ReportActions } from "@/components/report/ReportActions";
-import { GBM_OPTIONS, type GBMOption } from "@/utils/supabase-utils";
+import { GBMOption } from "@/types/supabase";
+
+const GBM_OPTIONS = [
+  { value: "1gbm", label: "1º GBM" },
+  { value: "2gbm", label: "2º GBM" },
+  { value: "5gbm", label: "5º GBM" },
+  { value: "gaph", label: "GAPH" },
+  { value: "gmaf", label: "GMAF" },
+  { value: "mcpb", label: "MCPB" },
+] as const;
 
 const Reports = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedGBM, setSelectedGBM] = useState<GBMOption>("1gbm");
+
+  const handleGBMChange = (value: string) => {
+    setSelectedGBM(value as GBMOption);
+  };
 
   return (
     <div className="container mx-auto py-8 space-y-6">
@@ -36,7 +48,7 @@ const Reports = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-sm font-medium">GBM</label>
-              <Select value={selectedGBM} onValueChange={setSelectedGBM}>
+              <Select value={selectedGBM} onValueChange={handleGBMChange}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o GBM" />
                 </SelectTrigger>
