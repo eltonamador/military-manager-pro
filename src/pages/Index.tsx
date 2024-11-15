@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 import LoginForm from "@/components/LoginForm";
 import MilitaryForm from "@/components/MilitaryForm";
 import MilitaryTable from "@/components/MilitaryTable";
@@ -23,6 +24,7 @@ const Index = () => {
   const [militaryList, setMilitaryList] = useState<Military[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const gbmOptions = ["1º GBM", "2º GBM", "GAPH", "GMAF", "5º GBM", "MCPB"];
   const vtrOptions: Record<string, string[]> = {
@@ -117,6 +119,7 @@ const Index = () => {
     setMilitaryList([]);
     setSelectedGBM("");
     setSelectedVTR("");
+    navigate("/vehicle-receiving");
   };
 
   if (!isLoggedIn) {
