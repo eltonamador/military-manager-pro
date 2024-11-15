@@ -6,11 +6,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, ArrowUpDown } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useState } from "react";
+import { Button } from "./ui/button";
 
 interface Military {
   name: string;
@@ -23,14 +23,12 @@ interface Military {
 
 interface MilitaryTableProps {
   militaryList: Military[];
-  onEdit: (index: number) => void;
-  onDelete: (index: number) => void;
 }
 
 type SortField = 'name' | 'vtr' | 'function' | 'gbm' | 'date' | 'shiftDuration';
 type SortOrder = 'asc' | 'desc';
 
-const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) => {
+const MilitaryTable = ({ militaryList }: MilitaryTableProps) => {
   const [sortField, setSortField] = useState<SortField>('name');
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
 
@@ -58,7 +56,7 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
     <Button
       variant="ghost"
       onClick={() => handleSort(field)}
-      className="hover:bg-transparent"
+      className="hover:bg-red-50 text-gray-700 font-medium"
     >
       {label}
       <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -66,9 +64,9 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
   );
 
   return (
-    <div className="rounded-lg border">
+    <div className="rounded-lg border border-red-100">
       <Table>
-        <TableHeader>
+        <TableHeader className="bg-gradient-to-r from-red-50 to-red-100">
           <TableRow>
             <TableHead>
               <SortButton field="name" label="Nome" />
@@ -88,42 +86,23 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
             <TableHead>
               <SortButton field="shiftDuration" label="Jornada" />
             </TableHead>
-            <TableHead className="text-right">Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {sortedList.map((military, index) => (
-            <TableRow key={index}>
-              <TableCell>{military.name}</TableCell>
+            <TableRow key={index} className="hover:bg-red-50/50">
+              <TableCell className="font-medium">{military.name}</TableCell>
               <TableCell>{military.vtr}</TableCell>
               <TableCell>{military.function}</TableCell>
               <TableCell>{military.gbm}</TableCell>
               <TableCell>{format(military.date, "dd/MM/yyyy", { locale: ptBR })}</TableCell>
               <TableCell>{military.shiftDuration}h</TableCell>
-              <TableCell className="text-right space-x-2">
-                <Button
-                  onClick={() => onEdit(index)}
-                  variant="outline"
-                  size="sm"
-                  className="text-blue-600 hover:text-blue-700"
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-                <Button
-                  onClick={() => onDelete(index)}
-                  variant="outline"
-                  size="sm"
-                  className="text-red-600 hover:text-red-700"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </TableCell>
             </TableRow>
           ))}
           {sortedList.length === 0 && (
             <TableRow>
-              <TableCell colSpan={7} className="text-center text-muted-foreground">
-                Nenhum militar adicionado
+              <TableCell colSpan={6} className="text-center text-gray-500 py-8">
+                Nenhum registro encontrado
               </TableCell>
             </TableRow>
           )}

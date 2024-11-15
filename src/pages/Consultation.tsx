@@ -4,9 +4,10 @@ import MilitaryTable from "@/components/MilitaryTable";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
-import { Loader2 } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import { getMilitaryTableName, getVehicleTableName } from "@/utils/tableNames";
 import { ConsultationFilters } from "@/components/consultation/ConsultationFilters";
+import { Separator } from "@/components/ui/separator";
 
 const Consultation = () => {
   const [selectedDate, setSelectedDate] = useState<Date>();
@@ -120,36 +121,56 @@ const Consultation = () => {
   const combinedData = [...formattedMilitaryData, ...formattedVehicleData];
 
   return (
-    <div className="container mx-auto p-4 min-h-screen">
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>Consulta de Serviço</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ConsultationFilters
-            selectedDate={selectedDate}
-            selectedMilitaryGBMs={selectedMilitaryGBMs}
-            selectedVehicleGBMs={selectedVehicleGBMs}
-            selectedVTRs={selectedVTRs}
-            onDateChange={setSelectedDate}
-            onMilitaryGBMChange={handleMilitaryGBMChange}
-            onVehicleGBMChange={handleVehicleGBMChange}
-            onVTRChange={handleVTRChange}
-          />
-        </CardContent>
-      </Card>
-
-      {isLoading ? (
-        <div className="flex justify-center items-center p-8">
-          <Loader2 className="h-8 w-8 animate-spin" />
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="container mx-auto p-4 space-y-6">
+        <div className="text-center space-y-2 py-6">
+          <h1 className="text-3xl font-bold text-gray-900">Sistema de Consulta</h1>
+          <p className="text-gray-600">Corpo de Bombeiros Militar</p>
         </div>
-      ) : (
-        <MilitaryTable 
-          militaryList={combinedData}
-          onEdit={() => {}}
-          onDelete={() => {}}
-        />
-      )}
+
+        <Card className="border-2 border-red-600/10 shadow-lg">
+          <CardHeader className="border-b bg-gradient-to-r from-red-600 to-red-700">
+            <CardTitle className="text-white flex items-center gap-2">
+              <Search className="h-5 w-5" />
+              Filtros de Consulta
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <ConsultationFilters
+              selectedDate={selectedDate}
+              selectedMilitaryGBMs={selectedMilitaryGBMs}
+              selectedVehicleGBMs={selectedVehicleGBMs}
+              selectedVTRs={selectedVTRs}
+              onDateChange={setSelectedDate}
+              onMilitaryGBMChange={handleMilitaryGBMChange}
+              onVehicleGBMChange={handleVehicleGBMChange}
+              onVTRChange={handleVTRChange}
+            />
+          </CardContent>
+        </Card>
+
+        <Separator className="my-8" />
+
+        <div className="rounded-lg bg-white shadow-lg p-6 border border-gray-200">
+          {isLoading ? (
+            <div className="flex justify-center items-center p-12">
+              <div className="space-y-4 text-center">
+                <Loader2 className="h-8 w-8 animate-spin text-red-600 mx-auto" />
+                <p className="text-gray-600">Carregando dados...</p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                Resultados da Consulta
+              </h2>
+              <MilitaryTable 
+                militaryList={combinedData}
+              />
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

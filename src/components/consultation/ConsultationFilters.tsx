@@ -2,6 +2,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { ptBR } from "date-fns/locale";
+import { Card } from "@/components/ui/card";
 
 interface ConsultationFiltersProps {
   selectedDate: Date | undefined;
@@ -24,11 +25,11 @@ const gbmOptions = [
 ];
 
 const vtrOptions = [
-  { prefix: "ABT", description: "ABT (ex: ABT-123)" },
-  { prefix: "ABS", description: "ABS (ex: ABS-123)" },
-  { prefix: "USB", description: "USB (ex: USB-123)" },
-  { prefix: "AEM", description: "AEM (ex: AEM-01)" },
-  { prefix: "ACA", description: "ACA (ex: ACA-123)" }
+  { prefix: "ABT", description: "Auto Bomba Tanque" },
+  { prefix: "ABS", description: "Auto Busca e Salvamento" },
+  { prefix: "USB", description: "Unidade de Suporte Básico" },
+  { prefix: "AEM", description: "Auto Escada Mecânica" },
+  { prefix: "ACA", description: "Auto Comando de Área" }
 ];
 
 export const ConsultationFilters = ({
@@ -42,9 +43,9 @@ export const ConsultationFilters = ({
   onVTRChange,
 }: ConsultationFiltersProps) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-      <div className="space-y-4">
-        <Label>GBM Militares</Label>
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <Card className="p-4 border-red-100 shadow-sm">
+        <h3 className="font-semibold text-gray-900 mb-4">GBM Militares</h3>
         <div className="grid grid-cols-2 gap-4">
           {gbmOptions.map((gbm) => (
             <div key={gbm} className="flex items-center space-x-2">
@@ -52,15 +53,21 @@ export const ConsultationFilters = ({
                 id={`military-${gbm}`}
                 checked={selectedMilitaryGBMs.includes(gbm)}
                 onCheckedChange={(checked) => onMilitaryGBMChange(gbm, !!checked)}
+                className="border-red-200 text-red-600"
               />
-              <Label htmlFor={`military-${gbm}`}>{gbm}</Label>
+              <Label 
+                htmlFor={`military-${gbm}`}
+                className="text-sm text-gray-700"
+              >
+                {gbm}
+              </Label>
             </div>
           ))}
         </div>
-      </div>
+      </Card>
       
-      <div className="space-y-4">
-        <Label>GBM Viaturas</Label>
+      <Card className="p-4 border-red-100 shadow-sm">
+        <h3 className="font-semibold text-gray-900 mb-4">GBM Viaturas</h3>
         <div className="grid grid-cols-2 gap-4">
           {gbmOptions.map((gbm) => (
             <div key={gbm} className="flex items-center space-x-2">
@@ -68,39 +75,56 @@ export const ConsultationFilters = ({
                 id={`vehicle-${gbm}`}
                 checked={selectedVehicleGBMs.includes(gbm)}
                 onCheckedChange={(checked) => onVehicleGBMChange(gbm, !!checked)}
+                className="border-red-200 text-red-600"
               />
-              <Label htmlFor={`vehicle-${gbm}`}>{gbm}</Label>
+              <Label 
+                htmlFor={`vehicle-${gbm}`}
+                className="text-sm text-gray-700"
+              >
+                {gbm}
+              </Label>
             </div>
           ))}
         </div>
-      </div>
+      </Card>
 
-      <div className="space-y-4">
-        <Label>Tipo de VTR</Label>
-        <div className="grid grid-cols-1 gap-4">
+      <Card className="p-4 border-red-100 shadow-sm">
+        <h3 className="font-semibold text-gray-900 mb-4">Tipo de VTR</h3>
+        <div className="space-y-3">
           {vtrOptions.map(({ prefix, description }) => (
             <div key={prefix} className="flex items-center space-x-2">
               <Checkbox
                 id={`vtr-${prefix}`}
                 checked={selectedVTRs.includes(prefix)}
                 onCheckedChange={(checked) => onVTRChange(prefix, !!checked)}
+                className="border-red-200 text-red-600"
               />
-              <Label htmlFor={`vtr-${prefix}`}>{description}</Label>
+              <Label 
+                htmlFor={`vtr-${prefix}`}
+                className="text-sm text-gray-700"
+              >
+                <span className="font-medium">{prefix}</span> - {description}
+              </Label>
             </div>
           ))}
         </div>
-      </div>
+      </Card>
 
-      <div>
-        <Label>Data</Label>
+      <Card className="p-4 border-red-100 shadow-sm">
+        <h3 className="font-semibold text-gray-900 mb-4">Data</h3>
         <Calendar
           mode="single"
           selected={selectedDate}
           onSelect={onDateChange}
           className="border rounded-md"
           locale={ptBR}
+          classNames={{
+            head_cell: "text-red-600 font-medium",
+            day_selected: "bg-red-600 hover:bg-red-600",
+            day_today: "bg-red-100 text-red-900",
+          }}
         />
-      </div>
+      </Card>
     </div>
   );
 };
