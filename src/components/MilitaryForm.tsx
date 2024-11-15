@@ -25,7 +25,7 @@ interface MilitaryFormProps {
   shiftDuration: string;
   gbmOptions: string[];
   vtrOptions: Record<string, string[]>;
-  militaryOptions: Record<string, string[]>;
+  militaryOptions: string[]; // Updated type to string[]
   onGBMChange: (value: string) => void;
   onVTRChange: (value: string) => void;
   onMilitaryChange: (value: string) => void;
@@ -143,12 +143,11 @@ const MilitaryForm = ({
               <SelectValue placeholder="Selecione o Militar" />
             </SelectTrigger>
             <SelectContent>
-              {selectedGBM &&
-                militaryOptions[selectedGBM].map((military) => (
-                  <SelectItem key={military} value={military}>
-                    {military}
-                  </SelectItem>
-                ))}
+              {militaryOptions.map((military) => (
+                <SelectItem key={military} value={military}>
+                  {military}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
