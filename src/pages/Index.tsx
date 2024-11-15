@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -24,6 +24,7 @@ const Index = () => {
   const [shiftDuration, setShiftDuration] = useState("");
   const [militaryList, setMilitaryList] = useState<Military[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [militaryOptions1GBM, setMilitaryOptions1GBM] = useState<string[]>([]);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -35,6 +36,54 @@ const Index = () => {
     "GMAF": ["VTR-07", "VTR-08"],
     "5º GBM": ["VTR-09", "VTR-10"],
     "MCPB": ["VTR-11", "VTR-12"],
+  };
+
+  const defaultMilitaryOptions: Record<string, string[]> = {
+    "2º GBM": ["Pedro Santos", "Ana Rodrigues"],
+    "GAPH": ["Carlos Ferreira", "Juliana Costa"],
+    "GMAF": ["Marcos Souza", "Beatriz Lima"],
+    "5º GBM": ["Ricardo Alves", "Fernanda Pereira"],
+    "MCPB": ["Gabriel Martins", "Camila Rocha"],
+  };
+
+  useEffect(() => {
+    const fetchMilitaryNames = async () => {
+      if (selectedGBM === "1º GBM") {
+        try {
+          const { data, error } = await supabase
+            .from('militares_1gbm')
+            .select('nome_guerra')
+            .not('nome_guerra', 'is', null);
+
+          if (error) {
+            toast({
+              variant: "destructive",
+              title: "Erro ao carregar militares",
+              description: "Não foi possível carregar a lista de militares.",
+            });
+            return;
+          }
+
+          const names = data.map(item => item.nome_guerra as string);
+          setMilitaryOptions1GBM(names);
+        } catch (error) {
+          toast({
+            variant: "destructive",
+            title: "Erro ao carregar militares",
+            description: "Ocorreu um erro ao buscar a lista de militares.",
+          });
+        }
+      }
+    };
+
+    fetchMilitaryNames();
+  }, [selectedGBM, toast]);
+
+  const getMilitaryOptionsForGBM = (gbm: string) => {
+    if (gbm === "1º GBM") {
+      return militaryOptions1GBM;
+    }
+    return defaultMilitaryOptions[gbm] || [];
   };
 
   const handleAddMilitary = () => {
@@ -100,6 +149,7 @@ const Index = () => {
 
   const handleFinishOperation = async () => {
     try {
+      // Save each military service record to Supabase
       for (const military of militaryList) {
         const { error } = await supabase
           .from('servico_militar')
@@ -108,7 +158,7 @@ const Index = () => {
             viatura: military.vtr,
             funcao: military.function,
             GBM: military.gbm,
-            data: military.date.toISOString().split('T')[0],
+            data: military.date.toISOString().split('T')[0], // Format date as YYYY-MM-DD
           });
 
         if (error) {
@@ -151,6 +201,7 @@ const Index = () => {
           shiftDuration={shiftDuration}
           gbmOptions={gbmOptions}
           vtrOptions={vtrOptions}
+          militaryOptions={getMilitaryOptionsForGBM(selectedGBM)}
           onGBMChange={setSelectedGBM}
           onVTRChange={setSelectedVTR}
           onMilitaryChange={setSelectedMilitary}
