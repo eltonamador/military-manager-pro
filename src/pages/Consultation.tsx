@@ -16,31 +16,45 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Loader2 } from "lucide-react";
+import { getMilitaryTableName, getVehicleTableName } from "@/utils/tableNames";
 
 const Consultation = () => {
   const [selectedDate, setSelectedDate] = useState<Date>();
-  const [selectedGBM, setSelectedGBM] = useState<string>();
+  const [selectedMilitaryGBM, setSelectedMilitaryGBM] = useState<string>();
+  const [selectedVehicleGBM, setSelectedVehicleGBM] = useState<string>();
 
-  const { data: militaryData, isLoading } = useQuery({
-    queryKey: ["military-service", selectedGBM, selectedDate],
+  const { data: militaryData, isLoading: isMilitaryLoading } = useQuery({
+    queryKey: ["military-service", selectedMilitaryGBM, selectedDate],
     queryFn: async () => {
-      if (!selectedGBM) return [];
+      if (!selectedMilitaryGBM) return [];
 
-      const tableName = `servico_militar_${selectedGBM.toLowerCase().replace(/[ºª\s]/g, '')}`;
-      const query = supabase
+      const tableName = getMilitaryTableName(selectedMilitaryGBM);
+      const { data, error } = await supabase
         .from(tableName)
-        .select("*");
-
-      if (selectedDate) {
-        query.eq('data', format(selectedDate, 'yyyy-MM-dd'));
-      }
-
-      const { data, error } = await query;
+        .select("*")
+        .eq('data', selectedDate ? format(selectedDate, 'yyyy-MM-dd') : null);
 
       if (error) throw error;
       return data || [];
     },
-    enabled: !!selectedGBM,
+    enabled: !!selectedMilitaryGBM,
+  });
+
+  const { data: vehicleData, isLoading: isVehicleLoading } = useQuery({
+    queryKey: ["vehicle-service", selectedVehicleGBM, selectedDate],
+    queryFn: async () => {
+      if (!selectedVehicleGBM) return [];
+
+      const tableName = getVehicleTableName(selectedVehicleGBM);
+      const { data, error } = await supabase
+        .from(tableName)
+        .select("*")
+        .eq('data', selectedDate ? format(selectedDate, 'yyyy-MM-dd') : null);
+
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!selectedVehicleGBM,
   });
 
   const gbmOptions = [
@@ -52,14 +66,26 @@ const Consultation = () => {
     "MCPB"
   ];
 
-  const formattedData = militaryData?.map(item => ({
-    name: item.nome_de_guerra,
-    function: item.funcao,
-    gbm: item.GBM,
-    vtr: item.viatura,
+  const formattedMilitaryData = militaryData?.map(item => ({
+    name: item.nome_de_guerra || "",
+    function: item.funcao || "",
+    gbm: item.GBM || "",
+    vtr: item.viatura || "",
     date: new Date(item.data),
     shiftDuration: "24"
   })) || [];
+
+  const formattedVehicleData = vehicleData?.map(item => ({
+    name: item.vtr || "",
+    function: item.status || "",
+    gbm: item.gbm || "",
+    vtr: item.alteracao || "",
+    date: new Date(item.data),
+    shiftDuration: "-"
+  })) || [];
+
+  const isLoading = isMilitaryLoading || isVehicleLoading;
+  const combinedData = [...formattedMilitaryData, ...formattedVehicleData];
 
   return (
     <div className="container mx-auto p-4 min-h-screen">
@@ -68,10 +94,25 @@ const Consultation = () => {
           <CardTitle>Consulta de Serviço</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <Label>GBM</Label>
-              <Select value={selectedGBM} onValueChange={setSelectedGBM}>
+              <Label>GBM Militares</Label>
+              <Select value={selectedMilitaryGBM} onValueChange={setSelectedMilitaryGBM}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o GBM" />
+                </SelectTrigger>
+                <SelectContent>
+                  {gbmOptions.map((gbm) => (
+                    <SelectItem key={gbm} value={gbm}>
+                      {gbm}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>GBM Viaturas</Label>
+              <Select value={selectedVehicleGBM} onValueChange={setSelectedVehicleGBM}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o GBM" />
                 </SelectTrigger>
@@ -104,7 +145,7 @@ const Consultation = () => {
         </div>
       ) : (
         <MilitaryTable 
-          militaryList={formattedData}
+          militaryList={combinedData}
           onEdit={() => {}}
           onDelete={() => {}}
         />
