@@ -110,12 +110,6 @@ const MilitaryForm = ({
           </Popover>
         </div>
       </div>
-
-      {selectedGBM && selectedDate && (
-        <div className="text-center font-medium text-gray-700 bg-gray-100 py-2 rounded-md">
-          {selectedGBM} - Dia: {selectedDate && format(selectedDate, "dd/MM/yyyy", { locale: ptBR })}
-        </div>
-      )}
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>

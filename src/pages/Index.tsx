@@ -53,7 +53,7 @@ const Index = () => {
   const [selectedVTR, setSelectedVTR] = useState("");
   const [selectedMilitary, setSelectedMilitary] = useState("");
   const [militaryFunction, setMilitaryFunction] = useState("");
-  const [selectedDate, setSelectedDate] = useState<Date>();
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [shiftDuration, setShiftDuration] = useState("");
   const [militaryList, setMilitaryList] = useState<Military[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);

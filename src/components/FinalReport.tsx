@@ -27,6 +27,7 @@ interface Vehicle {
   vtr: string;
   status: string;
   description: string;
+  date: Date;
 }
 
 interface FinalReportProps {
@@ -112,6 +113,7 @@ const FinalReport = ({
           vtr: item.vtr || '',
           status: item.status || '',
           description: item.alteracao || '',
+          date: item.data ? new Date(item.data) : new Date(),
         }));
         setServiceVehicleList(formattedVehicleData);
       } catch (error) {
