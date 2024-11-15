@@ -17,6 +17,7 @@ interface Military {
   gbm: string;
   vtr: string;
   date: Date;
+  shiftDuration: string;
 }
 
 interface MilitaryTableProps {
@@ -26,7 +27,6 @@ interface MilitaryTableProps {
 }
 
 const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) => {
-  // Group militaries by GBM and date
   const groupedMilitaries = militaryList.reduce((acc, military, index) => {
     const key = `${military.gbm}-${format(military.date, "dd/MM/yyyy")}`;
     if (!acc[key]) {
@@ -48,6 +48,7 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
             <TableHead>Nome</TableHead>
             <TableHead>VTR</TableHead>
             <TableHead>Função</TableHead>
+            <TableHead>Jornada</TableHead>
             <TableHead className="text-right">Ações</TableHead>
           </TableRow>
         </TableHeader>
@@ -55,7 +56,7 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
           {Object.entries(groupedMilitaries).map(([key, group]) => (
             <>
               <TableRow key={`header-${key}`} className="bg-muted/50">
-                <TableCell colSpan={4} className="font-medium text-center">
+                <TableCell colSpan={5} className="font-medium text-center">
                   {group.gbm} - Dia: {format(group.date, "dd/MM/yyyy", { locale: ptBR })}
                 </TableCell>
               </TableRow>
@@ -64,6 +65,7 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
                   <TableCell>{military.name}</TableCell>
                   <TableCell>{military.vtr}</TableCell>
                   <TableCell>{military.function}</TableCell>
+                  <TableCell>{military.shiftDuration}h</TableCell>
                   <TableCell className="text-right space-x-2">
                     <Button
                       onClick={() => onEdit(military.originalIndex)}
@@ -88,7 +90,7 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
           ))}
           {militaryList.length === 0 && (
             <TableRow>
-              <TableCell colSpan={4} className="text-center text-muted-foreground">
+              <TableCell colSpan={5} className="text-center text-muted-foreground">
                 Nenhum militar adicionado
               </TableCell>
             </TableRow>

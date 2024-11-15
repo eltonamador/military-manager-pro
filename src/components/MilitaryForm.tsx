@@ -22,6 +22,7 @@ interface MilitaryFormProps {
   selectedMilitary: string;
   militaryFunction: string;
   selectedDate: Date | undefined;
+  shiftDuration: string;
   gbmOptions: string[];
   vtrOptions: Record<string, string[]>;
   militaryOptions: Record<string, string[]>;
@@ -30,6 +31,7 @@ interface MilitaryFormProps {
   onMilitaryChange: (value: string) => void;
   onFunctionChange: (value: string) => void;
   onDateChange: (date: Date | undefined) => void;
+  onShiftDurationChange: (value: string) => void;
   onAddMilitary: () => void;
 }
 
@@ -44,12 +46,15 @@ const militaryFunctionOptions = [
   "ajudante de 2º linha"
 ];
 
+const shiftDurationOptions = ["6", "8", "12", "24"];
+
 const MilitaryForm = ({
   selectedGBM,
   selectedVTR,
   selectedMilitary,
   militaryFunction,
   selectedDate,
+  shiftDuration,
   gbmOptions,
   vtrOptions,
   militaryOptions,
@@ -58,6 +63,7 @@ const MilitaryForm = ({
   onMilitaryChange,
   onFunctionChange,
   onDateChange,
+  onShiftDurationChange,
   onAddMilitary,
 }: MilitaryFormProps) => {
   const hasExistingMilitary = selectedGBM !== "" && selectedDate !== undefined;
@@ -161,11 +167,26 @@ const MilitaryForm = ({
             </SelectContent>
           </Select>
         </div>
+        <div>
+          <Label htmlFor="shiftDuration">Jornada</Label>
+          <Select onValueChange={onShiftDurationChange} value={shiftDuration}>
+            <SelectTrigger id="shiftDuration">
+              <SelectValue placeholder="Selecione a Jornada" />
+            </SelectTrigger>
+            <SelectContent>
+              {shiftDurationOptions.map((duration) => (
+                <SelectItem key={duration} value={duration}>
+                  {duration} horas
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
         <div className="md:col-span-2">
           <Button
             onClick={onAddMilitary}
             className="w-full bg-military-orange hover:bg-military-red transition-colors"
-            disabled={!selectedMilitary || !militaryFunction || !selectedDate}
+            disabled={!selectedMilitary || !militaryFunction || !selectedDate || !shiftDuration}
           >
             <Plus className="mr-2 h-4 w-4" /> Adicionar Militar
           </Button>
