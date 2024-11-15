@@ -6,6 +6,7 @@ import VehicleForm from "@/components/vehicle/VehicleForm";
 import FinalReport from "@/components/FinalReport";
 import { supabase } from "@/integrations/supabase/client";
 import { useVehicleService } from "@/hooks/useVehicleService";
+import { useQuery } from "@tanstack/react-query";
 
 interface Vehicle {
   gbm: string;
@@ -15,6 +16,16 @@ interface Vehicle {
   date: Date;
 }
 
+const fetchVTRs = async () => {
+  const { data, error } = await supabase
+    .from('viaturas')
+    .select('prefixo')
+    .not('prefixo', 'is', null);
+
+  if (error) throw error;
+  return data.map(item => item.prefixo as string);
+};
+
 const VehicleReceiving = () => {
   const [selectedVTR, setSelectedVTR] = useState("");
   const [selectedGBM, setSelectedGBM] = useState("");
@@ -23,10 +34,14 @@ const VehicleReceiving = () => {
   const [showFinalReport, setShowFinalReport] = useState(false);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [vtrOptions, setVtrOptions] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const { toast } = useToast();
   const { saveVehicleService } = useVehicleService();
+
+  const { data: vtrOptions = [] } = useQuery({
+    queryKey: ['vtrOptions'],
+    queryFn: fetchVTRs,
+  });
 
   const gbmOptions = ["1º GBM", "2º GBM", "GAPH", "GMAF", "5º GBM", "MCPB"];
 
