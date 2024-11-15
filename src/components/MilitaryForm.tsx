@@ -58,7 +58,7 @@ const MilitaryForm = ({
   shiftDuration,
   gbmOptions,
   vtrOptions,
-  militaryOptions,
+  militaryOptions = [], // Provide default empty array
   onGBMChange,
   onVTRChange,
   onMilitaryChange,
@@ -134,7 +134,7 @@ const MilitaryForm = ({
             </SelectTrigger>
             <SelectContent>
               {selectedGBM &&
-                vtrOptions[selectedGBM].map((vtr) => (
+                vtrOptions[selectedGBM]?.map((vtr) => (
                   <SelectItem key={vtr} value={vtr}>
                     {vtr}
                   </SelectItem>
