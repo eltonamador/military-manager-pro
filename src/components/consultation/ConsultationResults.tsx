@@ -25,7 +25,17 @@ const ConsultationResults = ({ isLoading, combinedData }: ConsultationResultsPro
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      // Add header text
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(16);
+      pdf.text("CORPO DE BOMBEIROS MILITAR DO AMAPÁ", pdfWidth/2, 20, { align: "center" });
+      pdf.setFontSize(14);
+      pdf.text("COMANDO OPERACIONAL", pdfWidth/2, 30, { align: "center" });
+      pdf.text("MILITARES E VIATURAS NO SERVIÇO OPERACIONAL", pdfWidth/2, 40, { align: "center" });
+      pdf.setFont("helvetica", "normal");
+      
+      // Add the table image below the header
+      pdf.addImage(imgData, 'PNG', 0, 50, pdfWidth, pdfHeight);
       const pdfBlob = pdf.output('blob');
       const pdfUrl = URL.createObjectURL(pdfBlob);
 
@@ -50,7 +60,8 @@ const ConsultationResults = ({ isLoading, combinedData }: ConsultationResultsPro
   const handleShare = async () => {
     const pdfUrl = await generateAndSharePDF();
     if (pdfUrl) {
-      const whatsappUrl = `https://wa.me/?text=Consulta%20de%20Serviço%20${encodeURIComponent(pdfUrl)}`;
+      const message = "Relatório do Serviço Operacional - CBMAP";
+      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message + "\n" + pdfUrl)}`;
       window.open(whatsappUrl, '_blank');
     }
   };
