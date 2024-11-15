@@ -15,6 +15,7 @@ const Consultation = () => {
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [selectedMilitaryGBMs, setSelectedMilitaryGBMs] = useState<string[]>([]);
   const [selectedVehicleGBMs, setSelectedVehicleGBMs] = useState<string[]>([]);
+  const [selectedVTRs, setSelectedVTRs] = useState<string[]>([]);
 
   const gbmOptions = [
     "1º GBM",
@@ -23,6 +24,17 @@ const Consultation = () => {
     "GAPH",
     "GMAF",
     "MCPB"
+  ];
+
+  const vtrOptions = [
+    "ABT",
+    "ABS",
+    "AR",
+    "ASE",
+    "ATP",
+    "AEM",
+    "ABSL",
+    "UR"
   ];
 
   const { data: militaryData, isLoading: isMilitaryLoading } = useQuery({
@@ -38,6 +50,10 @@ const Consultation = () => {
           query = query.eq('data', format(selectedDate, 'yyyy-MM-dd'));
         }
 
+        if (selectedVTRs.length > 0) {
+          query = query.in('viatura', selectedVTRs);
+        }
+
         const { data, error } = await query;
         if (error) throw error;
         return data || [];
@@ -50,7 +66,7 @@ const Consultation = () => {
   });
 
   const { data: vehicleData, isLoading: isVehicleLoading } = useQuery({
-    queryKey: ["vehicle-service", selectedVehicleGBMs, selectedDate],
+    queryKey: ["vehicle-service", selectedVehicleGBMs, selectedDate, selectedVTRs],
     queryFn: async () => {
       if (selectedVehicleGBMs.length === 0) return [];
 
@@ -60,6 +76,10 @@ const Consultation = () => {
         
         if (selectedDate) {
           query = query.eq('data', format(selectedDate, 'yyyy-MM-dd'));
+        }
+
+        if (selectedVTRs.length > 0) {
+          query = query.in('vtr', selectedVTRs);
         }
 
         const { data, error } = await query;
@@ -101,7 +121,7 @@ const Consultation = () => {
           <CardTitle>Consulta de Serviço</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="space-y-4">
               <Label>GBM Militares</Label>
               <div className="grid grid-cols-2 gap-4">
@@ -140,6 +160,27 @@ const Consultation = () => {
                       }}
                     />
                     <Label htmlFor={`vehicle-${gbm}`}>{gbm}</Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-4">
+              <Label>Tipo de VTR</Label>
+              <div className="grid grid-cols-2 gap-4">
+                {vtrOptions.map((vtr) => (
+                  <div key={vtr} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`vtr-${vtr}`}
+                      checked={selectedVTRs.includes(vtr)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedVTRs([...selectedVTRs, vtr]);
+                        } else {
+                          setSelectedVTRs(selectedVTRs.filter(v => v !== vtr));
+                        }
+                      }}
+                    />
+                    <Label htmlFor={`vtr-${vtr}`}>{vtr}</Label>
                   </div>
                 ))}
               </div>
