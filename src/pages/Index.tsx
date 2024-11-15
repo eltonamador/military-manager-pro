@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +6,7 @@ import MilitaryForm from "@/components/MilitaryForm";
 import MilitaryTable from "@/components/MilitaryTable";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { getMilitaryTableName } from "@/utils/tableNames";
 
 interface Military {
   name: string;
@@ -34,18 +35,6 @@ const fetchVTRs = async () => {
 
   if (error) throw error;
   return data.map(item => item.prefixo);
-};
-
-const getTableNameForGBM = (gbm: string) => {
-  const tableMap: { [key: string]: string } = {
-    "1º GBM": "servico_militar_1gbm",
-    "2º GBM": "servico_militar_2gbm",
-    "MCPB": "servico_militar_mcpb",
-    "5º GBM": "servico_militar_5gbm",
-    "GAPH": "servico_militar_gaph",
-    "GMAF": "servico_militar_gmaf"
-  };
-  return tableMap[gbm];
 };
 
 const Index = () => {
@@ -136,17 +125,8 @@ const Index = () => {
   const handleFinishOperation = async () => {
     try {
       for (const military of militaryList) {
-        const tableName = getTableNameForGBM(military.gbm);
+        const tableName = getMilitaryTableName(military.gbm);
         
-        if (!tableName) {
-          toast({
-            variant: "destructive",
-            title: "Erro ao salvar",
-            description: `GBM inválido: ${military.gbm}`,
-          });
-          continue;
-        }
-
         const { error } = await supabase
           .from(tableName)
           .insert({

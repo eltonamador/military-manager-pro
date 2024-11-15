@@ -52,16 +52,7 @@ const App = () => {
                 )
               }
             />
-            <Route
-              path="/login"
-              element={
-                !session ? (
-                  <LoginForm />
-                ) : (
-                  <Navigate to="/" replace />
-                )
-              }
-            />
+            <Route path="/login" element={<LoginForm />} />
             <Route path="/register" element={<Register />} />
             <Route
               path="/vehicle-receiving"
