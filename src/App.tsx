@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Register from "./pages/Register";
 import VehicleReceiving from "./pages/VehicleReceiving";
 import LoginForm from "./components/LoginForm";
+import Consultation from "./pages/Consultation";
 
 const queryClient = new QueryClient();
 
@@ -54,6 +55,7 @@ const App = () => {
             />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/consultation" element={<Consultation />} />
             <Route
               path="/vehicle-receiving"
               element={

@@ -102,9 +102,12 @@ const LoginForm = () => {
               {loading ? "Entrando..." : "Entrar"}
             </Button>
           </form>
-          <div className="mt-4 text-center">
-            <Link to="/register" className="text-military-orange hover:text-military-red transition-colors">
+          <div className="mt-4 text-center space-y-2">
+            <Link to="/register" className="text-military-orange hover:text-military-red transition-colors block">
               Não tem uma conta? Cadastre-se
+            </Link>
+            <Link to="/consultation" className="text-military-orange hover:text-military-red transition-colors block">
+              Consultar Escala de Serviço
             </Link>
           </div>
         </div>
