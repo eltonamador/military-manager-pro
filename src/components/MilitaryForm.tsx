@@ -63,9 +63,9 @@ const MilitaryForm = ({
   const hasExistingMilitary = selectedGBM !== "" && selectedDate !== undefined;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-      {!hasExistingMilitary && (
-        <>
+    <div className="space-y-6">
+      {!hasExistingMilitary ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <Label htmlFor="gbm">GBM</Label>
             <Select onValueChange={onGBMChange} value={selectedGBM}>
@@ -106,63 +106,70 @@ const MilitaryForm = ({
               </PopoverContent>
             </Popover>
           </div>
-        </>
+        </div>
+      ) : (
+        <div className="text-center font-medium text-gray-700 bg-gray-100 py-2 rounded-md">
+          {selectedGBM} - Dia: {selectedDate && format(selectedDate, "dd/MM/yyyy", { locale: ptBR })}
+        </div>
       )}
-      <div>
-        <Label htmlFor="vtr">VTR</Label>
-        <Select onValueChange={onVTRChange} value={selectedVTR} disabled={!selectedGBM}>
-          <SelectTrigger id="vtr">
-            <SelectValue placeholder="Selecione a VTR" />
-          </SelectTrigger>
-          <SelectContent>
-            {selectedGBM &&
-              vtrOptions[selectedGBM].map((vtr) => (
-                <SelectItem key={vtr} value={vtr}>
-                  {vtr}
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <Label htmlFor="vtr">VTR</Label>
+          <Select onValueChange={onVTRChange} value={selectedVTR} disabled={!selectedGBM}>
+            <SelectTrigger id="vtr">
+              <SelectValue placeholder="Selecione a VTR" />
+            </SelectTrigger>
+            <SelectContent>
+              {selectedGBM &&
+                vtrOptions[selectedGBM].map((vtr) => (
+                  <SelectItem key={vtr} value={vtr}>
+                    {vtr}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="military">Nome do Militar</Label>
+          <Select onValueChange={onMilitaryChange} value={selectedMilitary} disabled={!selectedGBM}>
+            <SelectTrigger id="military">
+              <SelectValue placeholder="Selecione o Militar" />
+            </SelectTrigger>
+            <SelectContent>
+              {selectedGBM &&
+                militaryOptions[selectedGBM].map((military) => (
+                  <SelectItem key={military} value={military}>
+                    {military}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="function">Função</Label>
+          <Select onValueChange={onFunctionChange} value={militaryFunction}>
+            <SelectTrigger id="function">
+              <SelectValue placeholder="Selecione a Função" />
+            </SelectTrigger>
+            <SelectContent>
+              {militaryFunctionOptions.map((func) => (
+                <SelectItem key={func} value={func}>
+                  {func}
                 </SelectItem>
               ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div>
-        <Label htmlFor="military">Nome do Militar</Label>
-        <Select onValueChange={onMilitaryChange} value={selectedMilitary} disabled={!selectedGBM}>
-          <SelectTrigger id="military">
-            <SelectValue placeholder="Selecione o Militar" />
-          </SelectTrigger>
-          <SelectContent>
-            {selectedGBM &&
-              militaryOptions[selectedGBM].map((military) => (
-                <SelectItem key={military} value={military}>
-                  {military}
-                </SelectItem>
-              ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div>
-        <Label htmlFor="function">Função</Label>
-        <Select onValueChange={onFunctionChange} value={militaryFunction}>
-          <SelectTrigger id="function">
-            <SelectValue placeholder="Selecione a Função" />
-          </SelectTrigger>
-          <SelectContent>
-            {militaryFunctionOptions.map((func) => (
-              <SelectItem key={func} value={func}>
-                {func}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="md:col-span-2">
-        <Button
-          onClick={onAddMilitary}
-          className="w-full bg-military-orange hover:bg-military-red transition-colors"
-          disabled={!selectedMilitary || !militaryFunction || !selectedDate}
-        >
-          <Plus className="mr-2 h-4 w-4" /> Adicionar Militar
-        </Button>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="md:col-span-2">
+          <Button
+            onClick={onAddMilitary}
+            className="w-full bg-military-orange hover:bg-military-red transition-colors"
+            disabled={!selectedMilitary || !militaryFunction || !selectedDate}
+          >
+            <Plus className="mr-2 h-4 w-4" /> Adicionar Militar
+          </Button>
+        </div>
       </div>
     </div>
   );
