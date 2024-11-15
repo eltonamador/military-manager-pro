@@ -29,7 +29,7 @@ const fetchMilitaryNames = async () => {
 const Index = () => {
   const [selectedGBM, setSelectedGBM] = useState("");
   const [selectedVTR, setSelectedVTR] = useState("");
-  const [selectedMilitary, setSelectedMilitary] = useState("");
+  const [selectedMilitary, setSelectedMilitary] = useState("Guerreiro");
   const [militaryFunction, setMilitaryFunction] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [shiftDuration, setShiftDuration] = useState("");
