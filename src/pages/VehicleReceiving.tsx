@@ -7,7 +7,6 @@ import FinalReport from "@/components/FinalReport";
 import { supabase } from "@/integrations/supabase/client";
 import { useVehicleService } from "@/hooks/useVehicleService";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 
 interface Vehicle {
   gbm: string;
@@ -38,7 +37,6 @@ const VehicleReceiving = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const { toast } = useToast();
   const { saveVehicleService } = useVehicleService();
-  const navigate = useNavigate();
 
   const { data: vtrOptions = [] } = useQuery({
     queryKey: ['vtrOptions'],
@@ -96,14 +94,25 @@ const VehicleReceiving = () => {
     });
   };
 
-  const handleFinishOperation = async () => {
+  const handleSendReport = async () => {
     const success = await saveVehicleService(vehicles, selectedDate);
     
     if (success) {
+      const reportText = `*Relatório de VTRs*\n\n${vehicles
+        .map(
+          (v) =>
+            `*GBM:* ${v.gbm}\n*VTR:* ${v.vtr}\n*Status:* ${v.status}\n*Descrição:* ${v.description}\n`
+        )
+        .join("\n")}`;
+
+      const encodedText = encodeURIComponent(reportText);
+      window.open(`https://wa.me/?text=${encodedText}`, "_blank");
+      
       setVehicles([]);
-      setSelectedGBM("");
       setSelectedVTR("");
-      navigate("/");
+      setStatus("");
+      setDescription("");
+      setShowFinalReport(false);
     }
   };
 
@@ -138,17 +147,15 @@ const VehicleReceiving = () => {
           onEdit={handleEdit}
           onDelete={handleDelete}
         />
-      </main>
 
-      <footer className="mt-6">
         <Button
-          onClick={handleFinishOperation}
-          className="w-full bg-military-red hover:bg-military-orange transition-colors"
+          onClick={() => setShowFinalReport(true)}
+          className="w-full mt-6 bg-military-red hover:bg-military-orange transition-colors"
           disabled={vehicles.length === 0}
         >
           Finalizar VTRs
         </Button>
-      </footer>
+      </main>
 
       <FinalReport
         open={showFinalReport}
@@ -156,7 +163,7 @@ const VehicleReceiving = () => {
         militaryList={[]}
         vehicleList={vehicles}
         onEdit={() => setShowFinalReport(false)}
-        onSend={handleFinishOperation}
+        onSend={handleSendReport}
         selectedDate={selectedDate}
       />
     </div>
