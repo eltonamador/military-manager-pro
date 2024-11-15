@@ -17,6 +17,15 @@ export const useVehicleService = () => {
     try {
       for (const vehicle of vehicles) {
         const tableName = getVehicleTableName(vehicle.gbm);
+        
+        if (!tableName) {
+          toast({
+            variant: "destructive",
+            title: "Erro ao salvar",
+            description: `GBM inválido: ${vehicle.gbm}`,
+          });
+          continue;
+        }
 
         const { error } = await supabase
           .from(tableName)
