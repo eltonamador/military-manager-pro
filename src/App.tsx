@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Register from "./pages/Register";
 import VehicleReceiving from "./pages/VehicleReceiving";
 import LoginForm from "./components/LoginForm";
+import Reports from "./pages/Reports";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +69,16 @@ const App = () => {
               element={
                 session ? (
                   <VehicleReceiving />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
+            <Route
+              path="/reports"
+              element={
+                session ? (
+                  <Reports />
                 ) : (
                   <Navigate to="/login" replace />
                 )
