@@ -1,15 +1,8 @@
 import { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import MilitaryTable from "@/components/MilitaryTable";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,46 +13,8 @@ import { getMilitaryTableName, getVehicleTableName } from "@/utils/tableNames";
 
 const Consultation = () => {
   const [selectedDate, setSelectedDate] = useState<Date>();
-  const [selectedMilitaryGBM, setSelectedMilitaryGBM] = useState<string>();
-  const [selectedVehicleGBM, setSelectedVehicleGBM] = useState<string>();
-
-  const { data: militaryData, isLoading: isMilitaryLoading } = useQuery({
-    queryKey: ["military-service", selectedMilitaryGBM, selectedDate],
-    queryFn: async () => {
-      if (!selectedMilitaryGBM) return [];
-
-      const tableName = getMilitaryTableName(selectedMilitaryGBM);
-      let query = supabase.from(tableName).select("*");
-      
-      if (selectedDate) {
-        query = query.eq('data', format(selectedDate, 'yyyy-MM-dd'));
-      }
-
-      const { data, error } = await query;
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!selectedMilitaryGBM,
-  });
-
-  const { data: vehicleData, isLoading: isVehicleLoading } = useQuery({
-    queryKey: ["vehicle-service", selectedVehicleGBM, selectedDate],
-    queryFn: async () => {
-      if (!selectedVehicleGBM) return [];
-
-      const tableName = getVehicleTableName(selectedVehicleGBM);
-      let query = supabase.from(tableName).select("*");
-      
-      if (selectedDate) {
-        query = query.eq('data', format(selectedDate, 'yyyy-MM-dd'));
-      }
-
-      const { data, error } = await query;
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!selectedVehicleGBM,
-  });
+  const [selectedMilitaryGBMs, setSelectedMilitaryGBMs] = useState<string[]>([]);
+  const [selectedVehicleGBMs, setSelectedVehicleGBMs] = useState<string[]>([]);
 
   const gbmOptions = [
     "1º GBM",
@@ -69,6 +24,54 @@ const Consultation = () => {
     "GMAF",
     "MCPB"
   ];
+
+  const { data: militaryData, isLoading: isMilitaryLoading } = useQuery({
+    queryKey: ["military-service", selectedMilitaryGBMs, selectedDate],
+    queryFn: async () => {
+      if (selectedMilitaryGBMs.length === 0) return [];
+
+      const promises = selectedMilitaryGBMs.map(async (gbm) => {
+        const tableName = getMilitaryTableName(gbm);
+        let query = supabase.from(tableName).select("*");
+        
+        if (selectedDate) {
+          query = query.eq('data', format(selectedDate, 'yyyy-MM-dd'));
+        }
+
+        const { data, error } = await query;
+        if (error) throw error;
+        return data || [];
+      });
+
+      const results = await Promise.all(promises);
+      return results.flat();
+    },
+    enabled: selectedMilitaryGBMs.length > 0,
+  });
+
+  const { data: vehicleData, isLoading: isVehicleLoading } = useQuery({
+    queryKey: ["vehicle-service", selectedVehicleGBMs, selectedDate],
+    queryFn: async () => {
+      if (selectedVehicleGBMs.length === 0) return [];
+
+      const promises = selectedVehicleGBMs.map(async (gbm) => {
+        const tableName = getVehicleTableName(gbm);
+        let query = supabase.from(tableName).select("*");
+        
+        if (selectedDate) {
+          query = query.eq('data', format(selectedDate, 'yyyy-MM-dd'));
+        }
+
+        const { data, error } = await query;
+        if (error) throw error;
+        return data || [];
+      });
+
+      const results = await Promise.all(promises);
+      return results.flat();
+    },
+    enabled: selectedVehicleGBMs.length > 0,
+  });
 
   const formattedMilitaryData = militaryData?.map(item => ({
     name: item.nome_de_guerra || "",
@@ -99,35 +102,47 @@ const Consultation = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
+            <div className="space-y-4">
               <Label>GBM Militares</Label>
-              <Select value={selectedMilitaryGBM} onValueChange={setSelectedMilitaryGBM}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o GBM" />
-                </SelectTrigger>
-                <SelectContent>
-                  {gbmOptions.map((gbm) => (
-                    <SelectItem key={gbm} value={gbm}>
-                      {gbm}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="grid grid-cols-2 gap-4">
+                {gbmOptions.map((gbm) => (
+                  <div key={gbm} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`military-${gbm}`}
+                      checked={selectedMilitaryGBMs.includes(gbm)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedMilitaryGBMs([...selectedMilitaryGBMs, gbm]);
+                        } else {
+                          setSelectedMilitaryGBMs(selectedMilitaryGBMs.filter(g => g !== gbm));
+                        }
+                      }}
+                    />
+                    <Label htmlFor={`military-${gbm}`}>{gbm}</Label>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div>
+            <div className="space-y-4">
               <Label>GBM Viaturas</Label>
-              <Select value={selectedVehicleGBM} onValueChange={setSelectedVehicleGBM}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o GBM" />
-                </SelectTrigger>
-                <SelectContent>
-                  {gbmOptions.map((gbm) => (
-                    <SelectItem key={gbm} value={gbm}>
-                      {gbm}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="grid grid-cols-2 gap-4">
+                {gbmOptions.map((gbm) => (
+                  <div key={gbm} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`vehicle-${gbm}`}
+                      checked={selectedVehicleGBMs.includes(gbm)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedVehicleGBMs([...selectedVehicleGBMs, gbm]);
+                        } else {
+                          setSelectedVehicleGBMs(selectedVehicleGBMs.filter(g => g !== gbm));
+                        }
+                      }}
+                    />
+                    <Label htmlFor={`vehicle-${gbm}`}>{gbm}</Label>
+                  </div>
+                ))}
+              </div>
             </div>
             <div>
               <Label>Data</Label>
