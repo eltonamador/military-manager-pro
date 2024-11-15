@@ -34,7 +34,7 @@ const MilitarySearch = ({ selectedMilitary, onMilitaryChange }: MilitarySearchPr
 
         if (error) throw error;
         
-        const names = data.map(item => item.nome_guerra).filter(Boolean);
+        const names = data?.map(item => item.nome_guerra).filter(Boolean) || [];
         setMilitaryOptions(names);
       } catch (error) {
         console.error('Error fetching military names:', error);
