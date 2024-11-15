@@ -93,6 +93,33 @@ export type Database = {
         }
         Relationships: []
       }
+      servico_vtrs: {
+        Row: {
+          alteracao: string | null
+          created_at: string
+          gbm: string | null
+          id: number
+          status: string | null
+          vtr: string | null
+        }
+        Insert: {
+          alteracao?: string | null
+          created_at?: string
+          gbm?: string | null
+          id?: number
+          status?: string | null
+          vtr?: string | null
+        }
+        Update: {
+          alteracao?: string | null
+          created_at?: string
+          gbm?: string | null
+          id?: number
+          status?: string | null
+          vtr?: string | null
+        }
+        Relationships: []
+      }
       viaturas: {
         Row: {
           alteracao: string | null

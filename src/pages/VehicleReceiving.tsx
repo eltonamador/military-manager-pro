@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 import {
   Select,
   SelectContent,
@@ -10,19 +11,10 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Plus } from "lucide-react";
 import VehicleTable from "@/components/VehicleTable";
 import FinalReport from "@/components/FinalReport";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Vehicle {
   gbm: string;
@@ -31,32 +23,42 @@ interface Vehicle {
   description: string;
 }
 
-interface Military {
-  name: string;
-  function: string;
-  gbm: string;
-  vtr: string;
-  date: Date;
-}
-
 const VehicleReceiving = () => {
   const [selectedVTR, setSelectedVTR] = useState("");
   const [status, setStatus] = useState("");
   const [description, setDescription] = useState("");
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showFinalReport, setShowFinalReport] = useState(false);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [vtrOptions, setVtrOptions] = useState<string[]>([]);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const vtrOptions = {
-    "1º GBM": ["VTR-01", "VTR-02"],
-    "2º GBM": ["VTR-03", "VTR-04"],
-    "GAPH": ["VTR-05", "VTR-06"],
-    "GMAF": ["VTR-07", "VTR-08"],
-    "5º GBM": ["VTR-09", "VTR-10"],
-    "MCPB": ["VTR-11", "VTR-12"],
-  };
+  // Fetch VTR prefixes from Supabase
+  useEffect(() => {
+    const fetchVTRs = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('viaturas')
+          .select('prefixo')
+          .not('prefixo', 'is', null);
+
+        if (error) throw error;
+
+        const prefixes = data.map(item => item.prefixo as string);
+        setVtrOptions(prefixes);
+      } catch (error) {
+        console.error('Error fetching VTRs:', error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao carregar VTRs",
+          description: "Não foi possível carregar a lista de VTRs",
+        });
+      }
+    };
+
+    fetchVTRs();
+  }, [toast]);
 
   const handleAddVehicle = () => {
     if (!selectedVTR || !status) {
@@ -68,9 +70,7 @@ const VehicleReceiving = () => {
       return;
     }
 
-    const gbm = Object.entries(vtrOptions).find(([_, vtrs]) =>
-      vtrs.includes(selectedVTR)
-    )?.[0] || "";
+    const gbm = selectedVTR.split('-')[0]; // Extract GBM from VTR prefix
 
     const newVehicle = {
       gbm,
@@ -118,18 +118,53 @@ const VehicleReceiving = () => {
     });
   };
 
-  const handleSendReport = () => {
-    // Format the report text for WhatsApp
-    const reportText = `*Relatório de VTRs*\n\n${vehicles
-      .map(
-        (v) =>
-          `*GBM:* ${v.gbm}\n*VTR:* ${v.vtr}\n*Status:* ${v.status}\n*Descrição:* ${v.description}\n`
-      )
-      .join("\n")}`;
+  const handleSendReport = async () => {
+    try {
+      // Save each vehicle service record to Supabase
+      for (const vehicle of vehicles) {
+        const { error } = await supabase
+          .from('servico_vtrs')
+          .insert({
+            gbm: vehicle.gbm,
+            vtr: vehicle.vtr,
+            status: vehicle.status,
+            alteracao: vehicle.description,
+          });
 
-    // Encode the text for WhatsApp URL
-    const encodedText = encodeURIComponent(reportText);
-    window.open(`https://wa.me/?text=${encodedText}`, "_blank");
+        if (error) throw error;
+      }
+
+      toast({
+        title: "Relatório enviado",
+        description: "Os dados foram salvos com sucesso",
+      });
+      
+      // Format the report text for WhatsApp
+      const reportText = `*Relatório de VTRs*\n\n${vehicles
+        .map(
+          (v) =>
+            `*GBM:* ${v.gbm}\n*VTR:* ${v.vtr}\n*Status:* ${v.status}\n*Descrição:* ${v.description}\n`
+        )
+        .join("\n")}`;
+
+      // Encode the text for WhatsApp URL
+      const encodedText = encodeURIComponent(reportText);
+      window.open(`https://wa.me/?text=${encodedText}`, "_blank");
+      
+      // Reset form
+      setVehicles([]);
+      setSelectedVTR("");
+      setStatus("");
+      setDescription("");
+      setShowFinalReport(false);
+    } catch (error) {
+      console.error('Error saving vehicle service:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao salvar",
+        description: "Ocorreu um erro ao salvar os dados do serviço",
+      });
+    }
   };
 
   return (
@@ -149,13 +184,11 @@ const VehicleReceiving = () => {
                 <SelectValue placeholder="Selecione a VTR" />
               </SelectTrigger>
               <SelectContent>
-                {Object.values(vtrOptions)
-                  .flat()
-                  .map((vtr) => (
-                    <SelectItem key={vtr} value={vtr}>
-                      {vtr}
-                    </SelectItem>
-                  ))}
+                {vtrOptions.map((vtr) => (
+                  <SelectItem key={vtr} value={vtr}>
+                    {vtr}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -214,7 +247,7 @@ const VehicleReceiving = () => {
       <FinalReport
         open={showFinalReport}
         onOpenChange={setShowFinalReport}
-        militaryList={[]} // This should be populated with the military list from the previous screen
+        militaryList={[]}
         vehicleList={vehicles}
         onEdit={() => setShowFinalReport(false)}
         onSend={handleSendReport}
