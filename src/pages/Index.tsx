@@ -18,12 +18,24 @@ interface Military {
 
 const fetchMilitaryNames = async () => {
   const { data, error } = await supabase
-    .from('militares_1gbm')
+    .from('militares_geral')
     .select('nome_guerra')
     .not('nome_guerra', 'is', null);
 
   if (error) throw error;
   return data.map(item => item.nome_guerra);
+};
+
+const getTableNameForGBM = (gbm: string) => {
+  const tableMap: { [key: string]: string } = {
+    "1º GBM": "servico_militar_1gbm",
+    "2º GBM": "servico_militar_2gbm",
+    "MCPB": "servico_militar_mcpb",
+    "5º GBM": "servico_militar_5gbm",
+    "GAPH": "servico_militar_gaph",
+    "GMAF": "servico_militar_gmaf"
+  };
+  return tableMap[gbm];
 };
 
 const Index = () => {
@@ -116,10 +128,21 @@ const Index = () => {
 
   const handleFinishOperation = async () => {
     try {
-      // Save each military service record to Supabase
+      // Save each military service record to the appropriate table based on GBM
       for (const military of militaryList) {
+        const tableName = getTableNameForGBM(military.gbm);
+        
+        if (!tableName) {
+          toast({
+            variant: "destructive",
+            title: "Erro ao salvar",
+            description: `GBM inválido: ${military.gbm}`,
+          });
+          continue;
+        }
+
         const { error } = await supabase
-          .from('servico_militar')
+          .from(tableName)
           .insert({
             nome_de_guerra: military.name,
             viatura: military.vtr,

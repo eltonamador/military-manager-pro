@@ -38,6 +38,18 @@ interface FinalReportProps {
   selectedDate: Date;
 }
 
+const getTableNameForGBM = (gbm: string) => {
+  const tableMap: { [key: string]: string } = {
+    "1º GBM": "servico_militar_1gbm",
+    "2º GBM": "servico_militar_2gbm",
+    "MCPB": "servico_militar_mcpb",
+    "5º GBM": "servico_militar_5gbm",
+    "GAPH": "servico_militar_gaph",
+    "GMAF": "servico_militar_gmaf"
+  };
+  return tableMap[gbm];
+};
+
 const FinalReport = ({
   open,
   onOpenChange,
@@ -62,45 +74,52 @@ const FinalReport = ({
 
         const formattedDate = selectedDate.toISOString().split('T')[0];
 
-        // Fetch military service data filtered by selected date
-        const { data: militaryData, error: militaryError } = await supabase
-          .from('servico_militar')
-          .select('*')
-          .eq('data', formattedDate)
-          .order('created_at', { ascending: false });
+        // Fetch military service data from all GBM tables
+        const militaryData = [];
+        for (const gbm of ["1º GBM", "2º GBM", "MCPB", "5º GBM", "GAPH", "GMAF"]) {
+          const tableName = getTableNameForGBM(gbm);
+          if (!tableName) continue;
 
-        if (militaryError) throw militaryError;
+          const { data, error } = await supabase
+            .from(tableName)
+            .select('*')
+            .eq('data', formattedDate);
 
-        if (militaryData) {
-          const formattedMilitaryData: Military[] = militaryData.map(item => ({
-            name: item.nome_de_guerra || '',
-            function: item.funcao || '',
-            gbm: item.GBM || '',
-            vtr: item.viatura || '',
-            date: item.data ? new Date(item.data) : new Date(),
-            shiftDuration: '24',
-          }));
-          setServiceMilitaryList(formattedMilitaryData);
+          if (error) throw error;
+          if (data) militaryData.push(...data);
         }
 
-        // Fetch vehicle service data filtered by selected date
-        const { data: vehicleData, error: vehicleError } = await supabase
-          .from('servico_vtrs')
-          .select('*')
-          .eq('data', formattedDate)
-          .order('created_at', { ascending: false });
+        const formattedMilitaryData: Military[] = militaryData.map(item => ({
+          name: item.nome_de_guerra || '',
+          function: item.funcao || '',
+          gbm: item.GBM || '',
+          vtr: item.viatura || '',
+          date: item.data ? new Date(item.data) : new Date(),
+          shiftDuration: '24',
+        }));
+        setServiceMilitaryList(formattedMilitaryData);
 
-        if (vehicleError) throw vehicleError;
+        // Fetch vehicle service data from all GBM tables
+        const vehicleData = [];
+        for (const gbm of ["1º GBM", "2º GBM", "MCPB", "5º GBM", "GAPH", "GMAF"]) {
+          const tableName = `servico_vtrs_${getTableNameForGBM(gbm).split('_')[2]}`;
+          
+          const { data, error } = await supabase
+            .from(tableName)
+            .select('*')
+            .eq('data', formattedDate);
 
-        if (vehicleData) {
-          const formattedVehicleData: Vehicle[] = vehicleData.map(item => ({
-            gbm: item.gbm || '',
-            vtr: item.vtr || '',
-            status: item.status || '',
-            description: item.alteracao || '',
-          }));
-          setServiceVehicleList(formattedVehicleData);
+          if (error) throw error;
+          if (data) vehicleData.push(...data);
         }
+
+        const formattedVehicleData: Vehicle[] = vehicleData.map(item => ({
+          gbm: item.gbm || '',
+          vtr: item.vtr || '',
+          status: item.status || '',
+          description: item.alteracao || '',
+        }));
+        setServiceVehicleList(formattedVehicleData);
       } catch (error) {
         console.error('Error fetching data:', error);
         toast({
