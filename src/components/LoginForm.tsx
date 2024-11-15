@@ -1,4 +1,4 @@
-import { LogIn, Search, User } from "lucide-react";
+import { LogIn, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,12 +25,16 @@ const LoginForm = () => {
       });
 
       if (error) {
+        let errorMessage = "Erro ao fazer login";
+        
+        if (error.message === "Invalid login credentials") {
+          errorMessage = "Email ou senha inválidos";
+        }
+
         toast({
           variant: "destructive",
           title: "Erro ao fazer login",
-          description: error.message === "Invalid login credentials" 
-            ? "Email ou senha inválidos"
-            : "Ocorreu um erro ao fazer login",
+          description: errorMessage,
         });
       } else {
         toast({
@@ -56,20 +60,15 @@ const LoginForm = () => {
         <div className="bg-military-red p-4 text-white text-center font-bold">
           COMANDO OPERACIONAL / CBMAP
         </div>
-        
-        <div className="relative">
-          <img 
-            src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d" 
-            alt="Imagem de Login" 
-            className="w-full h-48 object-cover"
-          />
-          <div className="absolute inset-0 bg-black/30" />
-        </div>
-
         <div className="p-6">
+          <div className="mb-6 flex justify-center">
+            <div className="w-24 h-24 rounded-full bg-military-orange flex items-center justify-center">
+              <User className="w-12 h-12 text-white" />
+            </div>
+          </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="email">Usuário (E-mail)</Label>
+              <Label htmlFor="email">E-mail</Label>
               <Input 
                 id="email" 
                 type="email" 
@@ -99,21 +98,9 @@ const LoginForm = () => {
               {loading ? "Entrando..." : "Entrar"}
             </Button>
           </form>
-
-          <div className="mt-6 flex flex-col gap-2">
-            <Link 
-              to="/register" 
-              className="text-military-orange hover:text-military-red transition-colors flex items-center justify-center gap-2"
-            >
-              <User className="h-4 w-4" />
-              Criar nova conta
-            </Link>
-            <Link 
-              to="/query" 
-              className="text-military-orange hover:text-military-red transition-colors flex items-center justify-center gap-2"
-            >
-              <Search className="h-4 w-4" />
-              Consultar serviços
+          <div className="mt-4 text-center">
+            <Link to="/register" className="text-military-orange hover:text-military-red transition-colors">
+              Não tem uma conta? Cadastre-se
             </Link>
           </div>
         </div>
