@@ -15,6 +15,7 @@ import { Plus } from "lucide-react";
 import VehicleTable from "@/components/VehicleTable";
 import FinalReport from "@/components/FinalReport";
 import { supabase } from "@/integrations/supabase/client";
+import { useVehicleService } from "@/hooks/useVehicleService";
 
 interface Vehicle {
   gbm: string;
@@ -33,6 +34,7 @@ const VehicleReceiving = () => {
   const [vtrOptions, setVtrOptions] = useState<string[]>([]);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { saveVehicleService } = useVehicleService();
 
   // Fetch VTR prefixes from Supabase
   useEffect(() => {
@@ -119,26 +121,9 @@ const VehicleReceiving = () => {
   };
 
   const handleSendReport = async () => {
-    try {
-      // Save each vehicle service record to Supabase
-      for (const vehicle of vehicles) {
-        const { error } = await supabase
-          .from('servico_vtrs')
-          .insert({
-            gbm: vehicle.gbm,
-            vtr: vehicle.vtr,
-            status: vehicle.status,
-            alteracao: vehicle.description,
-          });
-
-        if (error) throw error;
-      }
-
-      toast({
-        title: "Relatório enviado",
-        description: "Os dados foram salvos com sucesso",
-      });
-      
+    const success = await saveVehicleService(vehicles);
+    
+    if (success) {
       // Format the report text for WhatsApp
       const reportText = `*Relatório de VTRs*\n\n${vehicles
         .map(
@@ -157,13 +142,6 @@ const VehicleReceiving = () => {
       setStatus("");
       setDescription("");
       setShowFinalReport(false);
-    } catch (error) {
-      console.error('Error saving vehicle service:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao salvar",
-        description: "Ocorreu um erro ao salvar os dados do serviço",
-      });
     }
   };
 
