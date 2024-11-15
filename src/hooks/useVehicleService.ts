@@ -34,10 +34,6 @@ export const useVehicleService = () => {
         }
       }
 
-      toast({
-        title: "Sucesso",
-        description: "Dados das viaturas salvos com sucesso",
-      });
       return true;
     } catch (error) {
       console.error('Error saving vehicle service:', error);
