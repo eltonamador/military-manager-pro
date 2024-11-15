@@ -8,7 +8,7 @@ interface Vehicle {
   description: string;
 }
 
-const getTableNameForGBM = (gbm: string) => {
+const getTableNameForGBM = (gbm: string): string => {
   const tableMap: { [key: string]: string } = {
     "1º GBM": "servico_vtrs_1gbm",
     "2º GBM": "servico_vtrs_2gbm",
@@ -17,13 +17,13 @@ const getTableNameForGBM = (gbm: string) => {
     "GAPH": "servico_vtrs_gaph",
     "GMAF": "servico_vtrs_gmaf"
   };
-  return tableMap[gbm];
+  return tableMap[gbm] || '';
 };
 
 export const useVehicleService = () => {
   const { toast } = useToast();
 
-  const saveVehicleService = async (vehicles: Vehicle[]) => {
+  const saveVehicleService = async (vehicles: Vehicle[], selectedDate: Date) => {
     try {
       for (const vehicle of vehicles) {
         const tableName = getTableNameForGBM(vehicle.gbm);
@@ -44,7 +44,7 @@ export const useVehicleService = () => {
             status: vehicle.status,
             alteracao: vehicle.description,
             gbm: vehicle.gbm,
-            data: new Date().toISOString().split('T')[0],
+            data: selectedDate.toISOString().split('T')[0],
           });
 
         if (error) {

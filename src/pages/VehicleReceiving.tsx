@@ -16,15 +16,18 @@ interface Vehicle {
 
 const VehicleReceiving = () => {
   const [selectedVTR, setSelectedVTR] = useState("");
+  const [selectedGBM, setSelectedGBM] = useState("");
   const [status, setStatus] = useState("");
   const [description, setDescription] = useState("");
   const [showFinalReport, setShowFinalReport] = useState(false);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [vtrOptions, setVtrOptions] = useState<string[]>([]);
-  const [selectedDate] = useState<Date>(new Date()); // Using current date as default
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const { toast } = useToast();
   const { saveVehicleService } = useVehicleService();
+
+  const gbmOptions = ["1º GBM", "2º GBM", "GAPH", "GMAF", "5º GBM", "MCPB"];
 
   useEffect(() => {
     const fetchVTRs = async () => {
@@ -32,7 +35,8 @@ const VehicleReceiving = () => {
         const { data, error } = await supabase
           .from('viaturas')
           .select('prefixo')
-          .not('prefixo', 'is', null);
+          .not('prefixo', 'is', null)
+          .eq('gbm', selectedGBM);
 
         if (error) throw error;
 
@@ -48,14 +52,16 @@ const VehicleReceiving = () => {
       }
     };
 
-    fetchVTRs();
-  }, [toast]);
+    if (selectedGBM) {
+      fetchVTRs();
+    } else {
+      setVtrOptions([]);
+    }
+  }, [selectedGBM, toast]);
 
   const handleAddVehicle = () => {
-    const gbm = selectedVTR.split('-')[0];
-
     const newVehicle = {
-      gbm,
+      gbm: selectedGBM,
       vtr: selectedVTR,
       status,
       description,
@@ -85,6 +91,7 @@ const VehicleReceiving = () => {
 
   const handleEdit = (index: number) => {
     const vehicle = vehicles[index];
+    setSelectedGBM(vehicle.gbm);
     setSelectedVTR(vehicle.vtr);
     setStatus(vehicle.status);
     setDescription(vehicle.description);
@@ -101,7 +108,7 @@ const VehicleReceiving = () => {
   };
 
   const handleSendReport = async () => {
-    const success = await saveVehicleService(vehicles);
+    const success = await saveVehicleService(vehicles, selectedDate);
     
     if (success) {
       const reportText = `*Relatório de VTRs*\n\n${vehicles
@@ -133,10 +140,15 @@ const VehicleReceiving = () => {
       <main className="flex-grow bg-white rounded-lg shadow-md p-6">
         <VehicleForm
           selectedVTR={selectedVTR}
+          selectedGBM={selectedGBM}
+          selectedDate={selectedDate}
           status={status}
           description={description}
           vtrOptions={vtrOptions}
+          gbmOptions={gbmOptions}
+          onGBMChange={setSelectedGBM}
           onVTRChange={setSelectedVTR}
+          onDateChange={setSelectedDate}
           onStatusChange={setStatus}
           onDescriptionChange={setDescription}
           onAddVehicle={handleAddVehicle}
