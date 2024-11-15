@@ -33,10 +33,10 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
         <TableHeader>
           <TableRow>
             <TableHead>Nome</TableHead>
-            <TableHead>GBM</TableHead>
-            <TableHead>Data</TableHead>
             <TableHead>VTR</TableHead>
             <TableHead>Função</TableHead>
+            <TableHead>GBM</TableHead>
+            <TableHead>Data</TableHead>
             <TableHead>Jornada</TableHead>
             <TableHead className="text-right">Ações</TableHead>
           </TableRow>
@@ -45,10 +45,10 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
           {militaryList.map((military, index) => (
             <TableRow key={index}>
               <TableCell>{military.name}</TableCell>
-              <TableCell>{military.gbm}</TableCell>
-              <TableCell>{format(military.date, "dd/MM/yyyy", { locale: ptBR })}</TableCell>
               <TableCell>{military.vtr}</TableCell>
               <TableCell>{military.function}</TableCell>
+              <TableCell>{military.gbm}</TableCell>
+              <TableCell>{format(military.date, "dd/MM/yyyy", { locale: ptBR })}</TableCell>
               <TableCell>{military.shiftDuration}h</TableCell>
               <TableCell className="text-right space-x-2">
                 <Button
