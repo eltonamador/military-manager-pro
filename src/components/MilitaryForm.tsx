@@ -69,9 +69,9 @@ const MilitaryForm = ({
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <Label htmlFor="gbm">GBM</Label>
+          <Label htmlFor="gbm_mil">GBM_mil</Label>
           <Select onValueChange={onGBMChange} value={selectedGBM}>
-            <SelectTrigger id="gbm">
+            <SelectTrigger id="gbm_mil">
               <SelectValue placeholder="Selecione o GBM" />
             </SelectTrigger>
             <SelectContent>

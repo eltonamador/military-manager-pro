@@ -53,9 +53,9 @@ const VehicleForm = ({
     <div className="grid grid-cols-1 gap-6 mb-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <Label htmlFor="gbm">GBM</Label>
+          <Label htmlFor="gbm_vtr">GBM_vtr</Label>
           <Select onValueChange={onGBMChange} value={selectedGBM}>
-            <SelectTrigger id="gbm">
+            <SelectTrigger id="gbm_vtr">
               <SelectValue placeholder="Selecione o GBM" />
             </SelectTrigger>
             <SelectContent>
