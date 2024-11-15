@@ -1,4 +1,4 @@
-import { LogIn, User } from "lucide-react";
+import { LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -63,7 +63,7 @@ const LoginForm = () => {
         <div className="p-6">
           <div className="mb-6 flex justify-center">
             <div className="w-24 h-24 rounded-full bg-military-orange flex items-center justify-center">
-              <User className="w-12 h-12 text-white" />
+              <LogIn className="w-12 h-12 text-white" />
             </div>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
