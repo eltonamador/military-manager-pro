@@ -24,7 +24,7 @@ interface MilitaryFormProps {
   selectedDate: Date | undefined;
   shiftDuration: string;
   gbmOptions: string[];
-  vtrOptions: Record<string, string[]>;
+  vtrOptions: string[];
   militaryOptions: string[];
   onGBMChange: (value: string) => void;
   onVTRChange: (value: string) => void;
@@ -65,54 +65,53 @@ const MilitaryForm = ({
   onShiftDurationChange,
   onAddMilitary,
 }: MilitaryFormProps) => {
-  const hasExistingMilitary = selectedGBM !== "" && selectedDate !== undefined;
-
   return (
     <div className="space-y-6">
-      {!hasExistingMilitary ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <Label htmlFor="gbm">GBM</Label>
-            <Select onValueChange={onGBMChange} value={selectedGBM}>
-              <SelectTrigger id="gbm">
-                <SelectValue placeholder="Selecione o GBM" />
-              </SelectTrigger>
-              <SelectContent>
-                {gbmOptions.map((gbm) => (
-                  <SelectItem key={gbm} value={gbm}>
-                    {gbm}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label>Data do Serviço</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !selectedDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {selectedDate ? format(selectedDate, "PPP", { locale: ptBR }) : <span>Selecione uma data</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={onDateChange}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <Label htmlFor="gbm">GBM</Label>
+          <Select onValueChange={onGBMChange} value={selectedGBM}>
+            <SelectTrigger id="gbm">
+              <SelectValue placeholder="Selecione o GBM" />
+            </SelectTrigger>
+            <SelectContent>
+              {gbmOptions.map((gbm) => (
+                <SelectItem key={gbm} value={gbm}>
+                  {gbm}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-      ) : (
+
+        <div>
+          <Label>Data do Serviço</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !selectedDate && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {selectedDate ? format(selectedDate, "PPP", { locale: ptBR }) : <span>Selecione uma data</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={onDateChange}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+      </div>
+
+      {selectedGBM && selectedDate && (
         <div className="text-center font-medium text-gray-700 bg-gray-100 py-2 rounded-md">
           {selectedGBM} - Dia: {selectedDate && format(selectedDate, "dd/MM/yyyy", { locale: ptBR })}
         </div>
@@ -126,12 +125,11 @@ const MilitaryForm = ({
               <SelectValue placeholder="Selecione a VTR" />
             </SelectTrigger>
             <SelectContent>
-              {selectedGBM &&
-                vtrOptions[selectedGBM].map((vtr) => (
-                  <SelectItem key={vtr} value={vtr}>
-                    {vtr}
-                  </SelectItem>
-                ))}
+              {vtrOptions.map((vtr) => (
+                <SelectItem key={vtr} value={vtr}>
+                  {vtr}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>

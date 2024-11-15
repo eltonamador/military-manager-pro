@@ -26,6 +26,16 @@ const fetchMilitaryNames = async () => {
   return data.map(item => item.nome_guerra);
 };
 
+const fetchVTRs = async () => {
+  const { data, error } = await supabase
+    .from('viaturas')
+    .select('prefixo')
+    .not('prefixo', 'is', null);
+
+  if (error) throw error;
+  return data.map(item => item.prefixo);
+};
+
 const getTableNameForGBM = (gbm: string) => {
   const tableMap: { [key: string]: string } = {
     "1º GBM": "servico_militar_1gbm",
@@ -41,7 +51,7 @@ const getTableNameForGBM = (gbm: string) => {
 const Index = () => {
   const [selectedGBM, setSelectedGBM] = useState("");
   const [selectedVTR, setSelectedVTR] = useState("");
-  const [selectedMilitary, setSelectedMilitary] = useState("Guerreiro");
+  const [selectedMilitary, setSelectedMilitary] = useState("");
   const [militaryFunction, setMilitaryFunction] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [shiftDuration, setShiftDuration] = useState("");
@@ -55,15 +65,12 @@ const Index = () => {
     queryFn: fetchMilitaryNames,
   });
 
+  const { data: vtrOptions = [] } = useQuery({
+    queryKey: ['vtrOptions'],
+    queryFn: fetchVTRs,
+  });
+
   const gbmOptions = ["1º GBM", "2º GBM", "GAPH", "GMAF", "5º GBM", "MCPB"];
-  const vtrOptions: Record<string, string[]> = {
-    "1º GBM": ["VTR-01", "VTR-02"],
-    "2º GBM": ["VTR-03", "VTR-04"],
-    "GAPH": ["VTR-05", "VTR-06"],
-    "GMAF": ["VTR-07", "VTR-08"],
-    "5º GBM": ["VTR-09", "VTR-10"],
-    "MCPB": ["VTR-11", "VTR-12"],
-  };
 
   const handleAddMilitary = () => {
     if (selectedMilitary && militaryFunction && selectedDate && shiftDuration) {
@@ -128,7 +135,6 @@ const Index = () => {
 
   const handleFinishOperation = async () => {
     try {
-      // Save each military service record to the appropriate table based on GBM
       for (const military of militaryList) {
         const tableName = getTableNameForGBM(military.gbm);
         
@@ -148,7 +154,7 @@ const Index = () => {
             viatura: military.vtr,
             funcao: military.function,
             GBM: military.gbm,
-            data: military.date.toISOString().split('T')[0], // Format date as YYYY-MM-DD
+            data: military.date.toISOString().split('T')[0],
           });
 
         if (error) {
