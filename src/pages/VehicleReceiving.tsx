@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import VehicleTable from "@/components/VehicleTable";
@@ -29,35 +29,6 @@ const VehicleReceiving = () => {
   const { saveVehicleService } = useVehicleService();
 
   const gbmOptions = ["1º GBM", "2º GBM", "GAPH", "GMAF", "5º GBM", "MCPB"];
-
-  useEffect(() => {
-    const fetchVTRs = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('viaturas')
-          .select('prefixo')
-          .not('prefixo', 'is', null);
-
-        if (error) throw error;
-
-        const prefixes = data.map(item => item.prefixo as string);
-        setVtrOptions(prefixes);
-      } catch (error) {
-        console.error('Error fetching VTRs:', error);
-        toast({
-          variant: "destructive",
-          title: "Erro ao carregar VTRs",
-          description: "Não foi possível carregar a lista de VTRs",
-        });
-      }
-    };
-
-    if (selectedGBM) {
-      fetchVTRs();
-    } else {
-      setVtrOptions([]);
-    }
-  }, [selectedGBM, toast]);
 
   const handleAddVehicle = () => {
     const newVehicle = {

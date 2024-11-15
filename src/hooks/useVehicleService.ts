@@ -7,6 +7,7 @@ interface Vehicle {
   vtr: string;
   status: string;
   description: string;
+  date: Date;
 }
 
 export const useVehicleService = () => {
@@ -28,6 +29,7 @@ export const useVehicleService = () => {
           });
 
         if (error) {
+          console.error('Error saving vehicle:', error);
           throw error;
         }
       }
