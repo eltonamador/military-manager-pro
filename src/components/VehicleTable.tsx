@@ -7,7 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, ArrowUpDown } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useState } from "react";
@@ -22,14 +22,12 @@ interface Vehicle {
 
 interface VehicleTableProps {
   vehicleList: Vehicle[];
-  onEdit: (index: number) => void;
-  onDelete: (index: number) => void;
 }
 
 type SortField = 'gbm' | 'vtr' | 'status' | 'description' | 'date';
 type SortOrder = 'asc' | 'desc';
 
-const VehicleTable = ({ vehicleList, onEdit, onDelete }: VehicleTableProps) => {
+const VehicleTable = ({ vehicleList }: VehicleTableProps) => {
   const [sortField, setSortField] = useState<SortField>('gbm');
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
 
@@ -65,7 +63,7 @@ const VehicleTable = ({ vehicleList, onEdit, onDelete }: VehicleTableProps) => {
   );
 
   return (
-    <div className="rounded-lg border">
+    <div className="rounded-lg border bg-white shadow-sm">
       <Table>
         <TableHeader>
           <TableRow>
@@ -84,7 +82,6 @@ const VehicleTable = ({ vehicleList, onEdit, onDelete }: VehicleTableProps) => {
             <TableHead>
               <SortButton field="date" label="Data" />
             </TableHead>
-            <TableHead className="text-right">Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -95,30 +92,12 @@ const VehicleTable = ({ vehicleList, onEdit, onDelete }: VehicleTableProps) => {
               <TableCell>{vehicle.status}</TableCell>
               <TableCell>{vehicle.description}</TableCell>
               <TableCell>{vehicle.date ? format(vehicle.date, "dd/MM/yyyy", { locale: ptBR }) : ""}</TableCell>
-              <TableCell className="text-right space-x-2">
-                <Button
-                  onClick={() => onEdit(index)}
-                  variant="outline"
-                  size="sm"
-                  className="text-blue-600 hover:text-blue-700"
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-                <Button
-                  onClick={() => onDelete(index)}
-                  variant="outline"
-                  size="sm"
-                  className="text-red-600 hover:text-red-700"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </TableCell>
             </TableRow>
           ))}
           {sortedList.length === 0 && (
             <TableRow>
-              <TableCell colSpan={6} className="text-center text-muted-foreground">
-                Nenhuma VTR adicionada
+              <TableCell colSpan={5} className="text-center text-muted-foreground">
+                Nenhuma VTR encontrada
               </TableCell>
             </TableRow>
           )}
