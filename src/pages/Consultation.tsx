@@ -1,15 +1,12 @@
 import { useState } from "react";
-import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import MilitaryTable from "@/components/MilitaryTable";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { Loader2 } from "lucide-react";
 import { getMilitaryTableName, getVehicleTableName } from "@/utils/tableNames";
+import { ConsultationFilters } from "@/components/consultation/ConsultationFilters";
 
 const Consultation = () => {
   const [selectedDate, setSelectedDate] = useState<Date>();
@@ -17,28 +14,8 @@ const Consultation = () => {
   const [selectedVehicleGBMs, setSelectedVehicleGBMs] = useState<string[]>([]);
   const [selectedVTRs, setSelectedVTRs] = useState<string[]>([]);
 
-  const gbmOptions = [
-    "1º GBM",
-    "2º GBM",
-    "5º GBM",
-    "GAPH",
-    "GMAF",
-    "MCPB"
-  ];
-
-  const vtrOptions = [
-    "ABT",
-    "ABS",
-    "AR",
-    "ASE",
-    "ATP",
-    "AEM",
-    "ABSL",
-    "UR"
-  ];
-
   const { data: militaryData, isLoading: isMilitaryLoading } = useQuery({
-    queryKey: ["military-service", selectedMilitaryGBMs, selectedDate],
+    queryKey: ["military-service", selectedMilitaryGBMs, selectedDate, selectedVTRs],
     queryFn: async () => {
       if (selectedMilitaryGBMs.length === 0) return [];
 
@@ -51,7 +28,9 @@ const Consultation = () => {
         }
 
         if (selectedVTRs.length > 0) {
-          query = query.in('viatura', selectedVTRs);
+          query = query.or(
+            selectedVTRs.map(prefix => `viatura.ilike.${prefix}%`).join(',')
+          );
         }
 
         const { data, error } = await query;
@@ -79,7 +58,9 @@ const Consultation = () => {
         }
 
         if (selectedVTRs.length > 0) {
-          query = query.in('vtr', selectedVTRs);
+          query = query.or(
+            selectedVTRs.map(prefix => `vtr.ilike.${prefix}%`).join(',')
+          );
         }
 
         const { data, error } = await query;
@@ -111,6 +92,30 @@ const Consultation = () => {
     shiftDuration: "-"
   })) || [];
 
+  const handleMilitaryGBMChange = (gbm: string, checked: boolean) => {
+    if (checked) {
+      setSelectedMilitaryGBMs([...selectedMilitaryGBMs, gbm]);
+    } else {
+      setSelectedMilitaryGBMs(selectedMilitaryGBMs.filter(g => g !== gbm));
+    }
+  };
+
+  const handleVehicleGBMChange = (gbm: string, checked: boolean) => {
+    if (checked) {
+      setSelectedVehicleGBMs([...selectedVehicleGBMs, gbm]);
+    } else {
+      setSelectedVehicleGBMs(selectedVehicleGBMs.filter(g => g !== gbm));
+    }
+  };
+
+  const handleVTRChange = (vtr: string, checked: boolean) => {
+    if (checked) {
+      setSelectedVTRs([...selectedVTRs, vtr]);
+    } else {
+      setSelectedVTRs(selectedVTRs.filter(v => v !== vtr));
+    }
+  };
+
   const isLoading = isMilitaryLoading || isVehicleLoading;
   const combinedData = [...formattedMilitaryData, ...formattedVehicleData];
 
@@ -121,81 +126,16 @@ const Consultation = () => {
           <CardTitle>Consulta de Serviço</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="space-y-4">
-              <Label>GBM Militares</Label>
-              <div className="grid grid-cols-2 gap-4">
-                {gbmOptions.map((gbm) => (
-                  <div key={gbm} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`military-${gbm}`}
-                      checked={selectedMilitaryGBMs.includes(gbm)}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setSelectedMilitaryGBMs([...selectedMilitaryGBMs, gbm]);
-                        } else {
-                          setSelectedMilitaryGBMs(selectedMilitaryGBMs.filter(g => g !== gbm));
-                        }
-                      }}
-                    />
-                    <Label htmlFor={`military-${gbm}`}>{gbm}</Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="space-y-4">
-              <Label>GBM Viaturas</Label>
-              <div className="grid grid-cols-2 gap-4">
-                {gbmOptions.map((gbm) => (
-                  <div key={gbm} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`vehicle-${gbm}`}
-                      checked={selectedVehicleGBMs.includes(gbm)}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setSelectedVehicleGBMs([...selectedVehicleGBMs, gbm]);
-                        } else {
-                          setSelectedVehicleGBMs(selectedVehicleGBMs.filter(g => g !== gbm));
-                        }
-                      }}
-                    />
-                    <Label htmlFor={`vehicle-${gbm}`}>{gbm}</Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="space-y-4">
-              <Label>Tipo de VTR</Label>
-              <div className="grid grid-cols-2 gap-4">
-                {vtrOptions.map((vtr) => (
-                  <div key={vtr} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`vtr-${vtr}`}
-                      checked={selectedVTRs.includes(vtr)}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setSelectedVTRs([...selectedVTRs, vtr]);
-                        } else {
-                          setSelectedVTRs(selectedVTRs.filter(v => v !== vtr));
-                        }
-                      }}
-                    />
-                    <Label htmlFor={`vtr-${vtr}`}>{vtr}</Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div>
-              <Label>Data</Label>
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={setSelectedDate}
-                className="border rounded-md"
-                locale={ptBR}
-              />
-            </div>
-          </div>
+          <ConsultationFilters
+            selectedDate={selectedDate}
+            selectedMilitaryGBMs={selectedMilitaryGBMs}
+            selectedVehicleGBMs={selectedVehicleGBMs}
+            selectedVTRs={selectedVTRs}
+            onDateChange={setSelectedDate}
+            onMilitaryGBMChange={handleMilitaryGBMChange}
+            onVehicleGBMChange={handleVehicleGBMChange}
+            onVTRChange={handleVTRChange}
+          />
         </CardContent>
       </Card>
 
