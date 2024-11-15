@@ -21,7 +21,7 @@ export const MilitarySearch = ({
   onMilitaryChange,
 }: MilitarySearchProps) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [militaryOptions, setMilitaryOptions] = useState<string[]>([]); // Initialize with empty array
+  const [militaryOptions, setMilitaryOptions] = useState<string[]>([]);
   const [commandOpen, setCommandOpen] = useState(false);
   const { toast } = useToast();
 
@@ -44,11 +44,20 @@ export const MilitarySearch = ({
             return;
           }
 
-          const validNames = (data || [])
-            .filter((item): item is MilitaryData => item !== null && typeof item === 'object')
-            .map(item => item.nome_guerra)
-            .filter((name): name is string => typeof name === 'string' && name.length > 0)
-            .filter(name => name.toLowerCase().includes(searchQuery.toLowerCase()));
+          // Safe data handling with Array.isArray and optional chaining
+          const safeData = Array.isArray(data) ? data : [];
+          const validNames = safeData
+            ?.filter((item): item is MilitaryData => 
+              item !== null && 
+              typeof item === 'object' && 
+              'nome_guerra' in item
+            )
+            ?.map(item => item?.nome_guerra)
+            ?.filter((name): name is string => 
+              typeof name === 'string' && 
+              name.length > 0 && 
+              name.toLowerCase().includes(searchQuery.toLowerCase())
+            ) ?? [];
 
           setMilitaryOptions(validNames);
         } catch (error) {
