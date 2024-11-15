@@ -16,7 +16,6 @@ interface Military {
 }
 
 const Index = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [selectedGBM, setSelectedGBM] = useState("");
   const [selectedVTR, setSelectedVTR] = useState("");
   const [selectedMilitary, setSelectedMilitary] = useState("");
@@ -44,15 +43,6 @@ const Index = () => {
     "GMAF": ["Marcos Souza", "Beatriz Lima"],
     "5º GBM": ["Ricardo Alves", "Fernanda Pereira"],
     "MCPB": ["Gabriel Martins", "Camila Rocha"],
-  };
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoggedIn(true);
-    toast({
-      title: "Login realizado com sucesso",
-      description: "Bem-vindo ao sistema de gestão de militares",
-    });
   };
 
   const handleAddMilitary = () => {
@@ -126,10 +116,6 @@ const Index = () => {
     setSelectedVTR("");
     navigate("/vehicle-receiving");
   };
-
-  if (!isLoggedIn) {
-    return <LoginForm onSubmit={handleLogin} />;
-  }
 
   return (
     <div className="min-h-screen military-gradient flex flex-col p-4 animate-fadeIn">
