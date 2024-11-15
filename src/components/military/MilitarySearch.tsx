@@ -1,15 +1,6 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Search } from "lucide-react";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
+import Select from 'react-select';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -19,9 +10,8 @@ interface MilitarySearchProps {
 }
 
 const MilitarySearch = ({ selectedMilitary, onMilitaryChange }: MilitarySearchProps) => {
-  const [openMilitaryCommand, setOpenMilitaryCommand] = useState(false);
   const [militaryOptions, setMilitaryOptions] = useState<string[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -34,7 +24,6 @@ const MilitarySearch = ({ selectedMilitary, onMilitaryChange }: MilitarySearchPr
 
         if (error) throw error;
         
-        // Ensure we have an array of names, even if empty
         const names = (data || [])
           .map(item => item.nome_guerra)
           .filter((name): name is string => Boolean(name));
@@ -48,56 +37,53 @@ const MilitarySearch = ({ selectedMilitary, onMilitaryChange }: MilitarySearchPr
           description: "Não foi possível carregar a lista de militares.",
         });
         setMilitaryOptions([]);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchMilitaryOptions();
   }, [toast]);
 
-  const filteredOptions = militaryOptions.filter(option =>
-    option.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const options = militaryOptions.map(name => ({ value: name, label: name }));
 
   return (
     <div>
       <Label htmlFor="military">Nome do Militar</Label>
-      <Popover open={openMilitaryCommand} onOpenChange={setOpenMilitaryCommand}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={openMilitaryCommand}
-            className="w-full justify-between"
-          >
-            {selectedMilitary || "Selecione o Militar"}
-            <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-full p-0">
-          <Command>
-            <CommandInput 
-              placeholder="Buscar militar..." 
-              value={searchQuery}
-              onValueChange={setSearchQuery}
-            />
-            <CommandEmpty>Nenhum militar encontrado.</CommandEmpty>
-            <CommandGroup>
-              {filteredOptions.map((military) => (
-                <CommandItem
-                  key={military}
-                  onSelect={() => {
-                    onMilitaryChange(military);
-                    setOpenMilitaryCommand(false);
-                    setSearchQuery("");
-                  }}
-                >
-                  {military}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </Command>
-        </PopoverContent>
-      </Popover>
+      <Select
+        inputId="military"
+        options={options}
+        placeholder="Selecione o Militar"
+        value={selectedMilitary ? { value: selectedMilitary, label: selectedMilitary } : null}
+        onChange={(option) => onMilitaryChange(option ? option.value : '')}
+        isClearable
+        isLoading={isLoading}
+        className="mt-1"
+        styles={{
+          control: (base) => ({
+            ...base,
+            minHeight: '40px',
+            borderRadius: '6px',
+            borderColor: 'hsl(var(--border))',
+            '&:hover': {
+              borderColor: 'hsl(var(--border))',
+            },
+          }),
+          menu: (base) => ({
+            ...base,
+            backgroundColor: 'hsl(var(--background))',
+            border: '1px solid hsl(var(--border))',
+          }),
+          option: (base, state) => ({
+            ...base,
+            backgroundColor: state.isFocused ? 'hsl(var(--accent))' : 'transparent',
+            color: state.isFocused ? 'hsl(var(--accent-foreground))' : 'inherit',
+            '&:active': {
+              backgroundColor: 'hsl(var(--accent))',
+            },
+          }),
+        }}
+      />
     </div>
   );
 };
