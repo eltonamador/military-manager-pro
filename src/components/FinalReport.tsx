@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import MilitaryTable from "./MilitaryTable";
 import VehicleTable from "./VehicleTable";
 import { Send, Edit } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface Military {
   name: string;
@@ -42,6 +45,45 @@ const FinalReport = ({
   onEdit,
   onSend,
 }: FinalReportProps) => {
+  const [serviceMilitaryList, setServiceMilitaryList] = useState<Military[]>([]);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchMilitaryService = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('servico_militar')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (data) {
+          const formattedData: Military[] = data.map(item => ({
+            name: item.nome_de_guerra || '',
+            function: item.funcao || '',
+            gbm: item.GBM || '',
+            vtr: item.viatura || '',
+            date: item.data ? new Date(item.data) : new Date(),
+            shiftDuration: '24', // Default value since it's not in the database
+          }));
+          setServiceMilitaryList(formattedData);
+        }
+      } catch (error) {
+        console.error('Error fetching military service:', error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao carregar dados",
+          description: "Não foi possível carregar os dados dos militares",
+        });
+      }
+    };
+
+    if (open) {
+      fetchMilitaryService();
+    }
+  }, [open, toast]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
@@ -52,7 +94,7 @@ const FinalReport = ({
           <div>
             <h3 className="text-lg font-semibold mb-4">Militares</h3>
             <MilitaryTable
-              militaryList={militaryList}
+              militaryList={serviceMilitaryList}
               onEdit={() => {}}
               onDelete={() => {}}
             />
