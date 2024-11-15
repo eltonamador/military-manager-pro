@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
-import { Select } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Card,
   CardContent,
@@ -11,19 +17,11 @@ import {
 } from "@/components/ui/card";
 import { ReportTables } from "@/components/report/ReportTables";
 import { ReportActions } from "@/components/report/ReportActions";
-
-const GBM_OPTIONS = [
-  { value: "1gbm", label: "1º GBM" },
-  { value: "2gbm", label: "2º GBM" },
-  { value: "5gbm", label: "5º GBM" },
-  { value: "gaph", label: "GAPH" },
-  { value: "gmaf", label: "GMAF" },
-  { value: "mcpb", label: "MCPB" },
-];
+import { GBM_OPTIONS, type GBMOption } from "@/utils/supabase-utils";
 
 const Reports = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [selectedGBM, setSelectedGBM] = useState<string>("1gbm");
+  const [selectedGBM, setSelectedGBM] = useState<GBMOption>("1gbm");
 
   return (
     <div className="container mx-auto py-8 space-y-6">
@@ -38,11 +36,18 @@ const Reports = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-sm font-medium">GBM</label>
-              <Select
-                value={selectedGBM}
-                onValueChange={setSelectedGBM}
-                options={GBM_OPTIONS}
-              />
+              <Select value={selectedGBM} onValueChange={setSelectedGBM}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o GBM" />
+                </SelectTrigger>
+                <SelectContent>
+                  {GBM_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Data</label>
