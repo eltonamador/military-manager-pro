@@ -4,10 +4,14 @@ import MilitaryTable from "@/components/MilitaryTable";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
-import { Loader2, Search } from "lucide-react";
+import { Loader2, Search, FileDown, Share2 } from "lucide-react";
 import { getMilitaryTableName, getVehicleTableName } from "@/utils/tableNames";
 import { ConsultationFilters } from "@/components/consultation/ConsultationFilters";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 const Consultation = () => {
   const [selectedDate, setSelectedDate] = useState<Date>();
@@ -120,12 +124,39 @@ const Consultation = () => {
   const isLoading = isMilitaryLoading || isVehicleLoading;
   const combinedData = [...formattedMilitaryData, ...formattedVehicleData];
 
+  const generatePDF = async () => {
+    try {
+      const element = document.getElementById('consultation-results');
+      if (!element) return;
+
+      const canvas = await html2canvas(element);
+      const imgData = canvas.toDataURL('image/png');
+      
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      const pdfBlob = pdf.output('blob');
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+
+      // Share via WhatsApp
+      const whatsappUrl = `https://wa.me/?text=Consulta%20de%20Serviço%20${encodeURIComponent(pdfUrl)}`;
+      window.open(whatsappUrl, '_blank');
+
+      toast.success("PDF gerado com sucesso!");
+    } catch (error) {
+      toast.error("Erro ao gerar PDF");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="container mx-auto p-4 space-y-6">
         <div className="text-center space-y-2 py-6">
           <h1 className="text-3xl font-bold text-gray-900">Sistema de Consulta</h1>
-          <p className="text-gray-600">Corpo de Bombeiros Militar</p>
+          <p className="text-gray-600">Corpo de Bombeiros Militar do Amapá/ COOP</p>
         </div>
 
         <Card className="border-2 border-red-600/10 shadow-lg">
@@ -151,7 +182,7 @@ const Consultation = () => {
 
         <Separator className="my-8" />
 
-        <div className="rounded-lg bg-white shadow-lg p-6 border border-gray-200">
+        <div id="consultation-results" className="rounded-lg bg-white shadow-lg p-6 border border-gray-200">
           {isLoading ? (
             <div className="flex justify-center items-center p-12">
               <div className="space-y-4 text-center">
@@ -161,9 +192,27 @@ const Consultation = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Resultados da Consulta
-              </h2>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Resultados da Consulta
+                </h2>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={generatePDF}
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    <FileDown className="mr-2 h-4 w-4" />
+                    Gerar PDF
+                  </Button>
+                  <Button
+                    onClick={generatePDF}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    <Share2 className="mr-2 h-4 w-4" />
+                    Compartilhar
+                  </Button>
+                </div>
+              </div>
               <MilitaryTable 
                 militaryList={combinedData}
               />
