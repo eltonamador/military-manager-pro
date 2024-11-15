@@ -23,12 +23,14 @@ interface Military {
 
 interface MilitaryTableProps {
   militaryList: Military[];
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 type SortField = 'name' | 'vtr' | 'function' | 'gbm' | 'date' | 'shiftDuration';
 type SortOrder = 'asc' | 'desc';
 
-const MilitaryTable = ({ militaryList }: MilitaryTableProps) => {
+const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) => {
   const [sortField, setSortField] = useState<SortField>('name');
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
 

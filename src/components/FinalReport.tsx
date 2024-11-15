@@ -140,11 +140,7 @@ const FinalReport = ({
         <div className="space-y-6">
           <div>
             <h3 className="text-lg font-semibold mb-4">Militares</h3>
-            <MilitaryTable
-              militaryList={serviceMilitaryList}
-              onEdit={() => {}}
-              onDelete={() => {}}
-            />
+            <MilitaryTable militaryList={serviceMilitaryList} />
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-4">VTRs</h3>
