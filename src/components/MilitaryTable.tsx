@@ -55,7 +55,7 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
           {Object.entries(groupedMilitaries).map(([key, group]) => (
             <>
               <TableRow key={`header-${key}`} className="bg-muted/50">
-                <TableCell colSpan={4} className="font-medium">
+                <TableCell colSpan={4} className="font-medium text-center">
                   {group.gbm} - Dia: {format(group.date, "dd/MM/yyyy", { locale: ptBR })}
                 </TableCell>
               </TableRow>

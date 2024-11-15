@@ -60,23 +60,54 @@ const MilitaryForm = ({
   onDateChange,
   onAddMilitary,
 }: MilitaryFormProps) => {
+  const hasExistingMilitary = selectedGBM !== "" && selectedDate !== undefined;
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-      <div>
-        <Label htmlFor="gbm">GBM</Label>
-        <Select onValueChange={onGBMChange} value={selectedGBM}>
-          <SelectTrigger id="gbm">
-            <SelectValue placeholder="Selecione o GBM" />
-          </SelectTrigger>
-          <SelectContent>
-            {gbmOptions.map((gbm) => (
-              <SelectItem key={gbm} value={gbm}>
-                {gbm}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      {!hasExistingMilitary && (
+        <>
+          <div>
+            <Label htmlFor="gbm">GBM</Label>
+            <Select onValueChange={onGBMChange} value={selectedGBM}>
+              <SelectTrigger id="gbm">
+                <SelectValue placeholder="Selecione o GBM" />
+              </SelectTrigger>
+              <SelectContent>
+                {gbmOptions.map((gbm) => (
+                  <SelectItem key={gbm} value={gbm}>
+                    {gbm}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Data do Serviço</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !selectedDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {selectedDate ? format(selectedDate, "PPP", { locale: ptBR }) : <span>Selecione uma data</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={onDateChange}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </>
+      )}
       <div>
         <Label htmlFor="vtr">VTR</Label>
         <Select onValueChange={onVTRChange} value={selectedVTR} disabled={!selectedGBM}>
@@ -123,31 +154,6 @@ const MilitaryForm = ({
             ))}
           </SelectContent>
         </Select>
-      </div>
-      <div>
-        <Label>Data do Serviço</Label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant={"outline"}
-              className={cn(
-                "w-full justify-start text-left font-normal",
-                !selectedDate && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {selectedDate ? format(selectedDate, "PPP", { locale: ptBR }) : <span>Selecione uma data</span>}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={onDateChange}
-              initialFocus
-            />
-          </PopoverContent>
-        </Popover>
       </div>
       <div className="md:col-span-2">
         <Button
