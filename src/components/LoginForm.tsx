@@ -62,8 +62,12 @@ const LoginForm = () => {
         </div>
         <div className="p-6">
           <div className="mb-6 flex justify-center">
-            <div className="w-24 h-24 rounded-full bg-military-orange flex items-center justify-center">
-              <LogIn className="w-12 h-12 text-white" />
+            <div className="w-24 h-24 rounded-full overflow-hidden">
+              <img 
+                src="/src/escaladohj2.webp" 
+                alt="Logo CBMAP" 
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
