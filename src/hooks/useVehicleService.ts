@@ -8,11 +8,17 @@ interface Vehicle {
   description: string;
 }
 
+const getVehicleTableName = (gbm: string) => {
+  const normalizedGbm = gbm.toLowerCase().replace(/[º°]/g, '');
+  return `servico_vtrs_${normalizedGbm}`;
+};
+
 export const useVehicleService = () => {
   const saveVehicleService = async (vehicles: Vehicle[]) => {
     try {
       for (const vehicle of vehicles) {
-        const { error } = await supabase.from("servico_vtrs").insert({
+        const tableName = getVehicleTableName(vehicle.gbm);
+        const { error } = await supabase.from(tableName).insert({
           gbm: vehicle.gbm,
           vtr: vehicle.vtr,
           status: vehicle.status,
