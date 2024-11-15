@@ -15,6 +15,7 @@ interface Military {
   gbm: string;
   vtr: string;
   date: Date;
+  shiftDuration: string;
 }
 
 interface Vehicle {

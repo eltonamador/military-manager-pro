@@ -12,6 +12,7 @@ interface Military {
   gbm: string;
   vtr: string;
   date: Date;
+  shiftDuration: string;
 }
 
 const Index = () => {
@@ -21,6 +22,7 @@ const Index = () => {
   const [selectedMilitary, setSelectedMilitary] = useState("");
   const [militaryFunction, setMilitaryFunction] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date>();
+  const [shiftDuration, setShiftDuration] = useState("");
   const [militaryList, setMilitaryList] = useState<Military[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const { toast } = useToast();
@@ -54,7 +56,7 @@ const Index = () => {
   };
 
   const handleAddMilitary = () => {
-    if (selectedMilitary && militaryFunction && selectedDate) {
+    if (selectedMilitary && militaryFunction && selectedDate && shiftDuration) {
       if (editingIndex !== null) {
         const updatedList = [...militaryList];
         updatedList[editingIndex] = {
@@ -63,6 +65,7 @@ const Index = () => {
           gbm: selectedGBM,
           vtr: selectedVTR,
           date: selectedDate,
+          shiftDuration: shiftDuration,
         };
         setMilitaryList(updatedList);
         setEditingIndex(null);
@@ -79,6 +82,7 @@ const Index = () => {
             gbm: selectedGBM,
             vtr: selectedVTR,
             date: selectedDate,
+            shiftDuration: shiftDuration,
           },
         ]);
         toast({
@@ -88,7 +92,7 @@ const Index = () => {
       }
       setSelectedMilitary("");
       setMilitaryFunction("");
-      setSelectedDate(undefined);
+      setShiftDuration("");
     }
   };
 
@@ -99,6 +103,7 @@ const Index = () => {
     setSelectedMilitary(military.name);
     setMilitaryFunction(military.function);
     setSelectedDate(military.date);
+    setShiftDuration(military.shiftDuration);
     setEditingIndex(index);
   };
 
@@ -140,6 +145,7 @@ const Index = () => {
           selectedMilitary={selectedMilitary}
           militaryFunction={militaryFunction}
           selectedDate={selectedDate}
+          shiftDuration={shiftDuration}
           gbmOptions={gbmOptions}
           vtrOptions={vtrOptions}
           militaryOptions={militaryOptions}
@@ -148,6 +154,7 @@ const Index = () => {
           onMilitaryChange={setSelectedMilitary}
           onFunctionChange={setMilitaryFunction}
           onDateChange={setSelectedDate}
+          onShiftDurationChange={setShiftDuration}
           onAddMilitary={handleAddMilitary}
         />
         <MilitaryTable 
