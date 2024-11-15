@@ -62,7 +62,7 @@ const LoginForm = () => {
         </div>
         <div className="p-6">
           <div className="mb-6 flex justify-center">
-            <div className="w-24 h-24 rounded-full overflow-hidden">
+            <div className="w-32 h-32 rounded-full overflow-hidden">
               <img 
                 src="/src/escaladohj2.webp" 
                 alt="Logo CBMAP" 
@@ -95,19 +95,22 @@ const LoginForm = () => {
             </div>
             <Button 
               type="submit" 
-              className="w-full bg-military-orange hover:bg-military-red transition-colors"
+              className="w-full bg-military-orange hover:bg-military-red transition-colors text-lg font-semibold"
               disabled={loading}
             >
-              <LogIn className="mr-2 h-4 w-4" /> 
-              {loading ? "Entrando..." : "Entrar"}
+              <LogIn className="mr-2 h-5 w-5" /> 
+              {loading ? "Entrando..." : "Avance Guerreiro"}
             </Button>
           </form>
-          <div className="mt-4 text-center space-y-2">
-            <Link to="/register" className="text-military-orange hover:text-military-red transition-colors block">
+          <div className="mt-6 text-center space-y-3">
+            <Link to="/register" className="text-military-orange hover:text-military-red transition-colors block text-base">
               Não tem uma conta? Cadastre-se
             </Link>
-            <Link to="/consultation" className="text-military-orange hover:text-military-red transition-colors block">
-              Consultar Escala de Serviço
+            <Link 
+              to="/consultation" 
+              className="text-military-orange hover:text-military-red transition-colors block text-lg font-semibold underline decoration-2 hover:decoration-[3px]"
+            >
+              Consultar Equipe Operacional
             </Link>
           </div>
         </div>
