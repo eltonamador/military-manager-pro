@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import Select from 'react-select';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -18,7 +18,7 @@ const MilitarySearch = ({ selectedMilitary, onMilitaryChange }: MilitarySearchPr
     const fetchMilitaryOptions = async () => {
       try {
         const { data, error } = await supabase
-          .from('militares_geral')
+          .from('militares_1gbm')
           .select('nome_guerra')
           .not('nome_guerra', 'is', null);
 
@@ -45,21 +45,45 @@ const MilitarySearch = ({ selectedMilitary, onMilitaryChange }: MilitarySearchPr
     fetchMilitaryOptions();
   }, [toast]);
 
+  const options = militaryOptions.map(name => ({ value: name, label: name }));
+
   return (
     <div>
       <Label htmlFor="military">Nome do Militar</Label>
-      <Select value={selectedMilitary} onValueChange={onMilitaryChange}>
-        <SelectTrigger id="military" className="w-full">
-          <SelectValue placeholder="Selecione o Militar" />
-        </SelectTrigger>
-        <SelectContent>
-          {militaryOptions.map((name) => (
-            <SelectItem key={name} value={name}>
-              {name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <Select
+        inputId="military"
+        options={options}
+        placeholder="Selecione o Militar"
+        value={selectedMilitary ? { value: selectedMilitary, label: selectedMilitary } : null}
+        onChange={(option) => onMilitaryChange(option ? option.value : '')}
+        isClearable
+        isLoading={isLoading}
+        className="mt-1"
+        styles={{
+          control: (base) => ({
+            ...base,
+            minHeight: '40px',
+            borderRadius: '6px',
+            borderColor: 'hsl(var(--border))',
+            '&:hover': {
+              borderColor: 'hsl(var(--border))',
+            },
+          }),
+          menu: (base) => ({
+            ...base,
+            backgroundColor: 'hsl(var(--background))',
+            border: '1px solid hsl(var(--border))',
+          }),
+          option: (base, state) => ({
+            ...base,
+            backgroundColor: state.isFocused ? 'hsl(var(--accent))' : 'transparent',
+            color: state.isFocused ? 'hsl(var(--accent-foreground))' : 'inherit',
+            '&:active': {
+              backgroundColor: 'hsl(var(--accent))',
+            },
+          }),
+        }}
+      />
     </div>
   );
 };

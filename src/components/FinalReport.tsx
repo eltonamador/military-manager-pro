@@ -5,9 +5,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import MilitaryTable from "./MilitaryTable";
+import VehicleTable from "./VehicleTable";
 import { Send, Edit } from "lucide-react";
-import { MilitaryReport } from "./report/MilitaryReport";
-import { VehicleReport } from "./report/VehicleReport";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface Military {
   name: string;
@@ -38,10 +41,81 @@ interface FinalReportProps {
 const FinalReport = ({
   open,
   onOpenChange,
+  militaryList,
+  vehicleList,
   onEdit,
   onSend,
   selectedDate,
 }: FinalReportProps) => {
+  const [serviceMilitaryList, setServiceMilitaryList] = useState<Military[]>([]);
+  const [serviceVehicleList, setServiceVehicleList] = useState<Vehicle[]>([]);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (!selectedDate) {
+          setServiceMilitaryList([]);
+          setServiceVehicleList([]);
+          return;
+        }
+
+        const formattedDate = selectedDate.toISOString().split('T')[0];
+
+        // Fetch military service data filtered by selected date
+        const { data: militaryData, error: militaryError } = await supabase
+          .from('servico_militar')
+          .select('*')
+          .eq('data', formattedDate)
+          .order('created_at', { ascending: false });
+
+        if (militaryError) throw militaryError;
+
+        if (militaryData) {
+          const formattedMilitaryData: Military[] = militaryData.map(item => ({
+            name: item.nome_de_guerra || '',
+            function: item.funcao || '',
+            gbm: item.GBM || '',
+            vtr: item.viatura || '',
+            date: item.data ? new Date(item.data) : new Date(),
+            shiftDuration: '24',
+          }));
+          setServiceMilitaryList(formattedMilitaryData);
+        }
+
+        // Fetch vehicle service data filtered by selected date
+        const { data: vehicleData, error: vehicleError } = await supabase
+          .from('servico_vtrs')
+          .select('*')
+          .eq('data', formattedDate)
+          .order('created_at', { ascending: false });
+
+        if (vehicleError) throw vehicleError;
+
+        if (vehicleData) {
+          const formattedVehicleData: Vehicle[] = vehicleData.map(item => ({
+            gbm: item.gbm || '',
+            vtr: item.vtr || '',
+            status: item.status || '',
+            description: item.alteracao || '',
+          }));
+          setServiceVehicleList(formattedVehicleData);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao carregar dados",
+          description: "Não foi possível carregar os dados do relatório",
+        });
+      }
+    };
+
+    if (open) {
+      fetchData();
+    }
+  }, [open, selectedDate, toast]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
@@ -49,8 +123,22 @@ const FinalReport = ({
           <DialogTitle>Relatório Final</DialogTitle>
         </DialogHeader>
         <div className="space-y-6">
-          <MilitaryReport selectedDate={selectedDate} />
-          <VehicleReport selectedDate={selectedDate} />
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Militares</h3>
+            <MilitaryTable
+              militaryList={serviceMilitaryList}
+              onEdit={() => {}}
+              onDelete={() => {}}
+            />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold mb-4">VTRs</h3>
+            <VehicleTable
+              vehicleList={serviceVehicleList}
+              onEdit={() => {}}
+              onDelete={() => {}}
+            />
+          </div>
         </div>
         <div className="flex justify-end space-x-4 mt-6">
           <Button onClick={onEdit} variant="outline">

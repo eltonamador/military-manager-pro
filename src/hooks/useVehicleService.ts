@@ -1,6 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { getServiceVTRTableName } from "@/utils/supabase-utils";
 
 interface Vehicle {
   gbm: string;
@@ -13,15 +12,12 @@ export const useVehicleService = () => {
   const saveVehicleService = async (vehicles: Vehicle[]) => {
     try {
       for (const vehicle of vehicles) {
-        const tableName = getServiceVTRTableName(vehicle.gbm);
-        const { error } = await supabase
-          .from(tableName)
-          .insert({
-            gbm: vehicle.gbm,
-            vtr: vehicle.vtr,
-            status: vehicle.status,
-            alteracao: vehicle.description,
-          });
+        const { error } = await supabase.from("servico_vtrs").insert({
+          gbm: vehicle.gbm,
+          vtr: vehicle.vtr,
+          status: vehicle.status,
+          alteracao: vehicle.description,
+        });
 
         if (error) throw error;
       }
