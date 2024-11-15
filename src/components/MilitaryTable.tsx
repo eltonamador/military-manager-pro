@@ -6,8 +6,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Pencil, Trash2, ArrowUpDown } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useState } from "react";
@@ -23,12 +23,14 @@ interface Military {
 
 interface MilitaryTableProps {
   militaryList: Military[];
+  onEdit: (index: number) => void;
+  onDelete: (index: number) => void;
 }
 
 type SortField = 'name' | 'vtr' | 'function' | 'gbm' | 'date' | 'shiftDuration';
 type SortOrder = 'asc' | 'desc';
 
-const MilitaryTable = ({ militaryList }: MilitaryTableProps) => {
+const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) => {
   const [sortField, setSortField] = useState<SortField>('name');
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
 
@@ -64,7 +66,7 @@ const MilitaryTable = ({ militaryList }: MilitaryTableProps) => {
   );
 
   return (
-    <div className="rounded-lg border bg-white shadow-sm">
+    <div className="rounded-lg border">
       <Table>
         <TableHeader>
           <TableRow>
@@ -86,23 +88,42 @@ const MilitaryTable = ({ militaryList }: MilitaryTableProps) => {
             <TableHead>
               <SortButton field="shiftDuration" label="Jornada" />
             </TableHead>
+            <TableHead className="text-right">Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {sortedList.map((military, index) => (
             <TableRow key={index}>
-              <TableCell className="font-medium">{military.name}</TableCell>
+              <TableCell>{military.name}</TableCell>
               <TableCell>{military.vtr}</TableCell>
               <TableCell>{military.function}</TableCell>
               <TableCell>{military.gbm}</TableCell>
               <TableCell>{format(military.date, "dd/MM/yyyy", { locale: ptBR })}</TableCell>
               <TableCell>{military.shiftDuration}h</TableCell>
+              <TableCell className="text-right space-x-2">
+                <Button
+                  onClick={() => onEdit(index)}
+                  variant="outline"
+                  size="sm"
+                  className="text-blue-600 hover:text-blue-700"
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button
+                  onClick={() => onDelete(index)}
+                  variant="outline"
+                  size="sm"
+                  className="text-red-600 hover:text-red-700"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </TableCell>
             </TableRow>
           ))}
           {sortedList.length === 0 && (
             <TableRow>
-              <TableCell colSpan={6} className="text-center text-muted-foreground">
-                Nenhum militar encontrado
+              <TableCell colSpan={7} className="text-center text-muted-foreground">
+                Nenhum militar adicionado
               </TableCell>
             </TableRow>
           )}
