@@ -1,19 +1,28 @@
-import { LogIn, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-interface LoginFormProps {
-  onSubmit: (e: React.FormEvent) => void;
-}
+const Register = () => {
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
-const LoginForm = ({ onSubmit }: LoginFormProps) => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast({
+      title: "Cadastro realizado com sucesso",
+      description: "Você será redirecionado para a tela de login",
+    });
+    navigate("/");
+  };
+
   return (
     <div className="min-h-screen military-gradient flex flex-col items-center justify-center p-4 animate-fadeIn">
       <div className="w-full max-w-md bg-white rounded-lg shadow-xl overflow-hidden">
         <div className="bg-military-red p-4 text-white text-center font-bold">
-          COMANDO OPERACIONAL / CBMAP
+          CADASTRO DE USUÁRIO / CBMAP
         </div>
         <div className="p-6">
           <div className="mb-6 flex justify-center">
@@ -21,28 +30,31 @@ const LoginForm = ({ onSubmit }: LoginFormProps) => {
               <User className="w-12 h-12 text-white" />
             </div>
           </div>
-          <form onSubmit={onSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="warName">Nome de Guerra</Label>
+              <Input id="warName" type="text" required />
+            </div>
             <div>
               <Label htmlFor="email">E-mail</Label>
-              <Input id="email" type="email" placeholder="seu@email.com" required />
+              <Input id="email" type="email" required />
+            </div>
+            <div>
+              <Label htmlFor="phone">Telefone</Label>
+              <Input id="phone" type="tel" required />
             </div>
             <div>
               <Label htmlFor="password">Senha</Label>
-              <Input id="password" type="password" placeholder="********" required />
+              <Input id="password" type="password" required />
             </div>
             <Button type="submit" className="w-full bg-military-orange hover:bg-military-red transition-colors">
-              <LogIn className="mr-2 h-4 w-4" /> Entrar
+              Cadastrar
             </Button>
           </form>
-          <div className="mt-4 text-center">
-            <Link to="/register" className="text-military-orange hover:text-military-red transition-colors">
-              Não tem uma conta? Cadastre-se
-            </Link>
-          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default LoginForm;
+export default Register;
