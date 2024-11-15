@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import MilitaryForm from "@/components/MilitaryForm";
 import MilitaryTable from "@/components/MilitaryTable";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
 interface Military {
   name: string;
@@ -15,6 +16,16 @@ interface Military {
   shiftDuration: string;
 }
 
+const fetchMilitaryNames = async () => {
+  const { data, error } = await supabase
+    .from('militares_1gbm')
+    .select('nome_guerra')
+    .not('nome_guerra', 'is', null);
+
+  if (error) throw error;
+  return data.map(item => item.nome_guerra);
+};
+
 const Index = () => {
   const [selectedGBM, setSelectedGBM] = useState("");
   const [selectedVTR, setSelectedVTR] = useState("");
@@ -24,9 +35,13 @@ const Index = () => {
   const [shiftDuration, setShiftDuration] = useState("");
   const [militaryList, setMilitaryList] = useState<Military[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [militaryOptions1GBM, setMilitaryOptions1GBM] = useState<string[]>([]);
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const { data: militaryNames = [] } = useQuery({
+    queryKey: ['militaryNames'],
+    queryFn: fetchMilitaryNames,
+  });
 
   const gbmOptions = ["1º GBM", "2º GBM", "GAPH", "GMAF", "5º GBM", "MCPB"];
   const vtrOptions: Record<string, string[]> = {
@@ -36,54 +51,6 @@ const Index = () => {
     "GMAF": ["VTR-07", "VTR-08"],
     "5º GBM": ["VTR-09", "VTR-10"],
     "MCPB": ["VTR-11", "VTR-12"],
-  };
-
-  const defaultMilitaryOptions: Record<string, string[]> = {
-    "2º GBM": ["Pedro Santos", "Ana Rodrigues"],
-    "GAPH": ["Carlos Ferreira", "Juliana Costa"],
-    "GMAF": ["Marcos Souza", "Beatriz Lima"],
-    "5º GBM": ["Ricardo Alves", "Fernanda Pereira"],
-    "MCPB": ["Gabriel Martins", "Camila Rocha"],
-  };
-
-  useEffect(() => {
-    const fetchMilitaryNames = async () => {
-      if (selectedGBM === "1º GBM") {
-        try {
-          const { data, error } = await supabase
-            .from('militares_1gbm')
-            .select('nome_guerra')
-            .not('nome_guerra', 'is', null);
-
-          if (error) {
-            toast({
-              variant: "destructive",
-              title: "Erro ao carregar militares",
-              description: "Não foi possível carregar a lista de militares.",
-            });
-            return;
-          }
-
-          const names = data.map(item => item.nome_guerra as string);
-          setMilitaryOptions1GBM(names);
-        } catch (error) {
-          toast({
-            variant: "destructive",
-            title: "Erro ao carregar militares",
-            description: "Ocorreu um erro ao buscar a lista de militares.",
-          });
-        }
-      }
-    };
-
-    fetchMilitaryNames();
-  }, [selectedGBM, toast]);
-
-  const getMilitaryOptionsForGBM = (gbm: string) => {
-    if (gbm === "1º GBM") {
-      return militaryOptions1GBM;
-    }
-    return defaultMilitaryOptions[gbm] || [];
   };
 
   const handleAddMilitary = () => {
@@ -201,7 +168,7 @@ const Index = () => {
           shiftDuration={shiftDuration}
           gbmOptions={gbmOptions}
           vtrOptions={vtrOptions}
-          militaryOptions={getMilitaryOptionsForGBM(selectedGBM)}
+          militaryOptions={militaryNames}
           onGBMChange={setSelectedGBM}
           onVTRChange={setSelectedVTR}
           onMilitaryChange={setSelectedMilitary}
