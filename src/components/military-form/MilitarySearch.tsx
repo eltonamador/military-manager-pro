@@ -40,16 +40,22 @@ export const MilitarySearch = ({
             return;
           }
 
-          if (data) {
-            const names = data.map(item => item.nome_guerra || '').filter(Boolean);
-            setMilitaryOptions(names);
-          }
+          // Ensure data is an array and handle null/undefined values
+          const names = Array.isArray(data) 
+            ? data
+              .map(item => item?.nome_guerra)
+              .filter((name): name is string => typeof name === 'string' && name.length > 0)
+            : [];
+            
+          setMilitaryOptions(names);
         } catch (error) {
+          console.error('Error fetching military names:', error);
           toast({
             variant: "destructive",
             title: "Erro ao buscar militares",
             description: "Ocorreu um erro ao buscar a lista de militares.",
           });
+          setMilitaryOptions([]); // Set empty array on error
         }
       } else {
         setMilitaryOptions([]);
