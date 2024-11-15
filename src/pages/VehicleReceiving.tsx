@@ -11,14 +11,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -28,12 +20,23 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Plus } from "lucide-react";
+import VehicleTable from "@/components/VehicleTable";
+import FinalReport from "@/components/FinalReport";
 
-interface VehicleReport {
+interface Vehicle {
   gbm: string;
   vtr: string;
   status: string;
   description: string;
+}
+
+interface Military {
+  name: string;
+  function: string;
+  gbm: string;
+  vtr: string;
+  date: Date;
 }
 
 const VehicleReceiving = () => {
@@ -41,8 +44,9 @@ const VehicleReceiving = () => {
   const [status, setStatus] = useState("");
   const [description, setDescription] = useState("");
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [showReportDialog, setShowReportDialog] = useState(false);
-  const [reports, setReports] = useState<VehicleReport[]>([]);
+  const [showFinalReport, setShowFinalReport] = useState(false);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const { toast } = useToast();
 
   const vtrOptions = {
@@ -54,7 +58,7 @@ const VehicleReceiving = () => {
     "MCPB": ["VTR-11", "VTR-12"],
   };
 
-  const handleFinishVTR = () => {
+  const handleAddVehicle = () => {
     if (!selectedVTR || !status) {
       toast({
         title: "Erro",
@@ -64,33 +68,68 @@ const VehicleReceiving = () => {
       return;
     }
 
-    const newReport = {
-      gbm: Object.entries(vtrOptions).find(([_, vtrs]) =>
-        vtrs.includes(selectedVTR)
-      )?.[0] || "",
+    const gbm = Object.entries(vtrOptions).find(([_, vtrs]) =>
+      vtrs.includes(selectedVTR)
+    )?.[0] || "";
+
+    const newVehicle = {
+      gbm,
       vtr: selectedVTR,
       status,
       description,
     };
 
-    setReports([...reports, newReport]);
-    setShowConfirmDialog(true);
-  };
+    if (editingIndex !== null) {
+      const updatedVehicles = [...vehicles];
+      updatedVehicles[editingIndex] = newVehicle;
+      setVehicles(updatedVehicles);
+      setEditingIndex(null);
+      toast({
+        title: "VTR atualizada",
+        description: "As informações da VTR foram atualizadas com sucesso",
+      });
+    } else {
+      setVehicles([...vehicles, newVehicle]);
+      toast({
+        title: "VTR adicionada",
+        description: "A VTR foi adicionada com sucesso à lista",
+      });
+    }
 
-  const handleNewVTR = () => {
     setSelectedVTR("");
     setStatus("");
     setDescription("");
-    setShowConfirmDialog(false);
+  };
+
+  const handleEdit = (index: number) => {
+    const vehicle = vehicles[index];
+    setSelectedVTR(vehicle.vtr);
+    setStatus(vehicle.status);
+    setDescription(vehicle.description);
+    setEditingIndex(index);
+  };
+
+  const handleDelete = (index: number) => {
+    const updatedVehicles = vehicles.filter((_, i) => i !== index);
+    setVehicles(updatedVehicles);
     toast({
-      title: "Sucesso",
-      description: "Pronto para receber nova VTR",
+      title: "VTR removida",
+      description: "A VTR foi removida com sucesso da lista",
     });
   };
 
-  const handleFinishAll = () => {
-    setShowConfirmDialog(false);
-    setShowReportDialog(true);
+  const handleSendReport = () => {
+    // Format the report text for WhatsApp
+    const reportText = `*Relatório de VTRs*\n\n${vehicles
+      .map(
+        (v) =>
+          `*GBM:* ${v.gbm}\n*VTR:* ${v.vtr}\n*Status:* ${v.status}\n*Descrição:* ${v.description}\n`
+      )
+      .join("\n")}`;
+
+    // Encode the text for WhatsApp URL
+    const encodedText = encodeURIComponent(reportText);
+    window.open(`https://wa.me/?text=${encodedText}`, "_blank");
   };
 
   return (
@@ -129,7 +168,9 @@ const VehicleReceiving = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="operante">Operante</SelectItem>
-                <SelectItem value="parcialmente">Parcialmente Operante</SelectItem>
+                <SelectItem value="parcialmente">
+                  Parcialmente Operante
+                </SelectItem>
                 <SelectItem value="inoperante">Inoperante</SelectItem>
               </SelectContent>
             </Select>
@@ -145,66 +186,39 @@ const VehicleReceiving = () => {
               className="min-h-[100px]"
             />
           </div>
+
+          <Button
+            onClick={handleAddVehicle}
+            className="w-full bg-military-orange hover:bg-military-red transition-colors"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            {editingIndex !== null ? "Atualizar VTR" : "Adicionar VTR"}
+          </Button>
         </div>
 
+        <VehicleTable
+          vehicleList={vehicles}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+
         <Button
-          onClick={handleFinishVTR}
-          className="w-full bg-military-orange hover:bg-military-red transition-colors"
+          onClick={() => setShowFinalReport(true)}
+          className="w-full mt-6 bg-military-red hover:bg-military-orange transition-colors"
+          disabled={vehicles.length === 0}
         >
-          Finalizar VTR
+          Finalizar VTRs
         </Button>
       </main>
 
-      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Deseja Receber outra VTR?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Escolha se deseja continuar recebendo VTRs ou finalizar o processo.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleFinishAll}>Não</AlertDialogCancel>
-            <AlertDialogAction onClick={handleNewVTR}>Sim</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <Dialog open={showReportDialog} onOpenChange={setShowReportDialog}>
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
-            <DialogTitle>Relatório Final</DialogTitle>
-            <DialogDescription>
-              Resumo dos recebimentos de VTRs realizados
-            </DialogDescription>
-          </DialogHeader>
-          <div className="max-h-[60vh] overflow-y-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left p-2">GBM</th>
-                  <th className="text-left p-2">VTR</th>
-                  <th className="text-left p-2">Status</th>
-                  <th className="text-left p-2">Descrição</th>
-                </tr>
-              </thead>
-              <tbody>
-                {reports.map((report, index) => (
-                  <tr key={index} className="border-b">
-                    <td className="p-2">{report.gbm}</td>
-                    <td className="p-2">{report.vtr}</td>
-                    <td className="p-2">{report.status}</td>
-                    <td className="p-2">{report.description}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <DialogFooter>
-            <Button onClick={() => setShowReportDialog(false)}>Fechar</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <FinalReport
+        open={showFinalReport}
+        onOpenChange={setShowFinalReport}
+        militaryList={[]} // This should be populated with the military list from the previous screen
+        vehicleList={vehicles}
+        onEdit={() => setShowFinalReport(false)}
+        onSend={handleSendReport}
+      />
     </div>
   );
 };
