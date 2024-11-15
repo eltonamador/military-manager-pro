@@ -19,7 +19,7 @@ interface MilitarySearchProps {
 }
 
 const MilitarySearch = ({ selectedMilitary, onMilitaryChange }: MilitarySearchProps) => {
-  const [openMilitaryCommand, setOpenMilitaryCommand] = useState(true);
+  const [openMilitaryCommand, setOpenMilitaryCommand] = useState(false);
   const [militaryOptions, setMilitaryOptions] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
@@ -34,7 +34,11 @@ const MilitarySearch = ({ selectedMilitary, onMilitaryChange }: MilitarySearchPr
 
         if (error) throw error;
         
-        const names = data?.map(item => item.nome_guerra).filter(Boolean) || [];
+        // Ensure we have an array of names, even if empty
+        const names = (data || [])
+          .map(item => item.nome_guerra)
+          .filter((name): name is string => Boolean(name));
+        
         setMilitaryOptions(names);
       } catch (error) {
         console.error('Error fetching military names:', error);
