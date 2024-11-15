@@ -1,6 +1,5 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -13,8 +12,16 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import { useState } from "react";
 
 interface MilitaryFormProps {
   selectedGBM: string;
@@ -66,6 +73,7 @@ const MilitaryForm = ({
   onShiftDurationChange,
   onAddMilitary,
 }: MilitaryFormProps) => {
+  const [openMilitaryCommand, setOpenMilitaryCommand] = useState(false);
   const hasExistingMilitary = selectedGBM !== "" && selectedDate !== undefined;
 
   return (
@@ -138,18 +146,38 @@ const MilitaryForm = ({
         </div>
         <div>
           <Label htmlFor="military">Nome do Militar</Label>
-          <Select onValueChange={onMilitaryChange} value={selectedMilitary}>
-            <SelectTrigger id="military">
-              <SelectValue placeholder="Selecione o Militar" />
-            </SelectTrigger>
-            <SelectContent>
-              {militaryOptions.map((military) => (
-                <SelectItem key={military} value={military}>
-                  {military}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Popover open={openMilitaryCommand} onOpenChange={setOpenMilitaryCommand}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={openMilitaryCommand}
+                className="w-full justify-between"
+              >
+                {selectedMilitary || "Selecione o Militar"}
+                <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+              <Command>
+                <CommandInput placeholder="Buscar militar..." />
+                <CommandEmpty>Nenhum militar encontrado.</CommandEmpty>
+                <CommandGroup>
+                  {militaryOptions.map((military) => (
+                    <CommandItem
+                      key={military}
+                      onSelect={() => {
+                        onMilitaryChange(military);
+                        setOpenMilitaryCommand(false);
+                      }}
+                    >
+                      {military}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </Command>
+            </PopoverContent>
+          </Popover>
         </div>
         <div>
           <Label htmlFor="function">Função</Label>
