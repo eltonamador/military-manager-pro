@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "./use-toast";
+import { getVehicleTableName } from "@/utils/tableNames";
 
 interface Vehicle {
   gbm: string;
@@ -8,42 +9,13 @@ interface Vehicle {
   description: string;
 }
 
-type VehicleTableName = 
-  | "servico_vtrs_1gbm"
-  | "servico_vtrs_2gbm"
-  | "servico_vtrs_mcpb"
-  | "servico_vtrs_5gbm"
-  | "servico_vtrs_gaph"
-  | "servico_vtrs_gmaf";
-
-const getTableNameForGBM = (gbm: string): VehicleTableName => {
-  const tableMap: { [key: string]: VehicleTableName } = {
-    "1º GBM": "servico_vtrs_1gbm",
-    "2º GBM": "servico_vtrs_2gbm",
-    "MCPB": "servico_vtrs_mcpb",
-    "5º GBM": "servico_vtrs_5gbm",
-    "GAPH": "servico_vtrs_gaph",
-    "GMAF": "servico_vtrs_gmaf"
-  };
-  return tableMap[gbm] as VehicleTableName;
-};
-
 export const useVehicleService = () => {
   const { toast } = useToast();
 
   const saveVehicleService = async (vehicles: Vehicle[], selectedDate: Date) => {
     try {
       for (const vehicle of vehicles) {
-        const tableName = getTableNameForGBM(vehicle.gbm);
-        
-        if (!tableName) {
-          toast({
-            variant: "destructive",
-            title: "Erro ao salvar",
-            description: `GBM inválido: ${vehicle.gbm}`,
-          });
-          continue;
-        }
+        const tableName = getVehicleTableName(vehicle.gbm);
 
         const { error } = await supabase
           .from(tableName)
