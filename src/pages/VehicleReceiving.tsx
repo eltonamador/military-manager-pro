@@ -35,8 +35,7 @@ const VehicleReceiving = () => {
         const { data, error } = await supabase
           .from('viaturas')
           .select('prefixo')
-          .not('prefixo', 'is', null)
-          .eq('gbm', selectedGBM);
+          .not('prefixo', 'is', null);
 
         if (error) throw error;
 
