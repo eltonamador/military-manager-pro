@@ -46,41 +46,61 @@ const FinalReport = ({
   onSend,
 }: FinalReportProps) => {
   const [serviceMilitaryList, setServiceMilitaryList] = useState<Military[]>([]);
+  const [serviceVehicleList, setServiceVehicleList] = useState<Vehicle[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
-    const fetchMilitaryService = async () => {
+    const fetchData = async () => {
       try {
-        const { data, error } = await supabase
+        // Fetch military service data
+        const { data: militaryData, error: militaryError } = await supabase
           .from('servico_militar')
           .select('*')
           .order('created_at', { ascending: false });
 
-        if (error) throw error;
+        if (militaryError) throw militaryError;
 
-        if (data) {
-          const formattedData: Military[] = data.map(item => ({
+        if (militaryData) {
+          const formattedMilitaryData: Military[] = militaryData.map(item => ({
             name: item.nome_de_guerra || '',
             function: item.funcao || '',
             gbm: item.GBM || '',
             vtr: item.viatura || '',
             date: item.data ? new Date(item.data) : new Date(),
-            shiftDuration: '24', // Default value since it's not in the database
+            shiftDuration: '24',
           }));
-          setServiceMilitaryList(formattedData);
+          setServiceMilitaryList(formattedMilitaryData);
+        }
+
+        // Fetch vehicle service data
+        const { data: vehicleData, error: vehicleError } = await supabase
+          .from('servico_vtrs')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (vehicleError) throw vehicleError;
+
+        if (vehicleData) {
+          const formattedVehicleData: Vehicle[] = vehicleData.map(item => ({
+            gbm: item.gbm || '',
+            vtr: item.vtr || '',
+            status: item.status || '',
+            description: item.alteracao || '',
+          }));
+          setServiceVehicleList(formattedVehicleData);
         }
       } catch (error) {
-        console.error('Error fetching military service:', error);
+        console.error('Error fetching data:', error);
         toast({
           variant: "destructive",
           title: "Erro ao carregar dados",
-          description: "Não foi possível carregar os dados dos militares",
+          description: "Não foi possível carregar os dados do relatório",
         });
       }
     };
 
     if (open) {
-      fetchMilitaryService();
+      fetchData();
     }
   }, [open, toast]);
 
@@ -102,7 +122,7 @@ const FinalReport = ({
           <div>
             <h3 className="text-lg font-semibold mb-4">VTRs</h3>
             <VehicleTable
-              vehicleList={vehicleList}
+              vehicleList={serviceVehicleList}
               onEdit={() => {}}
               onDelete={() => {}}
             />
