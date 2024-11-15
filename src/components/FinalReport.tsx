@@ -12,7 +12,6 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format, parse } from "date-fns";
-import { getServiceTableName, getVehicleTableName } from "@/utils/supabase-utils";
 
 interface Military {
   name: string;
@@ -38,7 +37,6 @@ interface FinalReportProps {
   onEdit: () => void;
   onSend: () => void;
   selectedDate: Date;
-  selectedGBM?: string;
 }
 
 const FinalReport = ({
@@ -49,7 +47,6 @@ const FinalReport = ({
   onEdit,
   onSend,
   selectedDate,
-  selectedGBM = "1gbm",
 }: FinalReportProps) => {
   const [serviceMilitaryList, setServiceMilitaryList] = useState<Military[]>([]);
   const [serviceVehicleList, setServiceVehicleList] = useState<Vehicle[]>([]);
@@ -57,6 +54,7 @@ const FinalReport = ({
 
   const handleEditMilitary = async (index: number) => {
     const military = serviceMilitaryList[index];
+    // Implement edit logic here
     toast({
       title: "Edição iniciada",
       description: `Editando militar: ${military.name}`,
@@ -67,10 +65,9 @@ const FinalReport = ({
     try {
       const military = serviceMilitaryList[index];
       const formattedDate = format(military.date, 'yyyy-MM-dd');
-      const tableName = getServiceTableName(selectedGBM);
       
       const { error } = await supabase
-        .from(tableName)
+        .from('servico_militar')
         .delete()
         .eq('nome_de_guerra', military.name)
         .eq('data', formattedDate);
@@ -96,6 +93,7 @@ const FinalReport = ({
 
   const handleEditVehicle = async (index: number) => {
     const vehicle = serviceVehicleList[index];
+    // Implement edit logic here
     toast({
       title: "Edição iniciada",
       description: `Editando VTR: ${vehicle.vtr}`,
@@ -106,10 +104,9 @@ const FinalReport = ({
     try {
       const vehicle = serviceVehicleList[index];
       const formattedDate = format(selectedDate, 'yyyy-MM-dd');
-      const tableName = getVehicleTableName(selectedGBM);
       
       const { error } = await supabase
-        .from(tableName)
+        .from('servico_vtrs')
         .delete()
         .eq('vtr', vehicle.vtr)
         .eq('data', formattedDate);
@@ -143,13 +140,12 @@ const FinalReport = ({
         }
 
         const formattedDate = format(selectedDate, 'yyyy-MM-dd');
-        const militaryTableName = getServiceTableName(selectedGBM);
-        const vehicleTableName = getVehicleTableName(selectedGBM);
 
         const { data: militaryData, error: militaryError } = await supabase
-          .from(militaryTableName)
+          .from('servico_militar')
           .select('*')
-          .eq('data', formattedDate);
+          .eq('data', formattedDate)
+          .order('created_at', { ascending: false });
 
         if (militaryError) throw militaryError;
 
@@ -166,9 +162,10 @@ const FinalReport = ({
         }
 
         const { data: vehicleData, error: vehicleError } = await supabase
-          .from(vehicleTableName)
+          .from('servico_vtrs')
           .select('*')
-          .eq('data', formattedDate);
+          .eq('data', formattedDate)
+          .order('created_at', { ascending: false });
 
         if (vehicleError) throw vehicleError;
 
@@ -194,7 +191,7 @@ const FinalReport = ({
     if (open) {
       fetchData();
     }
-  }, [open, selectedDate, selectedGBM, toast]);
+  }, [open, selectedDate, toast]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

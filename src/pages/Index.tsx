@@ -18,7 +18,7 @@ interface Military {
 
 const fetchMilitaryNames = async () => {
   const { data, error } = await supabase
-    .from('militares_geral')
+    .from('militares_1gbm')
     .select('nome_guerra')
     .not('nome_guerra', 'is', null);
 

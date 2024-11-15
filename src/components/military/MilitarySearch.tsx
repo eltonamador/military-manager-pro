@@ -1,55 +1,90 @@
 import { useState, useEffect } from "react";
+import { Label } from "@/components/ui/label";
+import Select from 'react-select';
 import { supabase } from "@/integrations/supabase/client";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 
 interface MilitarySearchProps {
-  onSelect: (military: string) => void;
   selectedMilitary: string;
+  onMilitaryChange: (value: string) => void;
 }
 
-const MilitarySearch = ({ onSelect, selectedMilitary }: MilitarySearchProps) => {
+const MilitarySearch = ({ selectedMilitary, onMilitaryChange }: MilitarySearchProps) => {
   const [militaryOptions, setMilitaryOptions] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
-    const fetchMilitaryNames = async () => {
-      const { data, error } = await supabase
-        .from('militares_geral')
-        .select('nome_guerra')
-        .not('nome_guerra', 'is', null);
+    const fetchMilitaryOptions = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('militares_1gbm')
+          .select('nome_guerra')
+          .not('nome_guerra', 'is', null);
 
-      if (error) {
-        console.error('Error fetching military names:', error);
-        return;
-      }
-
-      if (data) {
-        const names = data.map(item => item.nome_guerra || '');
+        if (error) throw error;
+        
+        const names = (data || [])
+          .map(item => item.nome_guerra)
+          .filter((name): name is string => Boolean(name));
+        
         setMilitaryOptions(names);
+      } catch (error) {
+        console.error('Error fetching military names:', error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao carregar militares",
+          description: "Não foi possível carregar a lista de militares.",
+        });
+        setMilitaryOptions([]);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchMilitaryNames();
-  }, []);
+    fetchMilitaryOptions();
+  }, [toast]);
+
+  const options = militaryOptions.map(name => ({ value: name, label: name }));
 
   return (
-    <Select value={selectedMilitary} onValueChange={onSelect}>
-      <SelectTrigger>
-        <SelectValue placeholder="Selecione um militar" />
-      </SelectTrigger>
-      <SelectContent>
-        {militaryOptions.map((military) => (
-          <SelectItem key={military} value={military}>
-            {military}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <div>
+      <Label htmlFor="military">Nome do Militar</Label>
+      <Select
+        inputId="military"
+        options={options}
+        placeholder="Selecione o Militar"
+        value={selectedMilitary ? { value: selectedMilitary, label: selectedMilitary } : null}
+        onChange={(option) => onMilitaryChange(option ? option.value : '')}
+        isClearable
+        isLoading={isLoading}
+        className="mt-1"
+        styles={{
+          control: (base) => ({
+            ...base,
+            minHeight: '40px',
+            borderRadius: '6px',
+            borderColor: 'hsl(var(--border))',
+            '&:hover': {
+              borderColor: 'hsl(var(--border))',
+            },
+          }),
+          menu: (base) => ({
+            ...base,
+            backgroundColor: 'hsl(var(--background))',
+            border: '1px solid hsl(var(--border))',
+          }),
+          option: (base, state) => ({
+            ...base,
+            backgroundColor: state.isFocused ? 'hsl(var(--accent))' : 'transparent',
+            color: state.isFocused ? 'hsl(var(--accent-foreground))' : 'inherit',
+            '&:active': {
+              backgroundColor: 'hsl(var(--accent))',
+            },
+          }),
+        }}
+      />
+    </div>
   );
 };
 
