@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { getMilitaryTableName } from "@/utils/tableNames";
 import MilitaryForm from "@/components/MilitaryForm";
 import MilitaryTable from "@/components/MilitaryTable";
-import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
-import { getMilitaryTableName } from "@/utils/tableNames";
+import MilitaryHeader from "@/components/military/MilitaryHeader";
+import MilitaryFooter from "@/components/military/MilitaryFooter";
 
 interface Military {
   name: string;
@@ -43,9 +44,8 @@ const Index = () => {
   const [selectedMilitary, setSelectedMilitary] = useState("");
   const [militaryFunction, setMilitaryFunction] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [shiftDuration, setShiftDuration] = useState("");
+  const [shiftDuration, setShiftDuration] = useState("24");
   const [militaryList, setMilitaryList] = useState<Military[]>([]);
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -63,63 +63,24 @@ const Index = () => {
 
   const handleAddMilitary = () => {
     if (selectedMilitary && militaryFunction && selectedDate && shiftDuration) {
-      if (editingIndex !== null) {
-        const updatedList = [...militaryList];
-        updatedList[editingIndex] = {
+      setMilitaryList([
+        ...militaryList,
+        {
           name: selectedMilitary,
           function: militaryFunction,
           gbm: selectedGBM,
           vtr: selectedVTR,
           date: selectedDate,
           shiftDuration: shiftDuration,
-        };
-        setMilitaryList(updatedList);
-        setEditingIndex(null);
-        toast({
-          title: "Militar atualizado",
-          description: "As informações do militar foram atualizadas com sucesso",
-        });
-      } else {
-        setMilitaryList([
-          ...militaryList,
-          {
-            name: selectedMilitary,
-            function: militaryFunction,
-            gbm: selectedGBM,
-            vtr: selectedVTR,
-            date: selectedDate,
-            shiftDuration: shiftDuration,
-          },
-        ]);
-        toast({
-          title: "Militar adicionado",
-          description: "O militar foi adicionado com sucesso à lista",
-        });
-      }
+        },
+      ]);
+      toast({
+        title: "Militar adicionado",
+        description: "O militar foi adicionado com sucesso à lista",
+      });
       setSelectedMilitary("");
       setMilitaryFunction("");
-      setShiftDuration("");
     }
-  };
-
-  const handleEdit = (index: number) => {
-    const military = militaryList[index];
-    setSelectedGBM(military.gbm);
-    setSelectedVTR(military.vtr);
-    setSelectedMilitary(military.name);
-    setMilitaryFunction(military.function);
-    setSelectedDate(military.date);
-    setShiftDuration(military.shiftDuration);
-    setEditingIndex(index);
-  };
-
-  const handleDelete = (index: number) => {
-    const updatedList = militaryList.filter((_, i) => i !== index);
-    setMilitaryList(updatedList);
-    toast({
-      title: "Militar removido",
-      description: "O militar foi removido com sucesso da lista",
-    });
   };
 
   const handleFinishOperation = async () => {
@@ -137,9 +98,7 @@ const Index = () => {
             data: military.date.toISOString().split('T')[0],
           });
 
-        if (error) {
-          throw error;
-        }
+        if (error) throw error;
       }
 
       toast({
@@ -162,11 +121,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen military-gradient flex flex-col p-4 animate-fadeIn">
-      <header className="bg-white rounded-lg shadow-md p-4 mb-6">
-        <h1 className="text-2xl font-bold text-military-red">
-          Gestão de Militares
-        </h1>
-      </header>
+      <MilitaryHeader />
       <main className="flex-grow bg-white rounded-lg shadow-md p-6">
         <MilitaryForm
           selectedGBM={selectedGBM}
@@ -186,21 +141,12 @@ const Index = () => {
           onShiftDurationChange={setShiftDuration}
           onAddMilitary={handleAddMilitary}
         />
-        <MilitaryTable 
-          militaryList={militaryList} 
-          onEdit={handleEdit} 
-          onDelete={handleDelete}
-        />
+        <MilitaryTable militaryList={militaryList} />
       </main>
-      <footer className="mt-6">
-        <Button
-          onClick={handleFinishOperation}
-          className="w-full bg-military-red hover:bg-military-orange transition-colors"
-          disabled={militaryList.length === 0}
-        >
-          Finalizar Operação
-        </Button>
-      </footer>
+      <MilitaryFooter 
+        onFinish={handleFinishOperation}
+        disabled={militaryList.length === 0}
+      />
     </div>
   );
 };

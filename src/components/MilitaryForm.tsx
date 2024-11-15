@@ -150,7 +150,7 @@ const MilitaryForm = ({
         </div>
         <div>
           <Label htmlFor="shiftDuration">Jornada</Label>
-          <Select onValueChange={onShiftDurationChange} value={shiftDuration}>
+          <Select onValueChange={onShiftDurationChange} value={shiftDuration || "24"}>
             <SelectTrigger id="shiftDuration">
               <SelectValue placeholder="Selecione a Jornada" />
             </SelectTrigger>
