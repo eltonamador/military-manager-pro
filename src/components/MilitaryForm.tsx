@@ -1,6 +1,5 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -13,8 +12,12 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { useToast } from "@/hooks/use-toast";
 
 interface MilitaryFormProps {
   selectedGBM: string;
@@ -25,7 +28,6 @@ interface MilitaryFormProps {
   shiftDuration: string;
   gbmOptions: string[];
   vtrOptions: Record<string, string[]>;
-  militaryOptions: string[]; // Updated type to string[]
   onGBMChange: (value: string) => void;
   onVTRChange: (value: string) => void;
   onMilitaryChange: (value: string) => void;
@@ -57,7 +59,6 @@ const MilitaryForm = ({
   shiftDuration,
   gbmOptions,
   vtrOptions,
-  militaryOptions,
   onGBMChange,
   onVTRChange,
   onMilitaryChange,
@@ -66,7 +67,46 @@ const MilitaryForm = ({
   onShiftDurationChange,
   onAddMilitary,
 }: MilitaryFormProps) => {
+  const [militaryOptions, setMilitaryOptions] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [commandOpen, setCommandOpen] = useState(false);
+  const { toast } = useToast();
+
   const hasExistingMilitary = selectedGBM !== "" && selectedDate !== undefined;
+
+  useEffect(() => {
+    const fetchMilitaryNames = async () => {
+      if (searchQuery.length >= 3) {
+        try {
+          const { data, error } = await supabase
+            .from('militares_1gbm')
+            .select('nome_guerra')
+            .ilike('nome_guerra', `%${searchQuery}%`)
+            .not('nome_guerra', 'is', null);
+
+          if (error) {
+            toast({
+              variant: "destructive",
+              title: "Erro ao buscar militares",
+              description: "Não foi possível carregar a lista de militares.",
+            });
+            return;
+          }
+
+          const names = data.map(item => item.nome_guerra as string);
+          setMilitaryOptions(names);
+        } catch (error) {
+          toast({
+            variant: "destructive",
+            title: "Erro ao buscar militares",
+            description: "Ocorreu um erro ao buscar a lista de militares.",
+          });
+        }
+      }
+    };
+
+    fetchMilitaryNames();
+  }, [searchQuery, toast]);
 
   return (
     <div className="space-y-6">
@@ -128,7 +168,7 @@ const MilitaryForm = ({
             </SelectTrigger>
             <SelectContent>
               {selectedGBM &&
-                vtrOptions[selectedGBM].map((vtr) => (
+                vtrOptions[selectedGBM]?.map((vtr) => (
                   <SelectItem key={vtr} value={vtr}>
                     {vtr}
                   </SelectItem>
@@ -138,18 +178,43 @@ const MilitaryForm = ({
         </div>
         <div>
           <Label htmlFor="military">Nome do Militar</Label>
-          <Select onValueChange={onMilitaryChange} value={selectedMilitary} disabled={!selectedGBM}>
-            <SelectTrigger id="military">
-              <SelectValue placeholder="Selecione o Militar" />
-            </SelectTrigger>
-            <SelectContent>
-              {militaryOptions.map((military) => (
-                <SelectItem key={military} value={military}>
-                  {military}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Popover open={commandOpen} onOpenChange={setCommandOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={commandOpen}
+                className="w-full justify-between"
+              >
+                {selectedMilitary || "Selecione o Militar"}
+                <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+              <Command>
+                <CommandInput
+                  placeholder="Buscar militar..."
+                  value={searchQuery}
+                  onValueChange={setSearchQuery}
+                />
+                <CommandEmpty>Nenhum militar encontrado.</CommandEmpty>
+                <CommandGroup>
+                  {militaryOptions.map((military) => (
+                    <CommandItem
+                      key={military}
+                      value={military}
+                      onSelect={(value) => {
+                        onMilitaryChange(value);
+                        setCommandOpen(false);
+                      }}
+                    >
+                      {military}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </Command>
+            </PopoverContent>
+          </Popover>
         </div>
         <div>
           <Label htmlFor="function">Função</Label>
