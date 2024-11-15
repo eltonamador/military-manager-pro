@@ -97,6 +97,7 @@ export type Database = {
         Row: {
           alteracao: string | null
           created_at: string
+          data: string | null
           gbm: string | null
           id: number
           status: string | null
@@ -105,6 +106,7 @@ export type Database = {
         Insert: {
           alteracao?: string | null
           created_at?: string
+          data?: string | null
           gbm?: string | null
           id?: number
           status?: string | null
@@ -113,6 +115,7 @@ export type Database = {
         Update: {
           alteracao?: string | null
           created_at?: string
+          data?: string | null
           gbm?: string | null
           id?: number
           status?: string | null

@@ -35,6 +35,7 @@ interface FinalReportProps {
   vehicleList: Vehicle[];
   onEdit: () => void;
   onSend: () => void;
+  selectedDate: Date;
 }
 
 const FinalReport = ({
@@ -44,6 +45,7 @@ const FinalReport = ({
   vehicleList,
   onEdit,
   onSend,
+  selectedDate,
 }: FinalReportProps) => {
   const [serviceMilitaryList, setServiceMilitaryList] = useState<Military[]>([]);
   const [serviceVehicleList, setServiceVehicleList] = useState<Vehicle[]>([]);
@@ -52,10 +54,19 @@ const FinalReport = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch military service data
+        if (!selectedDate) {
+          setServiceMilitaryList([]);
+          setServiceVehicleList([]);
+          return;
+        }
+
+        const formattedDate = selectedDate.toISOString().split('T')[0];
+
+        // Fetch military service data filtered by selected date
         const { data: militaryData, error: militaryError } = await supabase
           .from('servico_militar')
           .select('*')
+          .eq('data', formattedDate)
           .order('created_at', { ascending: false });
 
         if (militaryError) throw militaryError;
@@ -72,10 +83,11 @@ const FinalReport = ({
           setServiceMilitaryList(formattedMilitaryData);
         }
 
-        // Fetch vehicle service data
+        // Fetch vehicle service data filtered by selected date
         const { data: vehicleData, error: vehicleError } = await supabase
           .from('servico_vtrs')
           .select('*')
+          .eq('data', formattedDate)
           .order('created_at', { ascending: false });
 
         if (vehicleError) throw vehicleError;
@@ -102,7 +114,7 @@ const FinalReport = ({
     if (open) {
       fetchData();
     }
-  }, [open, toast]);
+  }, [open, selectedDate, toast]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
