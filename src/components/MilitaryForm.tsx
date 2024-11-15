@@ -121,7 +121,7 @@ const MilitaryForm = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <Label htmlFor="vtr">VTR</Label>
-          <Select onValueChange={onVTRChange} value={selectedVTR} disabled={!selectedGBM}>
+          <Select onValueChange={onVTRChange} value={selectedVTR}>
             <SelectTrigger id="vtr">
               <SelectValue placeholder="Selecione a VTR" />
             </SelectTrigger>
