@@ -29,11 +29,13 @@ const Consultation = () => {
       if (!selectedMilitaryGBM) return [];
 
       const tableName = getMilitaryTableName(selectedMilitaryGBM);
-      const { data, error } = await supabase
-        .from(tableName)
-        .select("*")
-        .eq('data', selectedDate ? format(selectedDate, 'yyyy-MM-dd') : null);
+      let query = supabase.from(tableName).select("*");
+      
+      if (selectedDate) {
+        query = query.eq('data', format(selectedDate, 'yyyy-MM-dd'));
+      }
 
+      const { data, error } = await query;
       if (error) throw error;
       return data || [];
     },
@@ -46,11 +48,13 @@ const Consultation = () => {
       if (!selectedVehicleGBM) return [];
 
       const tableName = getVehicleTableName(selectedVehicleGBM);
-      const { data, error } = await supabase
-        .from(tableName)
-        .select("*")
-        .eq('data', selectedDate ? format(selectedDate, 'yyyy-MM-dd') : null);
+      let query = supabase.from(tableName).select("*");
+      
+      if (selectedDate) {
+        query = query.eq('data', format(selectedDate, 'yyyy-MM-dd'));
+      }
 
+      const { data, error } = await query;
       if (error) throw error;
       return data || [];
     },
