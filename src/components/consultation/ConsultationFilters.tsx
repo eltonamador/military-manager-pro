@@ -42,140 +42,71 @@ export const ConsultationFilters = ({
   onVehicleGBMChange,
   onVTRChange,
 }: ConsultationFiltersProps) => {
-  const handleSelectAllMilitary = (checked: boolean) => {
-    gbmOptions.forEach(gbm => onMilitaryGBMChange(gbm, checked));
-  };
-
-  const handleSelectAllVehicles = (checked: boolean) => {
-    gbmOptions.forEach(gbm => onVehicleGBMChange(gbm, checked));
-  };
-
-  const handleSelectAllVTRs = (checked: boolean) => {
-    vtrOptions.forEach(({ prefix }) => onVTRChange(prefix, checked));
-  };
-
-  const allMilitarySelected = gbmOptions.length > 0 && 
-    gbmOptions.every(gbm => selectedMilitaryGBMs.includes(gbm));
-
-  const allVehiclesSelected = gbmOptions.length > 0 && 
-    gbmOptions.every(gbm => selectedVehicleGBMs.includes(gbm));
-
-  const allVTRsSelected = vtrOptions.length > 0 && 
-    vtrOptions.every(({ prefix }) => selectedVTRs.includes(prefix));
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
       <Card className="p-4 border-red-100 shadow-sm">
         <h3 className="font-semibold text-gray-900 mb-4">GBM Militares</h3>
-        <div className="space-y-4">
-          <div className="flex items-center space-x-2 border-b pb-2">
-            <Checkbox
-              id="select-all-military"
-              checked={allMilitarySelected}
-              onCheckedChange={(checked) => handleSelectAllMilitary(!!checked)}
-              className="border-red-200 text-red-600"
-            />
-            <Label 
-              htmlFor="select-all-military"
-              className="text-sm font-medium text-gray-700"
-            >
-              Selecionar Todos
-            </Label>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            {gbmOptions.map((gbm) => (
-              <div key={gbm} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`military-${gbm}`}
-                  checked={selectedMilitaryGBMs.includes(gbm)}
-                  onCheckedChange={(checked) => onMilitaryGBMChange(gbm, !!checked)}
-                  className="border-red-200 text-red-600"
-                />
-                <Label 
-                  htmlFor={`military-${gbm}`}
-                  className="text-sm text-gray-700"
-                >
-                  {gbm}
-                </Label>
-              </div>
-            ))}
-          </div>
+        <div className="grid grid-cols-2 gap-4">
+          {gbmOptions.map((gbm) => (
+            <div key={gbm} className="flex items-center space-x-2">
+              <Checkbox
+                id={`military-${gbm}`}
+                checked={selectedMilitaryGBMs.includes(gbm)}
+                onCheckedChange={(checked) => onMilitaryGBMChange(gbm, !!checked)}
+                className="border-red-200 text-red-600"
+              />
+              <Label 
+                htmlFor={`military-${gbm}`}
+                className="text-sm text-gray-700"
+              >
+                {gbm}
+              </Label>
+            </div>
+          ))}
         </div>
       </Card>
       
       <Card className="p-4 border-red-100 shadow-sm">
         <h3 className="font-semibold text-gray-900 mb-4">GBM Viaturas</h3>
-        <div className="space-y-4">
-          <div className="flex items-center space-x-2 border-b pb-2">
-            <Checkbox
-              id="select-all-vehicles"
-              checked={allVehiclesSelected}
-              onCheckedChange={(checked) => handleSelectAllVehicles(!!checked)}
-              className="border-red-200 text-red-600"
-            />
-            <Label 
-              htmlFor="select-all-vehicles"
-              className="text-sm font-medium text-gray-700"
-            >
-              Selecionar Todos
-            </Label>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            {gbmOptions.map((gbm) => (
-              <div key={gbm} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`vehicle-${gbm}`}
-                  checked={selectedVehicleGBMs.includes(gbm)}
-                  onCheckedChange={(checked) => onVehicleGBMChange(gbm, !!checked)}
-                  className="border-red-200 text-red-600"
-                />
-                <Label 
-                  htmlFor={`vehicle-${gbm}`}
-                  className="text-sm text-gray-700"
-                >
-                  {gbm}
-                </Label>
-              </div>
-            ))}
-          </div>
+        <div className="grid grid-cols-2 gap-4">
+          {gbmOptions.map((gbm) => (
+            <div key={gbm} className="flex items-center space-x-2">
+              <Checkbox
+                id={`vehicle-${gbm}`}
+                checked={selectedVehicleGBMs.includes(gbm)}
+                onCheckedChange={(checked) => onVehicleGBMChange(gbm, !!checked)}
+                className="border-red-200 text-red-600"
+              />
+              <Label 
+                htmlFor={`vehicle-${gbm}`}
+                className="text-sm text-gray-700"
+              >
+                {gbm}
+              </Label>
+            </div>
+          ))}
         </div>
       </Card>
 
       <Card className="p-4 border-red-100 shadow-sm">
         <h3 className="font-semibold text-gray-900 mb-4">Tipo de VTR</h3>
-        <div className="space-y-4">
-          <div className="flex items-center space-x-2 border-b pb-2">
-            <Checkbox
-              id="select-all-vtrs"
-              checked={allVTRsSelected}
-              onCheckedChange={(checked) => handleSelectAllVTRs(!!checked)}
-              className="border-red-200 text-red-600"
-            />
-            <Label 
-              htmlFor="select-all-vtrs"
-              className="text-sm font-medium text-gray-700"
-            >
-              Selecionar Todos
-            </Label>
-          </div>
-          <div className="space-y-3">
-            {vtrOptions.map(({ prefix, description }) => (
-              <div key={prefix} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`vtr-${prefix}`}
-                  checked={selectedVTRs.includes(prefix)}
-                  onCheckedChange={(checked) => onVTRChange(prefix, !!checked)}
-                  className="border-red-200 text-red-600"
-                />
-                <Label 
-                  htmlFor={`vtr-${prefix}`}
-                  className="text-sm text-gray-700"
-                >
-                  <span className="font-medium">{prefix}</span> - {description}
-                </Label>
-              </div>
-            ))}
-          </div>
+        <div className="space-y-3">
+          {vtrOptions.map(({ prefix, description }) => (
+            <div key={prefix} className="flex items-center space-x-2">
+              <Checkbox
+                id={`vtr-${prefix}`}
+                checked={selectedVTRs.includes(prefix)}
+                onCheckedChange={(checked) => onVTRChange(prefix, !!checked)}
+                className="border-red-200 text-red-600"
+              />
+              <Label 
+                htmlFor={`vtr-${prefix}`}
+                className="text-sm text-gray-700"
+              >
+                <span className="font-medium">{prefix}</span> - {description}
+              </Label>
+            </div>
+          ))}
         </div>
       </Card>
 

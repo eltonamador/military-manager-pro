@@ -110,7 +110,8 @@ const VehicleReceiving = () => {
       setSelectedVTR("");
       setStatus("");
       setDescription("");
-      navigate("/");
+      await supabase.auth.signOut();
+      navigate("/login");
     }
   };
 
