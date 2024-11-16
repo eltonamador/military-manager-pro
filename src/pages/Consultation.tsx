@@ -75,6 +75,33 @@ const Consultation = () => {
     enabled: selectedVehicleGBMs.length > 0,
   });
 
+  const handleMilitaryGBMChange = (gbm: string, checked: boolean) => {
+    setSelectedMilitaryGBMs(prev => {
+      if (checked && !prev.includes(gbm)) {
+        return [...prev, gbm];
+      }
+      return prev.filter(g => g !== gbm);
+    });
+  };
+
+  const handleVehicleGBMChange = (gbm: string, checked: boolean) => {
+    setSelectedVehicleGBMs(prev => {
+      if (checked && !prev.includes(gbm)) {
+        return [...prev, gbm];
+      }
+      return prev.filter(g => g !== gbm);
+    });
+  };
+
+  const handleVTRChange = (vtr: string, checked: boolean) => {
+    setSelectedVTRs(prev => {
+      if (checked && !prev.includes(vtr)) {
+        return [...prev, vtr];
+      }
+      return prev.filter(v => v !== vtr);
+    });
+  };
+
   const formattedMilitaryData = militaryData?.map(item => ({
     name: item.nome_de_guerra || "",
     function: item.funcao || "",
@@ -92,30 +119,6 @@ const Consultation = () => {
     date: new Date(item.data),
     shiftDuration: "-"
   })) || [];
-
-  const handleMilitaryGBMChange = (gbm: string, checked: boolean) => {
-    if (checked) {
-      setSelectedMilitaryGBMs([...selectedMilitaryGBMs, gbm]);
-    } else {
-      setSelectedMilitaryGBMs(selectedMilitaryGBMs.filter(g => g !== gbm));
-    }
-  };
-
-  const handleVehicleGBMChange = (gbm: string, checked: boolean) => {
-    if (checked) {
-      setSelectedVehicleGBMs([...selectedVehicleGBMs, gbm]);
-    } else {
-      setSelectedVehicleGBMs(selectedVehicleGBMs.filter(g => g !== gbm));
-    }
-  };
-
-  const handleVTRChange = (vtr: string, checked: boolean) => {
-    if (checked) {
-      setSelectedVTRs([...selectedVTRs, vtr]);
-    } else {
-      setSelectedVTRs(selectedVTRs.filter(v => v !== vtr));
-    }
-  };
 
   const isLoading = isMilitaryLoading || isVehicleLoading;
   const combinedData = [...formattedMilitaryData, ...formattedVehicleData];
