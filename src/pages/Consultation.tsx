@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { format, addDays } from "date-fns";
+import { format } from "date-fns";
 import { Search } from "lucide-react";
 import { getMilitaryTableName, getVehicleTableName } from "@/utils/tableNames";
 import { ConsultationFilters } from "@/components/consultation/ConsultationFilters";
@@ -25,9 +25,7 @@ const Consultation = () => {
         let query = supabase.from(tableName).select("*");
         
         if (selectedDate) {
-          // Add one day to compensate for timezone differences
-          const adjustedDate = addDays(selectedDate, 1);
-          query = query.eq('data', format(adjustedDate, 'yyyy-MM-dd'));
+          query = query.eq('data', format(selectedDate, 'yyyy-MM-dd'));
         }
 
         if (selectedVTRs.length > 0) {
@@ -57,9 +55,7 @@ const Consultation = () => {
         let query = supabase.from(tableName).select("*");
         
         if (selectedDate) {
-          // Add one day to compensate for timezone differences
-          const adjustedDate = addDays(selectedDate, 1);
-          query = query.eq('data', format(adjustedDate, 'yyyy-MM-dd'));
+          query = query.eq('data', format(selectedDate, 'yyyy-MM-dd'));
         }
 
         if (selectedVTRs.length > 0) {
