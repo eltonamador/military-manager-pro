@@ -61,8 +61,24 @@ const ConsultationResults = ({ isLoading, combinedData }: ConsultationResultsPro
     const pdfUrl = await generateAndSharePDF();
     if (pdfUrl) {
       const message = "Relatório do Serviço Operacional - CBMAP";
-      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message + "\n" + pdfUrl)}`;
-      window.open(whatsappUrl, '_blank');
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: 'Relatório CBMAP',
+            text: message,
+            url: pdfUrl
+          });
+          toast.success("Compartilhado com sucesso!");
+        } catch (error) {
+          // Fallback to WhatsApp if share API fails or is cancelled
+          const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message + "\n" + pdfUrl)}`;
+          window.open(whatsappUrl, '_blank');
+        }
+      } else {
+        // Fallback for browsers that don't support the Web Share API
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message + "\n" + pdfUrl)}`;
+        window.open(whatsappUrl, '_blank');
+      }
     }
   };
 

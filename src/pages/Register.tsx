@@ -5,10 +5,12 @@ import { useToast } from "@/hooks/use-toast";
 import { User } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const Register = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     warName: '',
     email: '',
@@ -24,8 +26,9 @@ const Register = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     
     if (formData.password !== formData.confirmPassword) {
       toast({
@@ -33,14 +36,38 @@ const Register = () => {
         title: "Erro no cadastro",
         description: "As senhas não coincidem",
       });
+      setLoading(false);
       return;
     }
 
-    toast({
-      title: "Cadastro realizado com sucesso",
-      description: "Você será redirecionado para a tela de login",
-    });
-    navigate("/login");
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            nome_guerra: formData.warName,
+            telefone: formData.phone,
+          },
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Cadastro realizado com sucesso",
+        description: "Você será redirecionado para a tela de login",
+      });
+      navigate("/login");
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro no cadastro",
+        description: "Ocorreu um erro ao realizar o cadastro",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -109,8 +136,9 @@ const Register = () => {
             <Button 
               type="submit" 
               className="w-full bg-military-orange hover:bg-military-red transition-colors"
+              disabled={loading}
             >
-              Cadastrar
+              {loading ? "Cadastrando..." : "Cadastrar"}
             </Button>
           </form>
         </div>
