@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { Search } from "lucide-react";
 import { getMilitaryTableName, getVehicleTableName } from "@/utils/tableNames";
 import { ConsultationFilters } from "@/components/consultation/ConsultationFilters";
@@ -21,21 +21,31 @@ const Consultation = () => {
       if (!selectedDate || selectedMilitaryGBMs.length === 0) return [];
 
       const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+      console.log('Querying military data for date:', formattedDate);
+
       const promises = selectedMilitaryGBMs.map(async (gbm) => {
         const tableName = getMilitaryTableName(gbm);
         let query = supabase
           .from(tableName)
-          .select("*")
-          .eq('data', formattedDate);
+          .select("*");
+
+        // Add date filter
+        query = query.eq('data', formattedDate);
 
         if (selectedVTRs.length > 0) {
           const vtrConditions = selectedVTRs.map(prefix => `viatura.ilike.${prefix}%`);
           query = query.or(vtrConditions.join(','));
         }
 
-        const { data, error } = await query;
-        if (error) throw error;
-        return data || [];
+        const { data: queryData, error } = await query;
+        
+        if (error) {
+          console.error(`Error querying ${tableName}:`, error);
+          throw error;
+        }
+        
+        console.log(`Data from ${tableName}:`, queryData);
+        return queryData || [];
       });
 
       const results = await Promise.all(promises);
@@ -50,21 +60,31 @@ const Consultation = () => {
       if (!selectedDate || selectedVehicleGBMs.length === 0) return [];
 
       const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+      console.log('Querying vehicle data for date:', formattedDate);
+
       const promises = selectedVehicleGBMs.map(async (gbm) => {
         const tableName = getVehicleTableName(gbm);
         let query = supabase
           .from(tableName)
-          .select("*")
-          .eq('data', formattedDate);
+          .select("*");
+
+        // Add date filter
+        query = query.eq('data', formattedDate);
 
         if (selectedVTRs.length > 0) {
           const vtrConditions = selectedVTRs.map(prefix => `vtr.ilike.${prefix}%`);
           query = query.or(vtrConditions.join(','));
         }
 
-        const { data, error } = await query;
-        if (error) throw error;
-        return data || [];
+        const { data: queryData, error } = await query;
+        
+        if (error) {
+          console.error(`Error querying ${tableName}:`, error);
+          throw error;
+        }
+        
+        console.log(`Data from ${tableName}:`, queryData);
+        return queryData || [];
       });
 
       const results = await Promise.all(promises);
@@ -105,7 +125,7 @@ const Consultation = () => {
     function: item.funcao || "",
     gbm: item.GBM || "",
     vtr: item.viatura || "",
-    date: new Date(item.data),
+    date: item.data ? new Date(item.data) : new Date(),
     shiftDuration: "24"
   })) || [];
 
@@ -114,7 +134,7 @@ const Consultation = () => {
     function: item.status || "",
     gbm: item.gbm || "",
     vtr: item.alteracao || "",
-    date: new Date(item.data),
+    date: item.data ? new Date(item.data) : new Date(),
     shiftDuration: "-"
   })) || [];
 
