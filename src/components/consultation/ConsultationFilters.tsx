@@ -3,6 +3,8 @@ import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { ptBR } from "date-fns/locale";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 
 interface ConsultationFiltersProps {
   selectedDate: Date | undefined;
@@ -42,6 +44,10 @@ export const ConsultationFilters = ({
   onVehicleGBMChange,
   onVTRChange,
 }: ConsultationFiltersProps) => {
+  const handleClearDate = () => {
+    onDateChange(undefined);
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
       <Card className="p-4 border-red-100 shadow-sm">
@@ -111,17 +117,32 @@ export const ConsultationFilters = ({
       </Card>
 
       <Card className="p-4 border-red-100 shadow-sm">
-        <h3 className="font-semibold text-gray-900 mb-4">Data</h3>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="font-semibold text-gray-900">Data</h3>
+          {selectedDate && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleClearDate}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
         <Calendar
           mode="single"
           selected={selectedDate}
           onSelect={onDateChange}
           className="border rounded-md"
           locale={ptBR}
+          disabled={(date) => date > new Date() || date < new Date('2024-01-01')}
+          initialFocus
           classNames={{
             head_cell: "text-red-600 font-medium",
             day_selected: "bg-red-600 hover:bg-red-600",
             day_today: "bg-red-100 text-red-900",
+            day_disabled: "text-gray-300 hover:bg-transparent",
           }}
         />
       </Card>
