@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
 import { Search } from "lucide-react";
 import { getMilitaryTableName, getVehicleTableName } from "@/utils/tableNames";
 import { ConsultationFilters } from "@/components/consultation/ConsultationFilters";
@@ -25,16 +25,14 @@ const Consultation = () => {
 
       const promises = selectedMilitaryGBMs.map(async (gbm) => {
         const tableName = getMilitaryTableName(gbm);
-        let query = supabase
+        const query = supabase
           .from(tableName)
-          .select("*");
-
-        // Add date filter
-        query = query.eq('data', formattedDate);
+          .select("*")
+          .eq('data', formattedDate);
 
         if (selectedVTRs.length > 0) {
           const vtrConditions = selectedVTRs.map(prefix => `viatura.ilike.${prefix}%`);
-          query = query.or(vtrConditions.join(','));
+          query.or(vtrConditions.join(','));
         }
 
         const { data: queryData, error } = await query;
@@ -64,16 +62,14 @@ const Consultation = () => {
 
       const promises = selectedVehicleGBMs.map(async (gbm) => {
         const tableName = getVehicleTableName(gbm);
-        let query = supabase
+        const query = supabase
           .from(tableName)
-          .select("*");
-
-        // Add date filter
-        query = query.eq('data', formattedDate);
+          .select("*")
+          .eq('data', formattedDate);
 
         if (selectedVTRs.length > 0) {
           const vtrConditions = selectedVTRs.map(prefix => `vtr.ilike.${prefix}%`);
-          query = query.or(vtrConditions.join(','));
+          query.or(vtrConditions.join(','));
         }
 
         const { data: queryData, error } = await query;
