@@ -6,7 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowUpDown, Edit, Trash2 } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useState } from "react";
@@ -23,8 +23,8 @@ interface Military {
 
 interface MilitaryTableProps {
   militaryList: Military[];
-  onEdit?: (index: number) => void;
-  onDelete?: (index: number) => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 type SortField = 'name' | 'vtr' | 'function' | 'gbm' | 'date' | 'shiftDuration';
@@ -88,9 +88,6 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
             <TableHead>
               <SortButton field="shiftDuration" label="Jornada" />
             </TableHead>
-            {(onEdit || onDelete) && (
-              <TableHead className="text-right">Ações</TableHead>
-            )}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -102,35 +99,11 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
               <TableCell>{military.gbm}</TableCell>
               <TableCell>{format(military.date, "dd/MM/yyyy", { locale: ptBR })}</TableCell>
               <TableCell>{military.shiftDuration}h</TableCell>
-              {(onEdit || onDelete) && (
-                <TableCell className="text-right space-x-2">
-                  {onEdit && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => onEdit(index)}
-                      className="hover:bg-red-50"
-                    >
-                      <Edit className="h-4 w-4 text-military-red" />
-                    </Button>
-                  )}
-                  {onDelete && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => onDelete(index)}
-                      className="hover:bg-red-50"
-                    >
-                      <Trash2 className="h-4 w-4 text-military-red" />
-                    </Button>
-                  )}
-                </TableCell>
-              )}
             </TableRow>
           ))}
           {sortedList.length === 0 && (
             <TableRow>
-              <TableCell colSpan={7} className="text-center text-gray-500 py-8">
+              <TableCell colSpan={6} className="text-center text-gray-500 py-8">
                 Nenhum registro encontrado
               </TableCell>
             </TableRow>

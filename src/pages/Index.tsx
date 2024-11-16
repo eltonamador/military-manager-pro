@@ -46,7 +46,6 @@ const Index = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [shiftDuration, setShiftDuration] = useState("24");
   const [militaryList, setMilitaryList] = useState<Military[]>([]);
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -62,53 +61,23 @@ const Index = () => {
 
   const gbmOptions = ["1º GBM", "2º GBM", "GAPH", "GMAF", "5º GBM", "MCPB"];
 
-  const handleEdit = (index: number) => {
-    const military = militaryList[index];
-    setSelectedGBM(military.gbm);
-    setSelectedVTR(military.vtr);
-    setSelectedMilitary(military.name);
-    setMilitaryFunction(military.function);
-    setShiftDuration(military.shiftDuration);
-    setEditingIndex(index);
-  };
-
-  const handleDelete = (index: number) => {
-    const updatedList = militaryList.filter((_, i) => i !== index);
-    setMilitaryList(updatedList);
-    toast({
-      title: "Militar removido",
-      description: "O militar foi removido da lista com sucesso",
-    });
-  };
-
   const handleAddMilitary = () => {
     if (selectedMilitary && militaryFunction && selectedDate && shiftDuration) {
-      const newMilitary = {
-        name: selectedMilitary,
-        function: militaryFunction,
-        gbm: selectedGBM,
-        vtr: selectedVTR,
-        date: selectedDate,
-        shiftDuration: shiftDuration,
-      };
-
-      if (editingIndex !== null) {
-        const updatedList = [...militaryList];
-        updatedList[editingIndex] = newMilitary;
-        setMilitaryList(updatedList);
-        setEditingIndex(null);
-        toast({
-          title: "Militar atualizado",
-          description: "As informações do militar foram atualizadas com sucesso",
-        });
-      } else {
-        setMilitaryList([...militaryList, newMilitary]);
-        toast({
-          title: "Militar adicionado",
-          description: "O militar foi adicionado com sucesso à lista",
-        });
-      }
-
+      setMilitaryList([
+        ...militaryList,
+        {
+          name: selectedMilitary,
+          function: militaryFunction,
+          gbm: selectedGBM,
+          vtr: selectedVTR,
+          date: selectedDate,
+          shiftDuration: shiftDuration,
+        },
+      ]);
+      toast({
+        title: "Militar adicionado",
+        description: "O militar foi adicionado com sucesso à lista",
+      });
       setSelectedMilitary("");
       setMilitaryFunction("");
     }
@@ -172,11 +141,7 @@ const Index = () => {
           onShiftDurationChange={setShiftDuration}
           onAddMilitary={handleAddMilitary}
         />
-        <MilitaryTable 
-          militaryList={militaryList} 
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+        <MilitaryTable militaryList={militaryList} />
       </main>
       <MilitaryFooter 
         onFinish={handleFinishOperation}

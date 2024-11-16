@@ -40,7 +40,7 @@ const Register = () => {
       title: "Cadastro realizado com sucesso",
       description: "Você será redirecionado para a tela de login",
     });
-    navigate("/login");
+    navigate("/");
   };
 
   return (
