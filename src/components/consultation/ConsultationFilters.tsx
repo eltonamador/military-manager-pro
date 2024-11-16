@@ -54,9 +54,14 @@ export const ConsultationFilters = ({
     vtrOptions.forEach(({ prefix }) => onVTRChange(prefix, checked));
   };
 
-  const allMilitarySelected = gbmOptions.every(gbm => selectedMilitaryGBMs.includes(gbm));
-  const allVehiclesSelected = gbmOptions.every(gbm => selectedVehicleGBMs.includes(gbm));
-  const allVTRsSelected = vtrOptions.every(({ prefix }) => selectedVTRs.includes(prefix));
+  const allMilitarySelected = gbmOptions.length > 0 && 
+    gbmOptions.every(gbm => selectedMilitaryGBMs.includes(gbm));
+
+  const allVehiclesSelected = gbmOptions.length > 0 && 
+    gbmOptions.every(gbm => selectedVehicleGBMs.includes(gbm));
+
+  const allVTRsSelected = vtrOptions.length > 0 && 
+    vtrOptions.every(({ prefix }) => selectedVTRs.includes(prefix));
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -67,7 +72,7 @@ export const ConsultationFilters = ({
             <Checkbox
               id="select-all-military"
               checked={allMilitarySelected}
-              onCheckedChange={handleSelectAllMilitary}
+              onCheckedChange={(checked) => handleSelectAllMilitary(!!checked)}
               className="border-red-200 text-red-600"
             />
             <Label 
@@ -105,7 +110,7 @@ export const ConsultationFilters = ({
             <Checkbox
               id="select-all-vehicles"
               checked={allVehiclesSelected}
-              onCheckedChange={handleSelectAllVehicles}
+              onCheckedChange={(checked) => handleSelectAllVehicles(!!checked)}
               className="border-red-200 text-red-600"
             />
             <Label 
@@ -143,7 +148,7 @@ export const ConsultationFilters = ({
             <Checkbox
               id="select-all-vtrs"
               checked={allVTRsSelected}
-              onCheckedChange={handleSelectAllVTRs}
+              onCheckedChange={(checked) => handleSelectAllVTRs(!!checked)}
               className="border-red-200 text-red-600"
             />
             <Label 
