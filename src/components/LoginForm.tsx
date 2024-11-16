@@ -19,7 +19,7 @@ const LoginForm = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -36,7 +36,32 @@ const LoginForm = () => {
           title: "Erro ao fazer login",
           description: errorMessage,
         });
-      } else {
+      } else if (data.user) {
+        // Fetch the user's profile to ensure it exists
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
+
+        if (profileError || !profileData) {
+          // If profile doesn't exist, create it
+          const { error: createProfileError } = await supabase
+            .from('profiles')
+            .insert([
+              {
+                id: data.user.id,
+                nome_guerra: data.user.user_metadata.nome_guerra || email.split('@')[0],
+                matricula: email,
+                telefone: data.user.user_metadata.telefone,
+              }
+            ]);
+
+          if (createProfileError) {
+            console.error('Error creating profile:', createProfileError);
+          }
+        }
+
         toast({
           title: "Login realizado com sucesso",
           description: "Bem-vindo ao sistema de gestão de militares",
@@ -44,6 +69,7 @@ const LoginForm = () => {
         navigate("/");
       }
     } catch (error) {
+      console.error('Login error:', error);
       toast({
         variant: "destructive",
         title: "Erro ao fazer login",

@@ -41,7 +41,8 @@ const Register = () => {
     }
 
     try {
-      const { error } = await supabase.auth.signUp({
+      // First, sign up the user
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -52,18 +53,43 @@ const Register = () => {
         },
       });
 
-      if (error) throw error;
+      if (signUpError) throw signUpError;
 
-      toast({
-        title: "Cadastro realizado com sucesso",
-        description: "Você será redirecionado para a tela de login",
-      });
-      navigate("/login");
-    } catch (error) {
+      if (signUpData.user) {
+        // Create a profile entry for the new user
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert([
+            {
+              id: signUpData.user.id,
+              nome_guerra: formData.warName,
+              matricula: formData.email, // Using email as matricula for now
+              telefone: formData.phone,
+            }
+          ]);
+
+        if (profileError) throw profileError;
+
+        // Now sign in the user
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password,
+        });
+
+        if (signInError) throw signInError;
+
+        toast({
+          title: "Cadastro realizado com sucesso",
+          description: "Você será redirecionado para a página inicial",
+        });
+        navigate("/");
+      }
+    } catch (error: any) {
+      console.error('Registration error:', error);
       toast({
         variant: "destructive",
         title: "Erro no cadastro",
-        description: "Ocorreu um erro ao realizar o cadastro",
+        description: error.message || "Ocorreu um erro ao realizar o cadastro",
       });
     } finally {
       setLoading(false);
