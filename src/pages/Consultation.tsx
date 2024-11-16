@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,12 +8,33 @@ import { getMilitaryTableName, getVehicleTableName } from "@/utils/tableNames";
 import { ConsultationFilters } from "@/components/consultation/ConsultationFilters";
 import { Separator } from "@/components/ui/separator";
 import ConsultationResults from "@/components/consultation/ConsultationResults";
+import { useNavigate } from "react-router-dom";
 
 const Consultation = () => {
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [selectedMilitaryGBMs, setSelectedMilitaryGBMs] = useState<string[]>([]);
   const [selectedVehicleGBMs, setSelectedVehicleGBMs] = useState<string[]>([]);
   const [selectedVTRs, setSelectedVTRs] = useState<string[]>([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/login');
+      }
+    };
+    
+    checkSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        navigate('/login');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   const { data: militaryData, isLoading: isMilitaryLoading } = useQuery({
     queryKey: ["military-service", selectedMilitaryGBMs, selectedDate, selectedVTRs],
