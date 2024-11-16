@@ -18,20 +18,19 @@ const Consultation = () => {
   const { data: militaryData, isLoading: isMilitaryLoading } = useQuery({
     queryKey: ["military-service", selectedMilitaryGBMs, selectedDate, selectedVTRs],
     queryFn: async () => {
-      if (selectedMilitaryGBMs.length === 0) return [];
+      if (!selectedDate || selectedMilitaryGBMs.length === 0) return [];
 
+      const formattedDate = format(selectedDate, 'yyyy-MM-dd');
       const promises = selectedMilitaryGBMs.map(async (gbm) => {
         const tableName = getMilitaryTableName(gbm);
-        let query = supabase.from(tableName).select("*");
-        
-        if (selectedDate) {
-          query = query.eq('data', format(selectedDate, 'yyyy-MM-dd'));
-        }
+        let query = supabase
+          .from(tableName)
+          .select("*")
+          .eq('data', formattedDate);
 
         if (selectedVTRs.length > 0) {
-          query = query.or(
-            selectedVTRs.map(prefix => `viatura.ilike.${prefix}%`).join(',')
-          );
+          const vtrConditions = selectedVTRs.map(prefix => `viatura.ilike.${prefix}%`);
+          query = query.or(vtrConditions.join(','));
         }
 
         const { data, error } = await query;
@@ -42,26 +41,25 @@ const Consultation = () => {
       const results = await Promise.all(promises);
       return results.flat();
     },
-    enabled: selectedMilitaryGBMs.length > 0,
+    enabled: !!selectedDate && selectedMilitaryGBMs.length > 0,
   });
 
   const { data: vehicleData, isLoading: isVehicleLoading } = useQuery({
     queryKey: ["vehicle-service", selectedVehicleGBMs, selectedDate, selectedVTRs],
     queryFn: async () => {
-      if (selectedVehicleGBMs.length === 0) return [];
+      if (!selectedDate || selectedVehicleGBMs.length === 0) return [];
 
+      const formattedDate = format(selectedDate, 'yyyy-MM-dd');
       const promises = selectedVehicleGBMs.map(async (gbm) => {
         const tableName = getVehicleTableName(gbm);
-        let query = supabase.from(tableName).select("*");
-        
-        if (selectedDate) {
-          query = query.eq('data', format(selectedDate, 'yyyy-MM-dd'));
-        }
+        let query = supabase
+          .from(tableName)
+          .select("*")
+          .eq('data', formattedDate);
 
         if (selectedVTRs.length > 0) {
-          query = query.or(
-            selectedVTRs.map(prefix => `vtr.ilike.${prefix}%`).join(',')
-          );
+          const vtrConditions = selectedVTRs.map(prefix => `vtr.ilike.${prefix}%`);
+          query = query.or(vtrConditions.join(','));
         }
 
         const { data, error } = await query;
@@ -72,7 +70,7 @@ const Consultation = () => {
       const results = await Promise.all(promises);
       return results.flat();
     },
-    enabled: selectedVehicleGBMs.length > 0,
+    enabled: !!selectedDate && selectedVehicleGBMs.length > 0,
   });
 
   const handleMilitaryGBMChange = (gbm: string, checked: boolean) => {
