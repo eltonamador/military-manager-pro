@@ -37,8 +37,11 @@ interface MilitaryFormProps {
 
 const militaryFunctionOptions = [
   "Condutor",
+  "Condutor/Operador",
   "Adjunto do Oficial",
-  "Resgateiro",
+  "Resgateiro 1",
+  "Resgateiro 2",
+  "Socorrista",
   "Cmdt de GU",
   "Cmdt de 1º linha",
   "ajudante de 1º linha",
