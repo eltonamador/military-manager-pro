@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
 import { Search } from "lucide-react";
+import { getMilitaryTableName, getVehicleTableName } from "@/utils/tableNames";
 import { ConsultationFilters } from "@/components/consultation/ConsultationFilters";
 import { Separator } from "@/components/ui/separator";
 import ConsultationResults from "@/components/consultation/ConsultationResults";
 import { useNavigate } from "react-router-dom";
-import { useConsultationData } from "@/hooks/useConsultationData";
 
 const Consultation = () => {
   const [selectedDate, setSelectedDate] = useState<Date>();
@@ -34,12 +36,79 @@ const Consultation = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const { isLoading, combinedData } = useConsultationData(
-    selectedMilitaryGBMs,
-    selectedVehicleGBMs,
-    selectedDate,
-    selectedVTRs
-  );
+  const { data: militaryData, isLoading: isMilitaryLoading } = useQuery({
+    queryKey: ["military-service", selectedMilitaryGBMs, selectedDate, selectedVTRs],
+    queryFn: async () => {
+      if (!selectedDate || selectedMilitaryGBMs.length === 0) return [];
+
+      const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+      console.log('Querying military data for date:', formattedDate);
+
+      const promises = selectedMilitaryGBMs.map(async (gbm) => {
+        const tableName = getMilitaryTableName(gbm);
+        const query = supabase
+          .from(tableName)
+          .select("*")
+          .eq('data', formattedDate);
+
+        if (selectedVTRs.length > 0) {
+          const vtrConditions = selectedVTRs.map(prefix => `viatura.ilike.${prefix}%`);
+          query.or(vtrConditions.join(','));
+        }
+
+        const { data: queryData, error } = await query;
+        
+        if (error) {
+          console.error(`Error querying ${tableName}:`, error);
+          throw error;
+        }
+        
+        console.log(`Data from ${tableName}:`, queryData);
+        return queryData || [];
+      });
+
+      const results = await Promise.all(promises);
+      return results.flat();
+    },
+    enabled: !!selectedDate && selectedMilitaryGBMs.length > 0,
+  });
+
+  const { data: vehicleData, isLoading: isVehicleLoading } = useQuery({
+    queryKey: ["vehicle-service", selectedVehicleGBMs, selectedDate, selectedVTRs],
+    queryFn: async () => {
+      if (!selectedDate || selectedVehicleGBMs.length === 0) return [];
+
+      const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+      console.log('Querying vehicle data for date:', formattedDate);
+
+      const promises = selectedVehicleGBMs.map(async (gbm) => {
+        const tableName = getVehicleTableName(gbm);
+        const query = supabase
+          .from(tableName)
+          .select("*")
+          .eq('data', formattedDate);
+
+        if (selectedVTRs.length > 0) {
+          const vtrConditions = selectedVTRs.map(prefix => `vtr.ilike.${prefix}%`);
+          query.or(vtrConditions.join(','));
+        }
+
+        const { data: queryData, error } = await query;
+        
+        if (error) {
+          console.error(`Error querying ${tableName}:`, error);
+          throw error;
+        }
+        
+        console.log(`Data from ${tableName}:`, queryData);
+        return queryData || [];
+      });
+
+      const results = await Promise.all(promises);
+      return results.flat();
+    },
+    enabled: !!selectedDate && selectedVehicleGBMs.length > 0,
+  });
 
   const handleMilitaryGBMChange = (gbm: string, checked: boolean) => {
     setSelectedMilitaryGBMs(prev => {
@@ -67,6 +136,27 @@ const Consultation = () => {
       return prev.filter(v => v !== vtr);
     });
   };
+
+  const formattedMilitaryData = militaryData?.map(item => ({
+    name: item.nome_de_guerra || "",
+    function: item.funcao || "",
+    gbm: item.GBM || "",
+    vtr: item.viatura || "",
+    date: item.data ? new Date(item.data) : new Date(),
+    shiftDuration: "24"
+  })) || [];
+
+  const formattedVehicleData = vehicleData?.map(item => ({
+    name: item.vtr || "",
+    function: item.status || "",
+    gbm: item.gbm || "",
+    vtr: item.alteracao || "",
+    date: item.data ? new Date(item.data) : new Date(),
+    shiftDuration: "-"
+  })) || [];
+
+  const isLoading = isMilitaryLoading || isVehicleLoading;
+  const combinedData = [...formattedMilitaryData, ...formattedVehicleData];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
