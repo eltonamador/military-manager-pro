@@ -94,27 +94,30 @@ const Consultation = () => {
   })) || [];
 
   const handleMilitaryGBMChange = (gbm: string, checked: boolean) => {
-    if (checked) {
-      setSelectedMilitaryGBMs([...selectedMilitaryGBMs, gbm]);
-    } else {
-      setSelectedMilitaryGBMs(selectedMilitaryGBMs.filter(g => g !== gbm));
-    }
+    setSelectedMilitaryGBMs(prev => {
+      if (checked && !prev.includes(gbm)) {
+        return [...prev, gbm];
+      }
+      return prev.filter(g => g !== gbm);
+    });
   };
 
   const handleVehicleGBMChange = (gbm: string, checked: boolean) => {
-    if (checked) {
-      setSelectedVehicleGBMs([...selectedVehicleGBMs, gbm]);
-    } else {
-      setSelectedVehicleGBMs(selectedVehicleGBMs.filter(g => g !== gbm));
-    }
+    setSelectedVehicleGBMs(prev => {
+      if (checked && !prev.includes(gbm)) {
+        return [...prev, gbm];
+      }
+      return prev.filter(g => g !== gbm);
+    });
   };
 
   const handleVTRChange = (vtr: string, checked: boolean) => {
-    if (checked) {
-      setSelectedVTRs([...selectedVTRs, vtr]);
-    } else {
-      setSelectedVTRs(selectedVTRs.filter(v => v !== vtr));
-    }
+    setSelectedVTRs(prev => {
+      if (checked && !prev.includes(vtr)) {
+        return [...prev, vtr];
+      }
+      return prev.filter(v => v !== vtr);
+    });
   };
 
   const isLoading = isMilitaryLoading || isVehicleLoading;

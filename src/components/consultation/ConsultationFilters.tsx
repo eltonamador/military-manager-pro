@@ -43,20 +43,34 @@ export const ConsultationFilters = ({
   onVTRChange,
 }: ConsultationFiltersProps) => {
   const handleSelectAllMilitary = (checked: boolean) => {
-    gbmOptions.forEach(gbm => onMilitaryGBMChange(gbm, checked));
+    gbmOptions.forEach(gbm => {
+      onMilitaryGBMChange(gbm, checked);
+    });
   };
 
   const handleSelectAllVehicles = (checked: boolean) => {
-    gbmOptions.forEach(gbm => onVehicleGBMChange(gbm, checked));
+    gbmOptions.forEach(gbm => {
+      onVehicleGBMChange(gbm, checked);
+    });
   };
 
   const handleSelectAllVTRs = (checked: boolean) => {
-    vtrOptions.forEach(({ prefix }) => onVTRChange(prefix, checked));
+    vtrOptions.forEach(({ prefix }) => {
+      onVTRChange(prefix, checked);
+    });
   };
 
-  const allMilitarySelected = gbmOptions.every(gbm => selectedMilitaryGBMs.includes(gbm));
-  const allVehiclesSelected = gbmOptions.every(gbm => selectedVehicleGBMs.includes(gbm));
-  const allVTRsSelected = vtrOptions.every(({ prefix }) => selectedVTRs.includes(prefix));
+  const isMilitaryAllSelected = gbmOptions.every(gbm => 
+    selectedMilitaryGBMs.includes(gbm)
+  );
+
+  const isVehiclesAllSelected = gbmOptions.every(gbm => 
+    selectedVehicleGBMs.includes(gbm)
+  );
+
+  const isVTRsAllSelected = vtrOptions.every(({ prefix }) => 
+    selectedVTRs.includes(prefix)
+  );
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -66,8 +80,8 @@ export const ConsultationFilters = ({
           <div className="flex items-center space-x-2 border-b pb-2">
             <Checkbox
               id="select-all-military"
-              checked={allMilitarySelected}
-              onCheckedChange={handleSelectAllMilitary}
+              checked={isMilitaryAllSelected}
+              onCheckedChange={(checked) => handleSelectAllMilitary(!!checked)}
               className="border-red-200 text-red-600"
             />
             <Label 
@@ -104,8 +118,8 @@ export const ConsultationFilters = ({
           <div className="flex items-center space-x-2 border-b pb-2">
             <Checkbox
               id="select-all-vehicles"
-              checked={allVehiclesSelected}
-              onCheckedChange={handleSelectAllVehicles}
+              checked={isVehiclesAllSelected}
+              onCheckedChange={(checked) => handleSelectAllVehicles(!!checked)}
               className="border-red-200 text-red-600"
             />
             <Label 
@@ -142,8 +156,8 @@ export const ConsultationFilters = ({
           <div className="flex items-center space-x-2 border-b pb-2">
             <Checkbox
               id="select-all-vtrs"
-              checked={allVTRsSelected}
-              onCheckedChange={handleSelectAllVTRs}
+              checked={isVTRsAllSelected}
+              onCheckedChange={(checked) => handleSelectAllVTRs(!!checked)}
               className="border-red-200 text-red-600"
             />
             <Label 
