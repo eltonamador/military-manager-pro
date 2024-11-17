@@ -8,6 +8,8 @@ import MilitaryForm from "@/components/MilitaryForm";
 import MilitaryTable from "@/components/MilitaryTable";
 import MilitaryHeader from "@/components/military/MilitaryHeader";
 import MilitaryFooter from "@/components/military/MilitaryFooter";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 interface Military {
   name: string;
@@ -152,7 +154,17 @@ const Index = () => {
 
   return (
     <div className="min-h-screen military-gradient flex flex-col p-4 animate-fadeIn">
-      <MilitaryHeader />
+      <div className="flex justify-between items-center mb-6">
+        <MilitaryHeader />
+        <Button
+          onClick={() => navigate("/vehicle-receiving")}
+          variant="outline"
+          className="hover:bg-red-50 transition-colors"
+        >
+          <span className="mr-2">Recebimento VTRs</span>
+          <ArrowRight className="h-5 w-5 text-military-red" />
+        </Button>
+      </div>
       <main className="flex-grow bg-white rounded-lg shadow-md p-6">
         <MilitaryForm
           selectedGBM={selectedGBM}
