@@ -20,23 +20,35 @@ const OfficerSelection = () => {
     queryFn: async () => {
       if (!selectedFunction) return [];
 
-      const tableName = selectedFunction === "Superior de dia" ? "superior_de_dia" : "oficiais_de_area";
-      const columnName = selectedFunction === "Superior de dia" ? "nome_guerra_sup" : "nome_guerra_of_area";
+      if (selectedFunction === "Superior de dia") {
+        const { data, error } = await supabase
+          .from("superior_de_dia")
+          .select("nome_guerra_sup")
+          .order("nome_guerra_sup");
 
-      let query = supabase.from(tableName).select(columnName);
+        if (error) {
+          console.error("Error fetching superior officers:", error);
+          return [];
+        }
 
-      if (selectedFunction !== "Superior de dia") {
-        query = query.eq("area_number", selectedFunction === "Oficial de Área 1" ? "1" : "2");
+        return data.map(officer => officer.nome_guerra_sup).filter(Boolean) as string[];
+      } else {
+        // For "Oficial de Área 1" or "Oficial de Área 2"
+        const areaNumber = selectedFunction === "Oficial de Área 1" ? "1" : "2";
+        
+        const { data, error } = await supabase
+          .from("oficiais_de_area")
+          .select("nome_guerra_of_area")
+          .eq("area_number", areaNumber)
+          .order("nome_guerra_of_area");
+
+        if (error) {
+          console.error("Error fetching area officers:", error);
+          return [];
+        }
+
+        return data.map(officer => officer.nome_guerra_of_area).filter(Boolean) as string[];
       }
-
-      const { data, error } = await query;
-
-      if (error) {
-        console.error("Error fetching officers:", error);
-        return [];
-      }
-
-      return data.map(officer => officer[columnName]).filter(Boolean) as string[];
     },
     enabled: !!selectedFunction,
   });
