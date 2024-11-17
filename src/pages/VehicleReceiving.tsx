@@ -8,7 +8,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useVehicleService } from "@/hooks/useVehicleService";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
 
 interface Vehicle {
   gbm: string;
@@ -118,19 +117,9 @@ const VehicleReceiving = () => {
   return (
     <div className="min-h-screen military-gradient flex flex-col p-2 sm:p-4 animate-fadeIn">
       <header className="bg-white rounded-lg shadow-md p-3 sm:p-4 mb-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <h1 className="text-xl sm:text-2xl font-bold text-military-red">
-            Recebimento de VTRs
-          </h1>
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/")}
-            className="w-full sm:w-auto hover:bg-red-50"
-          >
-            <ArrowLeft className="h-5 w-5 text-military-red" />
-            <span className="ml-2">Recebimento de Militares</span>
-          </Button>
-        </div>
+        <h1 className="text-xl sm:text-2xl font-bold text-military-red">
+          Recebimento de VTRs
+        </h1>
       </header>
 
       <main className="flex-grow bg-white rounded-lg shadow-md p-3 sm:p-6">
