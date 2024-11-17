@@ -110,12 +110,12 @@ const OfficerSelection = () => {
               onVTRChange={setSelectedVTR}
             />
 
-            <div className="mt-6 flex justify-end">
+            <div className="mt-6 flex justify-end gap-4">
               <Button
                 onClick={handleFinalize}
                 className="bg-military-orange hover:bg-military-red transition-colors text-white font-bold px-8 py-3"
               >
-                Finalizar Oficial
+                Avançar para Recebimento de Militares
               </Button>
             </div>
           </CardContent>

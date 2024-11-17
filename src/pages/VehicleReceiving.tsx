@@ -9,6 +9,15 @@ import { useVehicleService } from "@/hooks/useVehicleService";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Vehicle {
   gbm: string;
@@ -37,6 +46,7 @@ const VehicleReceiving = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [showGoodServiceDialog, setShowGoodServiceDialog] = useState(false);
   const { toast } = useToast();
   const { saveVehicleService } = useVehicleService();
   const navigate = useNavigate();
@@ -99,17 +109,7 @@ const VehicleReceiving = () => {
     const success = await saveVehicleService(vehicles, selectedDate);
     
     if (success) {
-      toast({
-        title: "Sucesso",
-        description: "Dados das viaturas salvos com sucesso",
-      });
-      
-      setVehicles([]);
-      setSelectedVTR("");
-      setStatus("");
-      setDescription("");
-      await supabase.auth.signOut();
-      navigate("/login");
+      setShowGoodServiceDialog(true);
     }
   };
 
@@ -176,6 +176,25 @@ const VehicleReceiving = () => {
             onFinish={handleFinishOperation}
           />
         )}
+
+        <AlertDialog open={showGoodServiceDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Bom Serviço!</AlertDialogTitle>
+              <AlertDialogDescription>
+                Agradecemos pelo seu trabalho. Tenha um excelente serviço!
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogAction onClick={() => {
+                setShowGoodServiceDialog(false);
+                navigate("/login");
+              }}>
+                OK
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </main>
     </div>
   );

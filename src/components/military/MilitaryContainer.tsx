@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import MilitaryForm from "@/components/MilitaryForm";
 import MilitaryTable from "@/components/MilitaryTable";
 import { Military } from "@/types/military";
+import { useNavigate } from "react-router-dom";
 
 interface MilitaryContainerProps {
   selectedGBM: string;
@@ -48,6 +49,13 @@ const MilitaryContainer = ({
   onDelete,
   onFinishOperation,
 }: MilitaryContainerProps) => {
+  const navigate = useNavigate();
+
+  const handleFinishMilitary = () => {
+    onFinishOperation();
+    navigate("/vehicle-receiving");
+  };
+
   return (
     <main className="flex-grow bg-white rounded-lg shadow-md p-3 sm:p-6">
       <MilitaryForm
@@ -65,7 +73,7 @@ const MilitaryContainer = ({
         onMilitaryChange={onMilitaryChange}
         onFunctionChange={onFunctionChange}
         onDateChange={onDateChange}
-        onShiftDurationChange={onShiftDurationChange}
+        onShiftDurationChange={onShiftDuration}
         onAddMilitary={onAddMilitary}
       />
       <div className="overflow-x-auto">
@@ -76,7 +84,7 @@ const MilitaryContainer = ({
         />
       </div>
       <Button
-        onClick={onFinishOperation}
+        onClick={handleFinishMilitary}
         className="w-full mt-6 bg-military-orange hover:bg-military-red transition-colors text-white font-bold text-lg py-6"
         disabled={militaryList.length === 0}
       >
