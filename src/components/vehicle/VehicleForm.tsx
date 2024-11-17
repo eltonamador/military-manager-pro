@@ -22,8 +22,6 @@ interface VehicleFormProps {
   selectedDate: Date;
   status: string;
   description: string;
-  vtrOptions?: string[];
-  gbmOptions?: string[];
   onGBMChange: (value: string) => void;
   onVTRChange: (value: string) => void;
   onDateChange: (date: Date) => void;
@@ -33,14 +31,34 @@ interface VehicleFormProps {
   editingIndex: number | null;
 }
 
+const gbmOptions = [
+  "1º GBM",
+  "2º GBM",
+  "5º GBM",
+  "GAPH",
+  "GMAF",
+  "MCPB"
+];
+
+const vtrOptions = [
+  "ABT-01",
+  "ABS-01",
+  "USB-01",
+  "AEM-01",
+  "ACA-01",
+  "ABT-02",
+  "ABS-02",
+  "USB-02",
+  "AEM-02",
+  "ACA-02"
+];
+
 const VehicleForm = ({
   selectedVTR,
   selectedGBM,
   selectedDate,
   status,
   description,
-  vtrOptions = [],
-  gbmOptions = [],
   onGBMChange,
   onVTRChange,
   onDateChange,

@@ -279,6 +279,27 @@ export type Database = {
         }
         Relationships: []
       }
+      servico_oficial: {
+        Row: {
+          created_at: string
+          id: number
+          nome_of_area: string | null
+          nome_of_sup: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          nome_of_area?: string | null
+          nome_of_sup?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          nome_of_area?: string | null
+          nome_of_sup?: string | null
+        }
+        Relationships: []
+      }
       servico_vtrs_1gbm: {
         Row: {
           alteracao: string | null
