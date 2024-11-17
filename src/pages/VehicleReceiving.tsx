@@ -116,11 +116,16 @@ const VehicleReceiving = () => {
 
   return (
     <div className="min-h-screen military-gradient flex flex-col p-2 sm:p-4 animate-fadeIn">
-      <header className="bg-white rounded-lg shadow-md p-3 sm:p-4 mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-military-red">
-          Recebimento de VTRs
-        </h1>
-      </header>
+      <div className="bg-military-orange p-4 rounded-lg mb-6">
+        <div className="bg-white rounded-lg p-4 mb-2">
+          <h1 className="text-2xl font-bold text-military-red">
+            Recebimento de
+            <span className="text-military-orange ml-2">
+              VTRs
+            </span>
+          </h1>
+        </div>
+      </div>
 
       <main className="flex-grow bg-white rounded-lg shadow-md p-3 sm:p-6">
         <VehicleForm
