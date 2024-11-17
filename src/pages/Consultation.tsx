@@ -23,7 +23,6 @@ const Consultation = () => {
     return format(date, 'yyyy-MM-dd');
   };
 
-  // Query for military data
   const { data: militaryData, isLoading: isMilitaryLoading } = useQuery({
     queryKey: ["military-service", selectedMilitaryGBMs, selectedDate, selectedVTRs],
     queryFn: async () => {
@@ -59,7 +58,6 @@ const Consultation = () => {
     enabled: !!selectedDate && selectedMilitaryGBMs.length > 0,
   });
 
-  // Query for vehicle data
   const { data: vehicleData, isLoading: isVehicleLoading } = useQuery({
     queryKey: ["vehicle-service", selectedVehicleGBMs, selectedDate, selectedVTRs],
     queryFn: async () => {
@@ -95,18 +93,18 @@ const Consultation = () => {
     enabled: !!selectedDate && selectedVehicleGBMs.length > 0,
   });
 
-  // Query for officer data including Area 1 and Area 2 officers
   const { data: officerData, isLoading: isOfficerLoading } = useQuery({
-    queryKey: ["officer-service", selectedDate],
+    queryKey: ["officer-service", selectedDate, selectedOfficerType],
     queryFn: async () => {
-      if (!selectedDate) return [];
+      if (!selectedDate || !selectedOfficerType) return [];
 
       const formattedDate = formatDateForQuery(selectedDate);
       
       const { data, error } = await supabase
         .from('servico_oficial')
         .select('*')
-        .eq('data_serv_of', formattedDate);
+        .eq('data_serv_of', formattedDate)
+        .eq('tipo', selectedOfficerType);
 
       if (error) {
         console.error('Error querying officer data:', error);
@@ -115,7 +113,7 @@ const Consultation = () => {
 
       return data || [];
     },
-    enabled: !!selectedDate,
+    enabled: !!selectedDate && !!selectedOfficerType,
   });
 
   const handleMilitaryGBMChange = (gbm: string, checked: boolean) => {
@@ -163,10 +161,8 @@ const Consultation = () => {
     shiftDuration: "-"
   })) || [];
 
-  // Format officer data including Area 1 and Area 2 officers
   const formattedOfficerData = officerData?.map(item => ({
-    name: item.tipo === "Superior de dia" ? item.nome_of_sup : 
-         (item.tipo === "Oficial de Área 1" || item.tipo === "Oficial de Área 2") ? item.nome_of_area : "",
+    name: item.nome_of_area || item.nome_of_sup || "",
     function: item.tipo || "",
     gbm: "-",
     vtr: "-",
