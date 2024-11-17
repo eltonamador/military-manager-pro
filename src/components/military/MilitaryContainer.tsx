@@ -73,7 +73,7 @@ const MilitaryContainer = ({
         onMilitaryChange={onMilitaryChange}
         onFunctionChange={onFunctionChange}
         onDateChange={onDateChange}
-        onShiftDurationChange={onShiftDuration}
+        onShiftDurationChange={onShiftDurationChange}
         onAddMilitary={onAddMilitary}
       />
       <div className="overflow-x-auto">
