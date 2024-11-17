@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
+import { format, subDays } from "date-fns";
 import { Search } from "lucide-react";
 import { getMilitaryTableName, getVehicleTableName } from "@/utils/tableNames";
 import { ConsultationFilters } from "@/components/consultation/ConsultationFilters";
@@ -20,7 +20,9 @@ const Consultation = () => {
   const [selectedOfficerType, setSelectedOfficerType] = useState<string | null>(null);
 
   const formatDateForQuery = (date: Date) => {
-    return format(date, 'yyyy-MM-dd');
+    // Subtract one day to compensate for timezone difference
+    const adjustedDate = subDays(date, 1);
+    return format(adjustedDate, 'yyyy-MM-dd');
   };
 
   const { data: militaryData, isLoading: isMilitaryLoading } = useQuery({
