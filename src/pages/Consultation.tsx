@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
-import { utcToZonedTime } from 'date-fns-tz';
 import { Search } from "lucide-react";
 import { getMilitaryTableName, getVehicleTableName } from "@/utils/tableNames";
 import { ConsultationFilters } from "@/components/consultation/ConsultationFilters";
@@ -21,9 +20,7 @@ const Consultation = () => {
   const [selectedOfficerType, setSelectedOfficerType] = useState<string | null>(null);
 
   const formatDateForQuery = (date: Date) => {
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const zonedDate = utcToZonedTime(date, timeZone);
-    return format(zonedDate, 'yyyy-MM-dd');
+    return format(date, 'yyyy-MM-dd');
   };
 
   const { data: militaryData, isLoading: isMilitaryLoading } = useQuery({
@@ -66,7 +63,7 @@ const Consultation = () => {
     queryFn: async () => {
       if (!selectedDate || selectedVehicleGBMs.length === 0) return [];
 
-      const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+      const formattedDate = formatDateForQuery(selectedDate);
 
       const promises = selectedVehicleGBMs.map(async (gbm) => {
         const tableName = getVehicleTableName(gbm);
@@ -101,7 +98,7 @@ const Consultation = () => {
     queryFn: async () => {
       if (!selectedDate || !selectedOfficerType) return [];
 
-      const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+      const formattedDate = formatDateForQuery(selectedDate);
       
       const { data, error } = await supabase
         .from('servico_oficial')

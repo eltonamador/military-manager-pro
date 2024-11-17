@@ -2,7 +2,6 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { format, parse } from "date-fns";
-import { zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz';
 
 interface DateFilterProps {
   selectedDate: Date | undefined;
@@ -21,16 +20,9 @@ export const DateFilter = ({ selectedDate, onDateChange }: DateFilterProps) => {
     try {
       // Parse the input date string to a Date object
       const parsedDate = parse(inputDate, 'yyyy-MM-dd', new Date());
-      
-      // Convert to UTC, considering the local timezone
-      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const utcDate = zonedTimeToUtc(parsedDate, timeZone);
-      
-      // Adjust the date to local timezone for display
-      const localDate = utcToZonedTime(utcDate, timeZone);
-      localDate.setHours(0, 0, 0, 0);
-      
-      onDateChange(localDate);
+      // Set time to noon to avoid timezone issues
+      parsedDate.setHours(12, 0, 0, 0);
+      onDateChange(parsedDate);
     } catch (error) {
       console.error('Error parsing date:', error);
       onDateChange(undefined);
