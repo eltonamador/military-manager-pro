@@ -33,7 +33,6 @@ const OfficerSelection = () => {
 
         return data.map(officer => officer.nome_guerra_sup).filter(Boolean) as string[];
       } else {
-        // For both "Oficial de Área 1" and "Oficial de Área 2", fetch all officers without filtering
         const { data, error } = await supabase
           .from("oficiais_de_area")
           .select("nome_guerra_of_area")
@@ -67,7 +66,7 @@ const OfficerSelection = () => {
     },
   });
 
-  const handleFinalize = () => {
+  const handleFinalize = async () => {
     if (!selectedFunction || !selectedOfficer || !selectedDate || !selectedVTR) {
       toast({
         variant: "destructive",
@@ -77,11 +76,41 @@ const OfficerSelection = () => {
       return;
     }
 
-    toast({
-      title: "Sucesso",
-      description: "Oficial selecionado com sucesso!",
-    });
-    navigate("/index");
+    try {
+      // Insert into servico_oficial table
+      const { error: servicoError } = await supabase
+        .from("servico_oficial")
+        .insert({
+          nome_of_area: selectedFunction.includes("Área") ? selectedOfficer : null,
+          nome_of_sup: selectedFunction === "Superior de dia" ? selectedOfficer : null,
+        });
+
+      if (servicoError) throw servicoError;
+
+      // If it's an area officer, update the area_number
+      if (selectedFunction.includes("Área")) {
+        const areaNumber = selectedFunction === "Oficial de Área 1" ? "1" : "2";
+        const { error: updateError } = await supabase
+          .from("oficiais_de_area")
+          .update({ area_number: areaNumber })
+          .eq("nome_guerra_of_area", selectedOfficer);
+
+        if (updateError) throw updateError;
+      }
+
+      toast({
+        title: "Sucesso",
+        description: "Oficial selecionado com sucesso!",
+      });
+      navigate("/index");
+    } catch (error) {
+      console.error("Error saving officer:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Erro ao salvar oficial. Tente novamente.",
+      });
+    }
   };
 
   return (
