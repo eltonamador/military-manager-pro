@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { format, startOfDay } from "date-fns";
+import { format } from "date-fns";
 import { Search } from "lucide-react";
 import { getMilitaryTableName, getVehicleTableName } from "@/utils/tableNames";
 import { ConsultationFilters } from "@/components/consultation/ConsultationFilters";
@@ -24,8 +24,7 @@ const Consultation = () => {
     queryFn: async () => {
       if (!selectedDate || selectedMilitaryGBMs.length === 0) return [];
 
-      const formattedDate = format(startOfDay(selectedDate), 'yyyy-MM-dd');
-      console.log('Querying military data for date:', formattedDate);
+      const formattedDate = format(selectedDate, 'yyyy-MM-dd');
 
       const promises = selectedMilitaryGBMs.map(async (gbm) => {
         const tableName = getMilitaryTableName(gbm);
@@ -60,8 +59,7 @@ const Consultation = () => {
     queryFn: async () => {
       if (!selectedDate || selectedVehicleGBMs.length === 0) return [];
 
-      const formattedDate = format(startOfDay(selectedDate), 'yyyy-MM-dd');
-      console.log('Querying vehicle data for date:', formattedDate);
+      const formattedDate = format(selectedDate, 'yyyy-MM-dd');
 
       const promises = selectedVehicleGBMs.map(async (gbm) => {
         const tableName = getVehicleTableName(gbm);
@@ -96,7 +94,7 @@ const Consultation = () => {
     queryFn: async () => {
       if (!selectedDate || !selectedOfficerType) return [];
 
-      const formattedDate = format(startOfDay(selectedDate), 'yyyy-MM-dd');
+      const formattedDate = format(selectedDate, 'yyyy-MM-dd');
       
       const { data, error } = await supabase
         .from('servico_oficial')

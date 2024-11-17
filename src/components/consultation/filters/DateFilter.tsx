@@ -1,7 +1,7 @@
-import { Calendar } from "@/components/ui/calendar";
 import { Card } from "@/components/ui/card";
-import { ptBR } from "date-fns/locale";
-import { startOfDay } from "date-fns";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { format, parse } from "date-fns";
 
 interface DateFilterProps {
   selectedDate: Date | undefined;
@@ -9,27 +9,40 @@ interface DateFilterProps {
 }
 
 export const DateFilter = ({ selectedDate, onDateChange }: DateFilterProps) => {
-  const handleDateChange = (date: Date | undefined) => {
-    // Ensure we're working with the start of the day to avoid timezone issues
-    const normalizedDate = date ? startOfDay(date) : undefined;
-    onDateChange(normalizedDate);
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const inputDate = event.target.value;
+    
+    if (!inputDate) {
+      onDateChange(undefined);
+      return;
+    }
+
+    // Parse the input date string to a Date object
+    try {
+      const parsedDate = parse(inputDate, 'yyyy-MM-dd', new Date());
+      // Set the time to midnight to avoid timezone issues
+      parsedDate.setHours(0, 0, 0, 0);
+      onDateChange(parsedDate);
+    } catch (error) {
+      console.error('Error parsing date:', error);
+      onDateChange(undefined);
+    }
   };
 
   return (
     <Card className="p-3 sm:p-4 border-red-100 shadow-sm">
-      <h3 className="font-semibold text-gray-900 mb-4">Data</h3>
-      <Calendar
-        mode="single"
-        selected={selectedDate}
-        onSelect={handleDateChange}
-        className="border rounded-md w-full"
-        locale={ptBR}
-        classNames={{
-          head_cell: "text-red-600 font-medium",
-          day_selected: "bg-red-600 hover:bg-red-600",
-          day_today: "bg-red-100 text-red-900",
-        }}
-      />
+      <div className="space-y-2">
+        <Label htmlFor="date-input" className="font-semibold text-gray-900">
+          Data
+        </Label>
+        <Input
+          id="date-input"
+          type="date"
+          value={selectedDate ? format(selectedDate, 'yyyy-MM-dd') : ''}
+          onChange={handleDateChange}
+          className="w-full"
+        />
+      </div>
     </Card>
   );
 };
