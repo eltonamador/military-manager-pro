@@ -77,13 +77,14 @@ const OfficerSelection = () => {
     }
 
     try {
-      // Insert into servico_oficial table with the tipo field
+      // Insert into servico_oficial table with the tipo field and date
       const { error: servicoError } = await supabase
         .from("servico_oficial")
         .insert({
           nome_of_area: selectedFunction.includes("Área") ? selectedOfficer : null,
           nome_of_sup: selectedFunction === "Superior de dia" ? selectedOfficer : null,
-          tipo: selectedFunction // Save the function type directly in the tipo column
+          tipo: selectedFunction, // Save the function type directly in the tipo column
+          data_serv_of: selectedDate.toISOString().split('T')[0] // Save the selected date
         });
 
       if (servicoError) throw servicoError;

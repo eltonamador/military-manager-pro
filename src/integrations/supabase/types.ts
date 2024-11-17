@@ -282,6 +282,7 @@ export type Database = {
       servico_oficial: {
         Row: {
           created_at: string
+          data_serv_of: string | null
           id: number
           nome_of_area: string | null
           nome_of_sup: string | null
@@ -289,6 +290,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          data_serv_of?: string | null
           id?: number
           nome_of_area?: string | null
           nome_of_sup?: string | null
@@ -296,6 +298,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          data_serv_of?: string | null
           id?: number
           nome_of_area?: string | null
           nome_of_sup?: string | null
