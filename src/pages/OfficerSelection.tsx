@@ -77,26 +77,16 @@ const OfficerSelection = () => {
     }
 
     try {
-      // Insert into servico_oficial table
+      // Insert into servico_oficial table with the tipo field
       const { error: servicoError } = await supabase
         .from("servico_oficial")
         .insert({
           nome_of_area: selectedFunction.includes("Área") ? selectedOfficer : null,
           nome_of_sup: selectedFunction === "Superior de dia" ? selectedOfficer : null,
+          tipo: selectedFunction // Save the function type directly in the tipo column
         });
 
       if (servicoError) throw servicoError;
-
-      // If it's an area officer, update the area_number
-      if (selectedFunction.includes("Área")) {
-        const areaNumber = selectedFunction === "Oficial de Área 1" ? "1" : "2";
-        const { error: updateError } = await supabase
-          .from("oficiais_de_area")
-          .update({ area_number: areaNumber })
-          .eq("nome_guerra_of_area", selectedOfficer);
-
-        if (updateError) throw updateError;
-      }
 
       toast({
         title: "Sucesso",

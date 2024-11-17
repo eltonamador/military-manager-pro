@@ -285,18 +285,21 @@ export type Database = {
           id: number
           nome_of_area: string | null
           nome_of_sup: string | null
+          tipo: string | null
         }
         Insert: {
           created_at?: string
           id?: number
           nome_of_area?: string | null
           nome_of_sup?: string | null
+          tipo?: string | null
         }
         Update: {
           created_at?: string
           id?: number
           nome_of_area?: string | null
           nome_of_sup?: string | null
+          tipo?: string | null
         }
         Relationships: []
       }
