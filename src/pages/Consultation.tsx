@@ -139,9 +139,9 @@ const Consultation = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="container mx-auto p-4 space-y-6">
-        <div className="text-center space-y-2 py-6">
-          <h1 className="text-3xl font-bold text-gray-900">Sistema de Consulta</h1>
+      <div className="container mx-auto p-2 sm:p-4 space-y-4 sm:space-y-6">
+        <div className="text-center space-y-2 py-4 sm:py-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Sistema de Consulta</h1>
           <p className="text-gray-600">Corpo de Bombeiros Militar do Amapá/ COOP</p>
         </div>
 
@@ -152,7 +152,7 @@ const Consultation = () => {
               Filtros de Consulta
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-6">
+          <CardContent className="p-3 sm:p-6">
             <ConsultationFilters
               selectedDate={selectedDate}
               selectedMilitaryGBMs={selectedMilitaryGBMs}
@@ -166,9 +166,9 @@ const Consultation = () => {
           </CardContent>
         </Card>
 
-        <Separator className="my-8" />
+        <Separator className="my-6 sm:my-8" />
 
-        <div className="rounded-lg bg-white shadow-lg p-6 border border-gray-200">
+        <div className="rounded-lg bg-white shadow-lg p-3 sm:p-6 border border-gray-200 overflow-x-auto">
           <ConsultationResults 
             isLoading={isLoading}
             combinedData={combinedData}

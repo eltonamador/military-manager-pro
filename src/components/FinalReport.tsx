@@ -133,29 +133,33 @@ const FinalReport = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-[95vw] sm:max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6">
         <DialogHeader>
           <DialogTitle>Relatório Final</DialogTitle>
         </DialogHeader>
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <div>
             <h3 className="text-lg font-semibold mb-4">Militares</h3>
-            <MilitaryTable militaryList={serviceMilitaryList} />
+            <div className="overflow-x-auto">
+              <MilitaryTable militaryList={serviceMilitaryList} />
+            </div>
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-4">VTRs</h3>
-            <VehicleTable
-              vehicleList={serviceVehicleList}
-              onEdit={() => {}}
-              onDelete={() => {}}
-            />
+            <div className="overflow-x-auto">
+              <VehicleTable
+                vehicleList={serviceVehicleList}
+                onEdit={() => {}}
+                onDelete={() => {}}
+              />
+            </div>
           </div>
         </div>
-        <div className="flex justify-end space-x-4 mt-6">
-          <Button onClick={onEdit} variant="outline">
+        <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-4 mt-6">
+          <Button onClick={onEdit} variant="outline" className="w-full sm:w-auto">
             <Edit className="mr-2 h-4 w-4" /> Editar
           </Button>
-          <Button onClick={onSend} className="bg-green-600 hover:bg-green-700">
+          <Button onClick={onSend} className="w-full sm:w-auto bg-green-600 hover:bg-green-700">
             <Send className="mr-2 h-4 w-4" /> Enviar via WhatsApp
           </Button>
         </div>

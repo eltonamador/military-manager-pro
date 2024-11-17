@@ -81,14 +81,14 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="min-h-screen military-gradient flex flex-col items-center justify-center p-4 animate-fadeIn">
+    <div className="min-h-screen military-gradient flex flex-col items-center justify-center p-2 sm:p-4 animate-fadeIn">
       <div className="w-full max-w-md bg-white rounded-lg shadow-xl overflow-hidden">
-        <div className="bg-military-red p-4 text-white text-center font-bold">
+        <div className="bg-military-red p-3 sm:p-4 text-white text-center font-bold">
           COMANDO OPERACIONAL / CBMAP
         </div>
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <div className="mb-6 flex justify-center">
-            <div className="w-32 h-32 rounded-full overflow-hidden">
+            <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden">
               <img 
                 src="/src/escaladohj2.webp" 
                 alt="Logo CBMAP" 
@@ -129,12 +129,12 @@ const LoginForm = () => {
             </Button>
           </form>
           <div className="mt-6 text-center space-y-3">
-            <Link to="/register" className="text-military-orange hover:text-military-red transition-colors block text-base">
+            <Link to="/register" className="text-military-orange hover:text-military-red transition-colors block text-sm sm:text-base">
               Não tem uma conta? Cadastre-se
             </Link>
             <Link 
               to="/consultation" 
-              className="text-military-orange hover:text-military-red transition-colors block text-lg font-semibold underline decoration-2 hover:decoration-[3px]"
+              className="text-military-orange hover:text-military-red transition-colors block text-base sm:text-lg font-semibold underline decoration-2 hover:decoration-[3px]"
             >
               Consultar Equipe Operacional
             </Link>

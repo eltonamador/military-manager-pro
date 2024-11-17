@@ -65,8 +65,8 @@ export const ConsultationFilters = ({
   const allVTRsSelected = vtrOptions.every(({ prefix }) => selectedVTRs.includes(prefix));
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-      <Card className="p-4 border-red-100 shadow-sm">
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
+      <Card className="p-3 sm:p-4 border-red-100 shadow-sm">
         <div className="flex justify-between items-center mb-4">
           <h3 className="font-semibold text-gray-900">GBM Militares</h3>
           <div className="flex items-center space-x-2">
@@ -104,7 +104,7 @@ export const ConsultationFilters = ({
         </div>
       </Card>
       
-      <Card className="p-4 border-red-100 shadow-sm">
+      <Card className="p-3 sm:p-4 border-red-100 shadow-sm">
         <div className="flex justify-between items-center mb-4">
           <h3 className="font-semibold text-gray-900">GBM Viaturas</h3>
           <div className="flex items-center space-x-2">
@@ -142,7 +142,7 @@ export const ConsultationFilters = ({
         </div>
       </Card>
 
-      <Card className="p-4 border-red-100 shadow-sm">
+      <Card className="p-3 sm:p-4 border-red-100 shadow-sm">
         <div className="flex justify-between items-center mb-4">
           <h3 className="font-semibold text-gray-900">Tipo de VTR</h3>
           <div className="flex items-center space-x-2">
@@ -180,13 +180,13 @@ export const ConsultationFilters = ({
         </div>
       </Card>
 
-      <Card className="p-4 border-red-100 shadow-sm">
+      <Card className="p-3 sm:p-4 border-red-100 shadow-sm">
         <h3 className="font-semibold text-gray-900 mb-4">Data</h3>
         <Calendar
           mode="single"
           selected={selectedDate}
           onSelect={onDateChange}
-          className="border rounded-md"
+          className="border rounded-md w-full"
           locale={ptBR}
           classNames={{
             head_cell: "text-red-600 font-medium",

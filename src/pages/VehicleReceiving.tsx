@@ -116,16 +116,16 @@ const VehicleReceiving = () => {
   };
 
   return (
-    <div className="min-h-screen military-gradient flex flex-col p-4 animate-fadeIn">
-      <header className="bg-white rounded-lg shadow-md p-4 mb-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-military-red">
+    <div className="min-h-screen military-gradient flex flex-col p-2 sm:p-4 animate-fadeIn">
+      <header className="bg-white rounded-lg shadow-md p-3 sm:p-4 mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <h1 className="text-xl sm:text-2xl font-bold text-military-red">
             Recebimento de VTRs
           </h1>
           <Button
             variant="ghost"
             onClick={() => navigate("/")}
-            className="hover:bg-red-50"
+            className="w-full sm:w-auto hover:bg-red-50"
           >
             <ArrowLeft className="h-5 w-5 text-military-red" />
             <span className="ml-2">Recebimento de Militares</span>
@@ -133,7 +133,7 @@ const VehicleReceiving = () => {
         </div>
       </header>
 
-      <main className="flex-grow bg-white rounded-lg shadow-md p-6">
+      <main className="flex-grow bg-white rounded-lg shadow-md p-3 sm:p-6">
         <VehicleForm
           selectedVTR={selectedVTR}
           selectedGBM={selectedGBM}
@@ -151,11 +151,13 @@ const VehicleReceiving = () => {
           editingIndex={editingIndex}
         />
 
-        <VehicleTable
-          vehicleList={vehicles}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+        <div className="overflow-x-auto">
+          <VehicleTable
+            vehicleList={vehicles}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        </div>
 
         <Button
           onClick={handleFinishOperation}

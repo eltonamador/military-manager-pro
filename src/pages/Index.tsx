@@ -153,19 +153,19 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen military-gradient flex flex-col p-4 animate-fadeIn">
-      <div className="flex justify-between items-center mb-6">
+    <div className="min-h-screen military-gradient flex flex-col p-2 sm:p-4 animate-fadeIn">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <MilitaryHeader />
         <Button
           onClick={() => navigate("/vehicle-receiving")}
           variant="outline"
-          className="hover:bg-red-50 transition-colors"
+          className="w-full sm:w-auto hover:bg-red-50 transition-colors"
         >
           <span className="mr-2">Recebimento VTRs</span>
           <ArrowRight className="h-5 w-5 text-military-red" />
         </Button>
       </div>
-      <main className="flex-grow bg-white rounded-lg shadow-md p-6">
+      <main className="flex-grow bg-white rounded-lg shadow-md p-3 sm:p-6">
         <MilitaryForm
           selectedGBM={selectedGBM}
           selectedVTR={selectedVTR}
@@ -184,11 +184,13 @@ const Index = () => {
           onShiftDurationChange={setShiftDuration}
           onAddMilitary={handleAddMilitary}
         />
-        <MilitaryTable 
-          militaryList={militaryList} 
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+        <div className="overflow-x-auto">
+          <MilitaryTable 
+            militaryList={militaryList} 
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        </div>
       </main>
       <MilitaryFooter 
         onFinish={handleFinishOperation}
