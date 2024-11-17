@@ -7,7 +7,6 @@ import { getMilitaryTableName } from "@/utils/tableNames";
 import MilitaryForm from "@/components/MilitaryForm";
 import MilitaryTable from "@/components/MilitaryTable";
 import MilitaryHeader from "@/components/military/MilitaryHeader";
-import MilitaryFooter from "@/components/military/MilitaryFooter";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
@@ -191,11 +190,14 @@ const Index = () => {
             onDelete={handleDelete}
           />
         </div>
+        <Button
+          onClick={handleFinishOperation}
+          className="w-full mt-6 bg-military-orange hover:bg-military-red transition-colors text-white font-bold text-lg py-6"
+          disabled={militaryList.length === 0}
+        >
+          Finalizar Militares
+        </Button>
       </main>
-      <MilitaryFooter 
-        onFinish={handleFinishOperation}
-        disabled={militaryList.length === 0}
-      />
     </div>
   );
 };
