@@ -7,8 +7,7 @@ import { getMilitaryTableName } from "@/utils/tableNames";
 import MilitaryForm from "@/components/MilitaryForm";
 import MilitaryTable from "@/components/MilitaryTable";
 import MilitaryHeader from "@/components/military/MilitaryHeader";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import MilitaryActions from "@/components/military/MilitaryActions";
 
 interface Military {
   name: string;
@@ -155,14 +154,6 @@ const Index = () => {
     <div className="min-h-screen military-gradient flex flex-col p-2 sm:p-4 animate-fadeIn">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <MilitaryHeader />
-        <Button
-          onClick={() => navigate("/vehicle-receiving")}
-          variant="outline"
-          className="w-full sm:w-auto hover:bg-red-50 transition-colors"
-        >
-          <span className="mr-2">Recebimento VTRs</span>
-          <ArrowRight className="h-5 w-5 text-military-red" />
-        </Button>
       </div>
       <main className="flex-grow bg-white rounded-lg shadow-md p-3 sm:p-6">
         <MilitaryForm
@@ -190,13 +181,10 @@ const Index = () => {
             onDelete={handleDelete}
           />
         </div>
-        <Button
-          onClick={handleFinishOperation}
-          className="w-full mt-6 bg-military-orange hover:bg-military-red transition-colors text-white font-bold text-lg py-6"
+        <MilitaryActions 
+          onFinish={handleFinishOperation}
           disabled={militaryList.length === 0}
-        >
-          Finalizar Militares
-        </Button>
+        />
       </main>
     </div>
   );
