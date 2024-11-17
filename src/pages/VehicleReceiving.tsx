@@ -119,21 +119,20 @@ const VehicleReceiving = () => {
     <div className="min-h-screen military-gradient flex flex-col p-2 sm:p-4 animate-fadeIn">
       <div className="flex flex-col gap-4">
         <div className="bg-white rounded-lg shadow-md p-3 sm:p-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/")}
-            className="w-full hover:bg-red-50"
-          >
-            <ArrowLeft className="h-5 w-5 text-military-red" />
-            <span className="ml-2">Recebimento de Militares</span>
-          </Button>
+          <div className="flex justify-between items-center">
+            <h1 className="text-xl sm:text-2xl font-bold text-military-red">
+              Recebimento de VTRs
+            </h1>
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/")}
+              className="hover:bg-red-50"
+            >
+              <ArrowLeft className="h-5 w-5 text-military-red" />
+              <span className="ml-2">Recebimento de Militares</span>
+            </Button>
+          </div>
         </div>
-
-        <header className="bg-white rounded-lg shadow-md p-3 sm:p-4">
-          <h1 className="text-xl sm:text-2xl font-bold text-military-red">
-            Recebimento de VTRs
-          </h1>
-        </header>
       </div>
 
       <main className="flex-grow bg-white rounded-lg shadow-md p-3 sm:p-6 mt-4">
