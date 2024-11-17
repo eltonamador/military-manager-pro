@@ -116,19 +116,19 @@ const VehicleReceiving = () => {
   return (
     <div className="min-h-screen military-gradient flex flex-col p-2 sm:p-4 animate-fadeIn">
       <div className="flex flex-col sm:flex-row gap-4 mb-4">
-        <div className="bg-white rounded-lg shadow-md p-4 flex-1">
-          <h1 className="text-xl sm:text-2xl font-bold text-military-red">
+        <div className="bg-white rounded-lg shadow-md p-3 flex-1 max-w-[300px]">
+          <h1 className="text-lg sm:text-xl font-bold text-military-red">
             Recebimento de VTRs
           </h1>
         </div>
-        <div className="bg-white rounded-lg shadow-md p-4 flex-1">
+        <div className="bg-white rounded-lg shadow-md p-3 flex-1 max-w-[300px]">
           <Button
             variant="ghost"
             onClick={() => navigate("/")}
             className="w-full hover:bg-red-50 flex items-center justify-center"
           >
-            <ArrowLeft className="h-5 w-5 text-military-red mr-2" />
-            <span className="text-xl sm:text-2xl font-bold text-military-red">
+            <ArrowLeft className="h-4 w-4 text-military-red mr-2" />
+            <span className="text-lg sm:text-xl font-bold text-black">
               Recebimento de Militares
             </span>
           </Button>

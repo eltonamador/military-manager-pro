@@ -438,6 +438,24 @@ export type Database = {
         }
         Relationships: []
       }
+      Superior_de_dia: {
+        Row: {
+          created_at: string
+          id: number
+          nome_guerra_sup: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          nome_guerra_sup?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          nome_guerra_sup?: string | null
+        }
+        Relationships: []
+      }
       viaturas: {
         Row: {
           alteracao: string | null
