@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+import { utcToZonedTime } from 'date-fns-tz';
 import { Search } from "lucide-react";
 import { getMilitaryTableName, getVehicleTableName } from "@/utils/tableNames";
 import { ConsultationFilters } from "@/components/consultation/ConsultationFilters";
@@ -19,12 +20,18 @@ const Consultation = () => {
   const [selectedVTRs, setSelectedVTRs] = useState<string[]>([]);
   const [selectedOfficerType, setSelectedOfficerType] = useState<string | null>(null);
 
+  const formatDateForQuery = (date: Date) => {
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const zonedDate = utcToZonedTime(date, timeZone);
+    return format(zonedDate, 'yyyy-MM-dd');
+  };
+
   const { data: militaryData, isLoading: isMilitaryLoading } = useQuery({
     queryKey: ["military-service", selectedMilitaryGBMs, selectedDate, selectedVTRs],
     queryFn: async () => {
       if (!selectedDate || selectedMilitaryGBMs.length === 0) return [];
 
-      const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+      const formattedDate = formatDateForQuery(selectedDate);
 
       const promises = selectedMilitaryGBMs.map(async (gbm) => {
         const tableName = getMilitaryTableName(gbm);
