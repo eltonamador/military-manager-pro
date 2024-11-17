@@ -46,8 +46,6 @@ const VehicleReceiving = () => {
     queryFn: fetchVTRs,
   });
 
-  const gbmOptions = ["1º GBM", "2º GBM", "GAPH", "GMAF", "5º GBM", "MCPB"];
-
   const handleAddVehicle = () => {
     const newVehicle = {
       gbm: selectedGBM,
@@ -119,8 +117,8 @@ const VehicleReceiving = () => {
     <div className="min-h-screen military-gradient flex flex-col p-2 sm:p-4 animate-fadeIn">
       <div className="flex flex-col gap-4">
         <div className="bg-white rounded-lg shadow-md p-3 sm:p-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-xl sm:text-2xl font-bold text-military-red">
+          <div className="flex justify-between items-center space-x-8">
+            <h1 className="text-xl sm:text-2xl font-bold text-military-red border-r pr-8">
               Recebimento de VTRs
             </h1>
             <Button
@@ -143,7 +141,7 @@ const VehicleReceiving = () => {
           status={status}
           description={description}
           vtrOptions={vtrOptions}
-          gbmOptions={gbmOptions}
+          gbmOptions={["1º GBM", "2º GBM", "GAPH", "GMAF", "5º GBM", "MCPB"]}
           onGBMChange={setSelectedGBM}
           onVTRChange={setSelectedVTR}
           onDateChange={setSelectedDate}
