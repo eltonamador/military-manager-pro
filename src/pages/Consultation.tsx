@@ -8,8 +8,11 @@ import { getMilitaryTableName, getVehicleTableName } from "@/utils/tableNames";
 import { ConsultationFilters } from "@/components/consultation/ConsultationFilters";
 import { Separator } from "@/components/ui/separator";
 import ConsultationResults from "@/components/consultation/ConsultationResults";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const Consultation = () => {
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [selectedMilitaryGBMs, setSelectedMilitaryGBMs] = useState<string[]>([]);
   const [selectedVehicleGBMs, setSelectedVehicleGBMs] = useState<string[]>([]);
@@ -173,6 +176,15 @@ const Consultation = () => {
             isLoading={isLoading}
             combinedData={combinedData}
           />
+        </div>
+
+        <div className="flex justify-center pt-4">
+          <Button 
+            onClick={() => navigate("/login")}
+            className="bg-military-orange hover:bg-military-red transition-colors text-white font-bold text-lg px-8 py-3"
+          >
+            Finalizar
+          </Button>
         </div>
       </div>
     </div>
