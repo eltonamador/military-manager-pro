@@ -33,13 +33,10 @@ const OfficerSelection = () => {
 
         return data.map(officer => officer.nome_guerra_sup).filter(Boolean) as string[];
       } else {
-        // For "Oficial de Área 1" or "Oficial de Área 2"
-        const areaNumber = selectedFunction === "Oficial de Área 1" ? "1" : "2";
-        
+        // For both "Oficial de Área 1" and "Oficial de Área 2", fetch all officers without filtering
         const { data, error } = await supabase
           .from("oficiais_de_area")
           .select("nome_guerra_of_area")
-          .eq("area_number", areaNumber)
           .order("nome_guerra_of_area");
 
         if (error) {
