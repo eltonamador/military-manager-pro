@@ -104,14 +104,24 @@ const Consultation = () => {
         .from('servico_oficial')
         .select('*')
         .eq('data_serv_of', formattedDate)
-        .eq('tipo', selectedOfficerType);
+        .not('nome_of_sup', 'is', null);
 
       if (error) {
         console.error('Error querying officer data:', error);
         throw error;
       }
 
-      return data || [];
+      // Filter based on the selected officer type
+      return data.filter(officer => {
+        if (selectedOfficerType === 'Superior de dia') {
+          return officer.tipo === 'Superior de dia';
+        } else if (selectedOfficerType === 'Oficial de Área 1') {
+          return officer.tipo === 'Oficial de Área 1';
+        } else if (selectedOfficerType === 'Oficial de Área 2') {
+          return officer.tipo === 'Oficial de Área 2';
+        }
+        return false;
+      }) || [];
     },
     enabled: !!selectedDate && !!selectedOfficerType,
   });
@@ -162,7 +172,7 @@ const Consultation = () => {
   })) || [];
 
   const formattedOfficerData = officerData?.map(item => ({
-    name: item.nome_of_area || item.nome_of_sup || "",
+    name: item.nome_of_sup || "",
     function: item.tipo || "",
     gbm: "-",
     vtr: "-",

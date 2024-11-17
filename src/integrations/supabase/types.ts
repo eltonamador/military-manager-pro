@@ -284,7 +284,6 @@ export type Database = {
           created_at: string
           data_serv_of: string | null
           id: number
-          nome_of_area: string | null
           nome_of_sup: string | null
           tipo: string | null
         }
@@ -292,7 +291,6 @@ export type Database = {
           created_at?: string
           data_serv_of?: string | null
           id?: number
-          nome_of_area?: string | null
           nome_of_sup?: string | null
           tipo?: string | null
         }
@@ -300,7 +298,6 @@ export type Database = {
           created_at?: string
           data_serv_of?: string | null
           id?: number
-          nome_of_area?: string | null
           nome_of_sup?: string | null
           tipo?: string | null
         }
