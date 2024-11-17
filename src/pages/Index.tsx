@@ -4,20 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { getMilitaryTableName } from "@/utils/tableNames";
-import MilitaryForm from "@/components/MilitaryForm";
-import MilitaryTable from "@/components/MilitaryTable";
 import MilitaryHeader from "@/components/military/MilitaryHeader";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
-
-interface Military {
-  name: string;
-  function: string;
-  gbm: string;
-  vtr: string;
-  date: Date;
-  shiftDuration: string;
-}
+import MilitaryActions from "@/components/military/MilitaryActions";
+import MilitaryContainer from "@/components/military/MilitaryContainer";
+import { Military } from "@/types/military";
 
 const fetchMilitaryNames = async () => {
   const { data, error } = await supabase
@@ -153,51 +143,30 @@ const Index = () => {
 
   return (
     <div className="min-h-screen military-gradient flex flex-col p-2 sm:p-4 animate-fadeIn">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <MilitaryHeader />
-        <Button
-          onClick={() => navigate("/vehicle-receiving")}
-          variant="outline"
-          className="w-full sm:w-auto hover:bg-red-50 transition-colors"
-        >
-          <span className="mr-2">Recebimento VTRs</span>
-          <ArrowRight className="h-5 w-5 text-military-red" />
-        </Button>
-      </div>
-      <main className="flex-grow bg-white rounded-lg shadow-md p-3 sm:p-6">
-        <MilitaryForm
-          selectedGBM={selectedGBM}
-          selectedVTR={selectedVTR}
-          selectedMilitary={selectedMilitary}
-          militaryFunction={militaryFunction}
-          selectedDate={selectedDate}
-          shiftDuration={shiftDuration}
-          gbmOptions={gbmOptions}
-          vtrOptions={vtrOptions}
-          militaryOptions={militaryNames}
-          onGBMChange={setSelectedGBM}
-          onVTRChange={setSelectedVTR}
-          onMilitaryChange={setSelectedMilitary}
-          onFunctionChange={setMilitaryFunction}
-          onDateChange={setSelectedDate}
-          onShiftDurationChange={setShiftDuration}
-          onAddMilitary={handleAddMilitary}
-        />
-        <div className="overflow-x-auto">
-          <MilitaryTable 
-            militaryList={militaryList} 
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
-        </div>
-        <Button
-          onClick={handleFinishOperation}
-          className="w-full mt-6 bg-military-orange hover:bg-military-red transition-colors text-white font-bold text-lg py-6"
-          disabled={militaryList.length === 0}
-        >
-          Finalizar Militares
-        </Button>
-      </main>
+      <MilitaryHeader />
+      <MilitaryActions />
+      <MilitaryContainer
+        selectedGBM={selectedGBM}
+        selectedVTR={selectedVTR}
+        selectedMilitary={selectedMilitary}
+        militaryFunction={militaryFunction}
+        selectedDate={selectedDate}
+        shiftDuration={shiftDuration}
+        gbmOptions={gbmOptions}
+        vtrOptions={vtrOptions}
+        militaryOptions={militaryNames}
+        militaryList={militaryList}
+        onGBMChange={setSelectedGBM}
+        onVTRChange={setSelectedVTR}
+        onMilitaryChange={setSelectedMilitary}
+        onFunctionChange={setMilitaryFunction}
+        onDateChange={setSelectedDate}
+        onShiftDurationChange={setShiftDuration}
+        onAddMilitary={handleAddMilitary}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onFinishOperation={handleFinishOperation}
+      />
     </div>
   );
 };
