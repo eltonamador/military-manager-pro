@@ -115,25 +115,27 @@ const VehicleReceiving = () => {
 
   return (
     <div className="min-h-screen military-gradient flex flex-col p-2 sm:p-4 animate-fadeIn">
-      <div className="flex flex-col gap-4">
-        <div className="bg-white rounded-lg shadow-md p-3 sm:p-4">
-          <div className="flex justify-between items-center space-x-8">
-            <h1 className="text-xl sm:text-2xl font-bold text-military-red border-r pr-8">
-              Recebimento de VTRs
-            </h1>
-            <Button
-              variant="ghost"
-              onClick={() => navigate("/")}
-              className="hover:bg-red-50"
-            >
-              <ArrowLeft className="h-5 w-5 text-military-red" />
-              <span className="ml-2">Recebimento de Militares</span>
-            </Button>
-          </div>
+      <div className="flex flex-col sm:flex-row gap-4 mb-4">
+        <div className="bg-white rounded-lg shadow-md p-4 flex-1">
+          <h1 className="text-xl sm:text-2xl font-bold text-military-red">
+            Recebimento de VTRs
+          </h1>
+        </div>
+        <div className="bg-white rounded-lg shadow-md p-4 flex-1">
+          <Button
+            variant="ghost"
+            onClick={() => navigate("/")}
+            className="w-full hover:bg-red-50 flex items-center justify-center"
+          >
+            <ArrowLeft className="h-5 w-5 text-military-red mr-2" />
+            <span className="text-xl sm:text-2xl font-bold text-military-red">
+              Recebimento de Militares
+            </span>
+          </Button>
         </div>
       </div>
 
-      <main className="flex-grow bg-white rounded-lg shadow-md p-3 sm:p-6 mt-4">
+      <main className="flex-grow bg-white rounded-lg shadow-md p-3 sm:p-6">
         <VehicleForm
           selectedVTR={selectedVTR}
           selectedGBM={selectedGBM}
@@ -160,12 +162,20 @@ const VehicleReceiving = () => {
         </div>
 
         <Button
-          onClick={handleFinishOperation}
+          onClick={() => setShowFinalReport(true)}
           className="w-full mt-6 bg-military-red hover:bg-military-orange transition-colors"
           disabled={vehicles.length === 0}
         >
           Finalizar VTRs
         </Button>
+
+        {showFinalReport && (
+          <FinalReport
+            vehicles={vehicles}
+            onClose={() => setShowFinalReport(false)}
+            onFinish={handleFinishOperation}
+          />
+        )}
       </main>
     </div>
   );
