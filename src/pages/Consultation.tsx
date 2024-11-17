@@ -17,6 +17,7 @@ const Consultation = () => {
   const [selectedMilitaryGBMs, setSelectedMilitaryGBMs] = useState<string[]>([]);
   const [selectedVehicleGBMs, setSelectedVehicleGBMs] = useState<string[]>([]);
   const [selectedVTRs, setSelectedVTRs] = useState<string[]>([]);
+  const [selectedOfficerType, setSelectedOfficerType] = useState<string | null>(null);
 
   const { data: militaryData, isLoading: isMilitaryLoading } = useQuery({
     queryKey: ["military-service", selectedMilitaryGBMs, selectedDate, selectedVTRs],
@@ -92,6 +93,29 @@ const Consultation = () => {
     enabled: !!selectedDate && selectedVehicleGBMs.length > 0,
   });
 
+  const { data: officerData, isLoading: isOfficerLoading } = useQuery({
+    queryKey: ["officer-service", selectedDate, selectedOfficerType],
+    queryFn: async () => {
+      if (!selectedDate || !selectedOfficerType) return [];
+
+      const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+      
+      const { data, error } = await supabase
+        .from('servico_oficial')
+        .select('*')
+        .eq('data_serv_of', formattedDate)
+        .eq('tipo', selectedOfficerType);
+
+      if (error) {
+        console.error('Error querying officer data:', error);
+        throw error;
+      }
+
+      return data || [];
+    },
+    enabled: !!selectedDate && !!selectedOfficerType,
+  });
+
   const handleMilitaryGBMChange = (gbm: string, checked: boolean) => {
     setSelectedMilitaryGBMs(prev => {
       if (checked && !prev.includes(gbm)) {
@@ -137,8 +161,17 @@ const Consultation = () => {
     shiftDuration: "-"
   })) || [];
 
-  const isLoading = isMilitaryLoading || isVehicleLoading;
-  const combinedData = [...formattedMilitaryData, ...formattedVehicleData];
+  const formattedOfficerData = officerData?.map(item => ({
+    name: item.nome_of_area || item.nome_of_sup || "",
+    function: item.tipo || "",
+    gbm: "-",
+    vtr: "-",
+    date: item.data_serv_of ? new Date(item.data_serv_of) : new Date(),
+    shiftDuration: "24"
+  })) || [];
+
+  const isLoading = isMilitaryLoading || isVehicleLoading || isOfficerLoading;
+  const combinedData = [...formattedMilitaryData, ...formattedVehicleData, ...formattedOfficerData];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -161,10 +194,12 @@ const Consultation = () => {
               selectedMilitaryGBMs={selectedMilitaryGBMs}
               selectedVehicleGBMs={selectedVehicleGBMs}
               selectedVTRs={selectedVTRs}
+              selectedOfficerType={selectedOfficerType}
               onDateChange={setSelectedDate}
               onMilitaryGBMChange={handleMilitaryGBMChange}
               onVehicleGBMChange={handleVehicleGBMChange}
               onVTRChange={handleVTRChange}
+              onOfficerTypeChange={setSelectedOfficerType}
             />
           </CardContent>
         </Card>
