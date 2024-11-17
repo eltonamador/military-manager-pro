@@ -53,7 +53,7 @@ const MilitarySearch = ({ selectedMilitary, onMilitaryChange }: MilitarySearchPr
       <Select
         inputId="military"
         options={options}
-        placeholder="Selecione o Militar"
+        placeholder="DIGITE o nome do Militar"
         value={selectedMilitary ? { value: selectedMilitary, label: selectedMilitary } : null}
         onChange={(option) => onMilitaryChange(option ? option.value : '')}
         isClearable
