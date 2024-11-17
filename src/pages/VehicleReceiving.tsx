@@ -128,7 +128,7 @@ const VehicleReceiving = () => {
             className="hover:bg-red-50"
           >
             <ArrowLeft className="h-5 w-5 text-military-red" />
-            <span className="ml-2">Voltar</span>
+            <span className="ml-2">Recebimento de Militares</span>
           </Button>
         </div>
       </header>
