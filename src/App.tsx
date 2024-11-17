@@ -48,7 +48,7 @@ const App = () => {
               path="/"
               element={
                 session ? (
-                  <Index />
+                  <Navigate to="/officer-selection" replace />
                 ) : (
                   <Navigate to="/login" replace />
                 )
@@ -72,6 +72,16 @@ const App = () => {
               element={
                 session ? (
                   <OfficerSelection />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
+            <Route
+              path="/index"
+              element={
+                session ? (
+                  <Index />
                 ) : (
                   <Navigate to="/login" replace />
                 )
