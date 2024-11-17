@@ -77,7 +77,6 @@ const OfficerSelection = () => {
       return;
     }
 
-    // Here you would typically save the data to your backend
     toast({
       title: "Sucesso",
       description: "Oficial selecionado com sucesso!",
@@ -86,21 +85,21 @@ const OfficerSelection = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto p-4 space-y-4">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">Seleção de Oficiais</h1>
+          <h1 className="text-2xl font-bold">Seleção de Oficiais</h1>
           <Button
             onClick={() => navigate("/vehicle-receiving")}
             variant="outline"
-            className="bg-white"
+            className="military-gradient text-white hover:opacity-90"
           >
             Recebimento de Militares
           </Button>
         </div>
 
-        <Card className="border-2 border-red-600/10 shadow-lg">
-          <CardHeader className="border-b bg-gradient-to-r from-red-600 to-red-700">
+        <Card className="border-2 border-military-red/10">
+          <CardHeader className="military-gradient">
             <CardTitle className="text-white">Dados do Oficial</CardTitle>
           </CardHeader>
           <CardContent className="p-6">
@@ -123,7 +122,7 @@ const OfficerSelection = () => {
         <div className="flex justify-center pt-4">
           <Button
             onClick={handleFinalize}
-            className="bg-military-orange hover:bg-military-red transition-colors text-white font-bold text-lg px-8 py-3"
+            className="military-gradient hover:opacity-90 text-white font-bold text-lg px-8 py-3"
           >
             Finalizar Oficial
           </Button>
