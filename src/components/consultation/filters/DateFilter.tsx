@@ -20,19 +20,17 @@ export const DateFilter = ({ selectedDate, onDateChange }: DateFilterProps) => {
     try {
       // Parse the input date string to a Date object
       const parsedDate = parse(inputDate, 'yyyy-MM-dd', new Date());
-      // Add one day to compensate for the difference
-      const adjustedDate = addDays(parsedDate, 1);
       // Set time to noon to avoid timezone issues
-      adjustedDate.setHours(12, 0, 0, 0);
-      onDateChange(adjustedDate);
+      parsedDate.setHours(12, 0, 0, 0);
+      onDateChange(parsedDate);
     } catch (error) {
       console.error('Error parsing date:', error);
       onDateChange(undefined);
     }
   };
 
-  // Subtract one day for display to match user input
-  const displayDate = selectedDate ? format(addDays(selectedDate, -1), 'yyyy-MM-dd') : '';
+  // Format the date for display without any adjustments
+  const displayDate = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '';
 
   return (
     <Card className="p-3 sm:p-4 border-red-100 shadow-sm">
