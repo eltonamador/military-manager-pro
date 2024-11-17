@@ -32,16 +32,19 @@ export type Database = {
       }
       oficiais_de_area: {
         Row: {
+          area_number: string | null
           created_at: string
           id: number
           nome_guerra_of_area: string | null
         }
         Insert: {
+          area_number?: string | null
           created_at?: string
           id?: number
           nome_guerra_of_area?: string | null
         }
         Update: {
+          area_number?: string | null
           created_at?: string
           id?: number
           nome_guerra_of_area?: string | null

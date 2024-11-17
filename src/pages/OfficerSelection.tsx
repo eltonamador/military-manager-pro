@@ -1,136 +1,125 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import OfficerForm from "@/components/officer/OfficerForm";
-import { useToast } from "@/hooks/use-toast";
 
 const OfficerSelection = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [selectedFunction, setSelectedFunction] = useState("");
   const [selectedOfficer, setSelectedOfficer] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedVTR, setSelectedVTR] = useState("");
-  const navigate = useNavigate();
-  const { toast } = useToast();
 
   const { data: officerOptions = [], isLoading: isLoadingOfficers } = useQuery({
-    queryKey: ['officers', selectedFunction],
+    queryKey: ["officers", selectedFunction],
     queryFn: async () => {
       if (!selectedFunction) return [];
 
-      if (selectedFunction === "Superior de dia") {
-        const { data, error } = await supabase
-          .from('superior_de_dia')
-          .select('nome_guerra_sup')
-          .not('nome_guerra_sup', 'is', null);
+      const tableName = selectedFunction === "Superior de dia" ? "superior_de_dia" : "oficiais_de_area";
+      const columnName = selectedFunction === "Superior de dia" ? "nome_guerra_sup" : "nome_guerra_of_area";
 
-        if (error) throw error;
-        return data.map(item => item.nome_guerra_sup);
-      } else {
-        const areaNumber = selectedFunction === "Oficial de Área 1" ? "1" : "2";
-        const { data, error } = await supabase
-          .from('oficiais_de_area')
-          .select('nome_guerra_of_area')
-          .eq('area_number', areaNumber)
-          .not('nome_guerra_of_area', 'is', null);
+      let query = supabase.from(tableName).select(columnName);
 
-        if (error) throw error;
-        return data.map(item => item.nome_guerra_of_area);
+      if (selectedFunction !== "Superior de dia") {
+        query = query.eq("area_number", selectedFunction === "Oficial de Área 1" ? "1" : "2");
       }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error("Error fetching officers:", error);
+        return [];
+      }
+
+      return data.map(officer => officer[columnName]).filter(Boolean) as string[];
     },
     enabled: !!selectedFunction,
   });
 
   const { data: vtrOptions = [] } = useQuery({
-    queryKey: ['vtrOptions'],
+    queryKey: ["vtrs"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('viaturas')
-        .select('prefixo')
-        .not('prefixo', 'is', null);
+        .from("viaturas")
+        .select("prefixo")
+        .order("prefixo");
 
-      if (error) throw error;
-      return data.map(item => item.prefixo);
+      if (error) {
+        console.error("Error fetching VTRs:", error);
+        return [];
+      }
+
+      return data.map(vtr => vtr.prefixo).filter(Boolean) as string[];
     },
   });
 
-  const handleFinish = async () => {
-    if (!selectedFunction || !selectedOfficer || !selectedDate) {
+  const handleFinalize = () => {
+    if (!selectedFunction || !selectedOfficer || !selectedDate || !selectedVTR) {
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Por favor, preencha todos os campos obrigatórios.",
+        description: "Por favor, preencha todos os campos.",
       });
       return;
     }
 
-    try {
-      // Save the officer selection data
-      // Note: You might want to create a new table for this in the future
-      toast({
-        title: "Sucesso",
-        description: "Oficial selecionado com sucesso!",
-      });
-      navigate("/");
-    } catch (error) {
-      console.error('Error saving officer selection:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao salvar",
-        description: "Ocorreu um erro ao salvar a seleção do oficial.",
-      });
-    }
+    // Here you would typically save the data to your backend
+    toast({
+      title: "Sucesso",
+      description: "Oficial selecionado com sucesso!",
+    });
+    navigate("/");
   };
 
   return (
-    <div className="min-h-screen military-gradient flex flex-col p-2 sm:p-4 animate-fadeIn">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow-md p-3 flex-1 max-w-[300px]">
-          <h1 className="text-lg sm:text-xl font-bold text-military-red">
-            Seleção de Oficiais
-          </h1>
-        </div>
-        <div className="bg-white rounded-lg shadow-md p-3 flex-1 max-w-[300px]">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="container mx-auto p-4 space-y-4">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-gray-900">Seleção de Oficiais</h1>
           <Button
-            onClick={() => navigate("/")}
-            variant="ghost"
-            className="w-full hover:bg-red-50 flex items-center justify-center"
+            onClick={() => navigate("/vehicle-receiving")}
+            variant="outline"
+            className="bg-white"
           >
-            <ArrowRight className="h-4 w-4 text-military-red mr-2" />
-            <span className="text-lg sm:text-xl font-bold text-black">
-              Recebimento de Militares
-            </span>
+            Recebimento de Militares
+          </Button>
+        </div>
+
+        <Card className="border-2 border-red-600/10 shadow-lg">
+          <CardHeader className="border-b bg-gradient-to-r from-red-600 to-red-700">
+            <CardTitle className="text-white">Dados do Oficial</CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <OfficerForm
+              selectedFunction={selectedFunction}
+              selectedOfficer={selectedOfficer}
+              selectedDate={selectedDate}
+              selectedVTR={selectedVTR}
+              officerOptions={officerOptions}
+              vtrOptions={vtrOptions}
+              isLoadingOfficers={isLoadingOfficers}
+              onFunctionChange={setSelectedFunction}
+              onOfficerChange={setSelectedOfficer}
+              onDateChange={(date) => date && setSelectedDate(date)}
+              onVTRChange={setSelectedVTR}
+            />
+          </CardContent>
+        </Card>
+
+        <div className="flex justify-center pt-4">
+          <Button
+            onClick={handleFinalize}
+            className="bg-military-orange hover:bg-military-red transition-colors text-white font-bold text-lg px-8 py-3"
+          >
+            Finalizar Oficial
           </Button>
         </div>
       </div>
-
-      <main className="flex-grow bg-white rounded-lg shadow-md p-3 sm:p-6">
-        <OfficerForm
-          selectedFunction={selectedFunction}
-          selectedOfficer={selectedOfficer}
-          selectedDate={selectedDate}
-          selectedVTR={selectedVTR}
-          officerOptions={officerOptions}
-          vtrOptions={vtrOptions}
-          isLoadingOfficers={isLoadingOfficers}
-          onFunctionChange={setSelectedFunction}
-          onOfficerChange={setSelectedOfficer}
-          onDateChange={setSelectedDate}
-          onVTRChange={setSelectedVTR}
-        />
-
-        <Button
-          onClick={handleFinish}
-          className="w-full mt-6 bg-military-red hover:bg-military-orange transition-colors text-white font-bold text-lg py-6"
-          disabled={!selectedFunction || !selectedOfficer || !selectedDate}
-        >
-          Finalizar Oficial
-        </Button>
-      </main>
     </div>
   );
 };
