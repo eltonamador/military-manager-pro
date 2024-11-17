@@ -31,38 +31,28 @@ interface Vehicle {
 }
 
 interface FinalReportProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  militaryList: Military[];
-  vehicleList: Vehicle[];
-  onEdit: () => void;
-  onSend: () => void;
-  selectedDate: Date;
+  vehicles: Vehicle[];
+  onClose: () => void;
+  onFinish: () => void;
 }
 
 const FinalReport = ({
-  open,
-  onOpenChange,
-  militaryList,
-  vehicleList,
-  onEdit,
-  onSend,
-  selectedDate,
+  vehicles,
+  onClose,
+  onFinish,
 }: FinalReportProps) => {
   const [serviceMilitaryList, setServiceMilitaryList] = useState<Military[]>([]);
-  const [serviceVehicleList, setServiceVehicleList] = useState<Vehicle[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (!selectedDate) {
+        if (!vehicles.length || !vehicles[0].date) {
           setServiceMilitaryList([]);
-          setServiceVehicleList([]);
           return;
         }
 
-        const formattedDate = selectedDate.toISOString().split('T')[0];
+        const formattedDate = vehicles[0].date.toISOString().split('T')[0];
 
         // Fetch military service data from all GBM tables
         const militaryData = [];
@@ -90,32 +80,6 @@ const FinalReport = ({
           shiftDuration: '24',
         }));
         setServiceMilitaryList(formattedMilitaryData);
-
-        // Fetch vehicle service data from all GBM tables
-        const vehicleData = [];
-        for (const gbm of ["1º GBM", "2º GBM", "MCPB", "5º GBM", "GAPH", "GMAF"]) {
-          try {
-            const tableName = getVehicleTableName(gbm);
-            const { data, error } = await supabase
-              .from(tableName)
-              .select('*')
-              .eq('data', formattedDate);
-
-            if (error) throw error;
-            if (data) vehicleData.push(...data);
-          } catch (error) {
-            console.error(`Error fetching vehicle data for ${gbm}:`, error);
-          }
-        }
-
-        const formattedVehicleData: Vehicle[] = vehicleData.map(item => ({
-          gbm: item.gbm || '',
-          vtr: item.vtr || '',
-          status: item.status || '',
-          description: item.alteracao || '',
-          date: item.data ? new Date(item.data) : new Date(),
-        }));
-        setServiceVehicleList(formattedVehicleData);
       } catch (error) {
         console.error('Error fetching data:', error);
         toast({
@@ -126,13 +90,11 @@ const FinalReport = ({
       }
     };
 
-    if (open) {
-      fetchData();
-    }
-  }, [open, selectedDate, toast]);
+    fetchData();
+  }, [vehicles, toast]);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-[95vw] sm:max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6">
         <DialogHeader>
           <DialogTitle>Relatório Final</DialogTitle>
@@ -148,7 +110,7 @@ const FinalReport = ({
             <h3 className="text-lg font-semibold mb-4">VTRs</h3>
             <div className="overflow-x-auto">
               <VehicleTable
-                vehicleList={serviceVehicleList}
+                vehicleList={vehicles}
                 onEdit={() => {}}
                 onDelete={() => {}}
               />
@@ -156,10 +118,10 @@ const FinalReport = ({
           </div>
         </div>
         <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-4 mt-6">
-          <Button onClick={onEdit} variant="outline" className="w-full sm:w-auto">
+          <Button onClick={onClose} variant="outline" className="w-full sm:w-auto">
             <Edit className="mr-2 h-4 w-4" /> Editar
           </Button>
-          <Button onClick={onSend} className="w-full sm:w-auto bg-green-600 hover:bg-green-700">
+          <Button onClick={onFinish} className="w-full sm:w-auto bg-green-600 hover:bg-green-700">
             <Send className="mr-2 h-4 w-4" /> Enviar via WhatsApp
           </Button>
         </div>
