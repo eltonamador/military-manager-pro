@@ -81,26 +81,19 @@ const OfficerSelection = () => {
       title: "Sucesso",
       description: "Oficial selecionado com sucesso!",
     });
-    navigate("/");
+    navigate("/index");
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen military-gradient">
       <div className="container mx-auto p-4 space-y-4">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Seleção de Oficiais</h1>
-          <Button
-            onClick={() => navigate("/vehicle-receiving")}
-            variant="outline"
-            className="military-gradient text-white hover:opacity-90"
-          >
-            Recebimento de Militares
-          </Button>
+          <h1 className="text-2xl font-bold text-white">Seleção de Oficiais</h1>
         </div>
 
         <Card className="border-2 border-military-red/10">
-          <CardHeader className="military-gradient">
-            <CardTitle className="text-white">Dados do Oficial</CardTitle>
+          <CardHeader className="bg-military-red text-white">
+            <CardTitle>Dados do Oficial</CardTitle>
           </CardHeader>
           <CardContent className="p-6">
             <OfficerForm
@@ -116,17 +109,17 @@ const OfficerSelection = () => {
               onDateChange={(date) => date && setSelectedDate(date)}
               onVTRChange={setSelectedVTR}
             />
+
+            <div className="mt-6 flex justify-end">
+              <Button
+                onClick={handleFinalize}
+                className="bg-military-orange hover:bg-military-red transition-colors text-white font-bold px-8 py-3"
+              >
+                Finalizar Oficial
+              </Button>
+            </div>
           </CardContent>
         </Card>
-
-        <div className="flex justify-center pt-4">
-          <Button
-            onClick={handleFinalize}
-            className="military-gradient hover:opacity-90 text-white font-bold text-lg px-8 py-3"
-          >
-            Finalizar Oficial
-          </Button>
-        </div>
       </div>
     </div>
   );

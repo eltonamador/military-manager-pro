@@ -124,12 +124,12 @@ const VehicleReceiving = () => {
         <div className="bg-white rounded-lg shadow-md p-3 flex-1 max-w-[300px]">
           <Button
             variant="ghost"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/index")}
             className="w-full hover:bg-red-50 flex items-center justify-center"
           >
             <ArrowLeft className="h-4 w-4 text-military-red mr-2" />
             <span className="text-lg sm:text-xl font-bold text-black">
-              Recebimento de Militares
+              Voltar para Recebimento de Militares
             </span>
           </Button>
         </div>

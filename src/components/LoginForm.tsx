@@ -37,7 +37,6 @@ const LoginForm = () => {
           description: errorMessage,
         });
       } else if (data.user) {
-        // Fetch the user's profile to ensure it exists
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('*')
@@ -45,7 +44,6 @@ const LoginForm = () => {
           .single();
 
         if (profileError || !profileData) {
-          // If profile doesn't exist, create it
           const { error: createProfileError } = await supabase
             .from('profiles')
             .insert([
@@ -66,7 +64,7 @@ const LoginForm = () => {
           title: "Login realizado com sucesso",
           description: "Bem-vindo ao sistema de gestão de militares",
         });
-        navigate("/");
+        navigate("/officer-selection");
       }
     } catch (error) {
       console.error('Login error:', error);
