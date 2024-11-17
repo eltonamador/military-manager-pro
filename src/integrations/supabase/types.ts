@@ -30,6 +30,24 @@ export type Database = {
         }
         Relationships: []
       }
+      oficiais_de_area: {
+        Row: {
+          created_at: string
+          id: number
+          nome_guerra_of_area: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          nome_guerra_of_area?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          nome_guerra_of_area?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -438,7 +456,7 @@ export type Database = {
         }
         Relationships: []
       }
-      Superior_de_dia: {
+      superior_de_dia: {
         Row: {
           created_at: string
           id: number

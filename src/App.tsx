@@ -10,6 +10,7 @@ import Register from "./pages/Register";
 import VehicleReceiving from "./pages/VehicleReceiving";
 import LoginForm from "./components/LoginForm";
 import Consultation from "./pages/Consultation";
+import OfficerSelection from "./pages/OfficerSelection";
 
 const queryClient = new QueryClient();
 
@@ -61,6 +62,16 @@ const App = () => {
               element={
                 session ? (
                   <VehicleReceiving />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
+            <Route
+              path="/officer-selection"
+              element={
+                session ? (
+                  <OfficerSelection />
                 ) : (
                   <Navigate to="/login" replace />
                 )
