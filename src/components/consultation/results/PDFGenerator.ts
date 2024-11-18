@@ -9,24 +9,62 @@ export const generatePDF = async (elementId: string) => {
 
     toast.loading("Gerando PDF...");
     
-    const canvas = await html2canvas(element);
-    const imgData = canvas.toDataURL('image/png');
+    // Improved canvas quality settings
+    const canvas = await html2canvas(element, {
+      scale: 2, // Increase resolution
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff'
+    });
     
+    const imgData = canvas.toDataURL('image/png', 1.0); // Maximum quality
+    
+    // Use A4 format with better margins
     const pdf = new jsPDF('p', 'mm', 'a4');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
     
-    // Add header text
+    // Calculate margins (20mm on each side)
+    const margin = 20;
+    const contentWidth = pageWidth - (2 * margin);
+    
+    // Header styling
     pdf.setFont("helvetica", "bold");
     pdf.setFontSize(16);
-    pdf.text("CORPO DE BOMBEIROS MILITAR DO AMAPÁ", pdfWidth/2, 20, { align: "center" });
-    pdf.setFontSize(14);
-    pdf.text("COMANDO OPERACIONAL", pdfWidth/2, 30, { align: "center" });
-    pdf.text("MILITARES E VIATURAS NO SERVIÇO OPERACIONAL", pdfWidth/2, 40, { align: "center" });
-    pdf.setFont("helvetica", "normal");
+    pdf.setTextColor(0, 0, 0);
     
-    // Add the table image below the header
-    pdf.addImage(imgData, 'PNG', 0, 50, pdfWidth, pdfHeight);
+    // Center-aligned header text with proper spacing
+    const headerY = margin + 10;
+    pdf.text("CORPO DE BOMBEIROS MILITAR DO AMAPÁ", pageWidth/2, headerY, { align: "center" });
+    pdf.setFontSize(14);
+    pdf.text("COMANDO OPERACIONAL", pageWidth/2, headerY + 10, { align: "center" });
+    pdf.text("MILITARES E VIATURAS NO SERVIÇO OPERACIONAL", pageWidth/2, headerY + 20, { align: "center" });
+    
+    // Add date if available
+    const currentDate = new Date().toLocaleDateString('pt-BR');
+    pdf.setFontSize(12);
+    pdf.setFont("helvetica", "normal");
+    pdf.text(`Data: ${currentDate}`, margin, headerY + 30);
+    
+    // Calculate image dimensions to fit content width while maintaining aspect ratio
+    const imgWidth = contentWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    
+    // Add the table image with proper margins and positioning
+    pdf.addImage(
+      imgData,
+      'PNG',
+      margin,
+      headerY + 40, // Position below header
+      imgWidth,
+      imgHeight
+    );
+    
+    // Add footer
+    const footerY = pageHeight - margin;
+    pdf.setFontSize(10);
+    pdf.text("Documento gerado automaticamente pelo sistema", pageWidth/2, footerY, { align: "center" });
+    
     const pdfBlob = pdf.output('blob');
     const pdfUrl = URL.createObjectURL(pdfBlob);
 
@@ -37,6 +75,7 @@ export const generatePDF = async (elementId: string) => {
   } catch (error) {
     toast.dismiss();
     toast.error("Erro ao gerar PDF");
+    console.error("PDF generation error:", error);
     return null;
   }
 };
