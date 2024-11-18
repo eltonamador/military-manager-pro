@@ -60,7 +60,7 @@ const OfficerForm = ({
               <SelectValue placeholder="Selecione a Função" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="" disabled>
+              <SelectItem value="_header_superior" disabled>
                 Superior de Dia
               </SelectItem>
               {officerTypes.superiorDeDia.map((type) => (
@@ -68,7 +68,7 @@ const OfficerForm = ({
                   {type.label}
                 </SelectItem>
               ))}
-              <SelectItem value="" disabled>
+              <SelectItem value="_header_area" disabled>
                 Oficiais de Área
               </SelectItem>
               {officerTypes.oficiaisDeArea.map((type) => (
