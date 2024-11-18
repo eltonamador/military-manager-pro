@@ -15,6 +15,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useVTRs } from "@/hooks/useVTRs";
 
 interface VehicleFormProps {
   selectedVTR: string;
@@ -40,19 +41,6 @@ const gbmOptions = [
   "MCPB"
 ];
 
-const vtrOptions = [
-  "ABT-01",
-  "ABS-01",
-  "USB-01",
-  "AEM-01",
-  "ACA-01",
-  "ABT-02",
-  "ABS-02",
-  "USB-02",
-  "AEM-02",
-  "ACA-02"
-];
-
 const VehicleForm = ({
   selectedVTR,
   selectedGBM,
@@ -67,11 +55,13 @@ const VehicleForm = ({
   onAddVehicle,
   editingIndex,
 }: VehicleFormProps) => {
+  const { data: vtrOptions, isLoading } = useVTRs();
+
   return (
     <div className="grid grid-cols-1 gap-6 mb-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <Label htmlFor="gbm_vtr">GBM_vtr</Label>
+          <Label htmlFor="gbm_vtr">GBM</Label>
           <Select onValueChange={onGBMChange} value={selectedGBM}>
             <SelectTrigger id="gbm_vtr">
               <SelectValue placeholder="Selecione o GBM" />
@@ -117,10 +107,10 @@ const VehicleForm = ({
         <Label htmlFor="vtr">VTR</Label>
         <Select onValueChange={onVTRChange} value={selectedVTR}>
           <SelectTrigger id="vtr">
-            <SelectValue placeholder="Selecione a VTR" />
+            <SelectValue placeholder={isLoading ? "Carregando VTRs..." : "Selecione a VTR"} />
           </SelectTrigger>
           <SelectContent>
-            {vtrOptions.map((vtr) => (
+            {vtrOptions?.map((vtr) => (
               <SelectItem key={vtr} value={vtr}>
                 {vtr}
               </SelectItem>
