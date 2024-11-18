@@ -1,15 +1,14 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
-import { Search } from "lucide-react";
-import { getMilitaryTableName, getVehicleTableName } from "@/utils/tableNames";
-import { ConsultationFilters } from "@/components/consultation/ConsultationFilters";
 import { Separator } from "@/components/ui/separator";
-import ConsultationResults from "@/components/consultation/ConsultationResults";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { ConsultationHeader } from "@/components/consultation/ConsultationHeader";
+import { ConsultationCard } from "@/components/consultation/ConsultationCard";
+import ConsultationResults from "@/components/consultation/ConsultationResults";
+import { getMilitaryTableName, getVehicleTableName } from "@/utils/tableNames";
 
 const Consultation = () => {
   const navigate = useNavigate();
@@ -144,6 +143,10 @@ const Consultation = () => {
     });
   };
 
+  const handleDateChange = (date: Date | undefined) => {
+    setSelectedDate(date);
+  };
+
   const formattedMilitaryData = militaryData?.map(item => ({
     name: item.nome_de_guerra || "",
     function: item.funcao || "",
@@ -172,38 +175,28 @@ const Consultation = () => {
   })) || [];
 
   const isLoading = isMilitaryLoading || isVehicleLoading || isOfficerLoading;
-  const combinedData = [...formattedMilitaryData, ...formattedVehicleData, ...formattedOfficerData];
+  const combinedData = [...formattedMilitaryData, ...formattedVehicleData, ...formattedOfficerData].map(item => ({
+    ...item,
+    date: selectedDate || item.date // Ensure all items use the selected date
+  }));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="container mx-auto p-2 sm:p-4 space-y-4 sm:space-y-6">
-        <div className="text-center space-y-2 py-4 sm:py-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Sistema de Consulta</h1>
-          <p className="text-gray-600">Corpo de Bombeiros Militar do Amapá/ COOP</p>
-        </div>
-
-        <Card className="border-2 border-red-600/10 shadow-lg">
-          <CardHeader className="border-b bg-gradient-to-r from-red-600 to-red-700">
-            <CardTitle className="text-white flex items-center gap-2">
-              <Search className="h-5 w-5" />
-              Filtros de Consulta
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-3 sm:p-6">
-            <ConsultationFilters
-              selectedDate={selectedDate}
-              selectedMilitaryGBMs={selectedMilitaryGBMs}
-              selectedVehicleGBMs={selectedVehicleGBMs}
-              selectedVTRs={selectedVTRs}
-              selectedOfficerType={selectedOfficerType}
-              onDateChange={setSelectedDate}
-              onMilitaryGBMChange={handleMilitaryGBMChange}
-              onVehicleGBMChange={handleVehicleGBMChange}
-              onVTRChange={handleVTRChange}
-              onOfficerTypeChange={setSelectedOfficerType}
-            />
-          </CardContent>
-        </Card>
+        <ConsultationHeader />
+        
+        <ConsultationCard
+          selectedDate={selectedDate}
+          selectedMilitaryGBMs={selectedMilitaryGBMs}
+          selectedVehicleGBMs={selectedVehicleGBMs}
+          selectedVTRs={selectedVTRs}
+          selectedOfficerType={selectedOfficerType}
+          onDateChange={handleDateChange}
+          onMilitaryGBMChange={handleMilitaryGBMChange}
+          onVehicleGBMChange={handleVehicleGBMChange}
+          onVTRChange={handleVTRChange}
+          onOfficerTypeChange={setSelectedOfficerType}
+        />
 
         <Separator className="my-6 sm:my-8" />
 
