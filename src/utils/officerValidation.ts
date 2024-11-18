@@ -7,7 +7,7 @@ export const checkExistingOfficerService = async (
   try {
     const { data, error } = await supabase
       .from('servico_oficial')
-      .select('id') // Seleciona apenas o necessário para economizar recursos
+      .select('id')
       .eq('nome_of_sup', officer)
       .eq('data_serv_of', date);
 
