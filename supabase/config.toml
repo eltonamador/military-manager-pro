@@ -26,4 +26,5 @@ enabled = true
 enabled = true
 
 [functions]
-enabled = true
+[functions.format-dates]
+verify_jwt = false
