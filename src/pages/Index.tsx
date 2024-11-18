@@ -23,7 +23,6 @@ const Index = () => {
 
   // Mock data for options (replace with actual data from your backend)
   const gbmOptions = ["1°GBM", "2°GBM", "5°GBM", "GAPH", "GMAF", "MCPB"];
-  const vtrOptions = ["ABT", "ABS", "ASE", "APP", "AR", "ATP"];
   const militaryOptions = [];
 
   const handleAddMilitary = () => {
@@ -121,7 +120,6 @@ const Index = () => {
           selectedDate={selectedDate}
           shiftDuration={shiftDuration}
           gbmOptions={gbmOptions}
-          vtrOptions={vtrOptions}
           militaryOptions={militaryOptions}
           militaryList={militaryList}
           onGBMChange={setSelectedGBM}
