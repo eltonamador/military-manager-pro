@@ -1,5 +1,5 @@
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-import { format, parse } from 'https://deno.land/x/date_fns@v2.22.1/index.js'
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { format, parse } from "npm:date-fns@2.30.0"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
