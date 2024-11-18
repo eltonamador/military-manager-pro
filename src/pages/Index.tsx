@@ -98,14 +98,14 @@ const Index = () => {
             className="bg-white hover:bg-red-50 transition-colors"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Voltar para Seleção de Oficiais
+            Oficiais
           </Button>
           <Button
             onClick={() => navigate("/vehicle-receiving")}
             variant="outline"
             className="bg-white hover:bg-red-50 transition-colors"
           >
-            Avançar para Recebimento de VTRs
+            VTRs
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>
