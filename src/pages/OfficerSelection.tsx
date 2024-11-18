@@ -9,6 +9,8 @@ import OfficerForm from "@/components/officer/OfficerForm";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Separator } from "@/components/ui/separator";
+import SelectedOfficersList from "@/components/officer/SelectedOfficersList";
+import { checkExistingOfficerService } from "@/utils/officerValidation";
 
 const OfficerSelection = () => {
   const navigate = useNavigate();
@@ -80,6 +82,20 @@ const OfficerSelection = () => {
         variant: "destructive",
         title: "Erro",
         description: "Por favor, preencha todos os campos.",
+      });
+      return;
+    }
+
+    // Check if officer already has service on the selected date
+    const hasExistingService = await checkExistingOfficerService(
+      selectedOfficer,
+      selectedDate.toISOString().split('T')[0]
+    );
+
+    if (hasExistingService) {
+      toast({
+        title: "Aviso",
+        description: "Este oficial já possui serviço registrado para esta data.",
       });
       return;
     }
@@ -166,24 +182,7 @@ const OfficerSelection = () => {
               onVTRChange={setSelectedVTR}
             />
 
-            {/* Selected Officers List */}
-            {selectedOfficers.length > 0 && (
-              <>
-                <Separator className="my-6" />
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Oficiais Selecionados</h3>
-                  <div className="space-y-3">
-                    {selectedOfficers.map((officer, index) => (
-                      <div key={index} className="p-3 bg-gray-50 rounded-lg">
-                        <p className="font-medium">{officer.function}</p>
-                        <p className="text-sm text-gray-600">Oficial: {officer.officer}</p>
-                        <p className="text-sm text-gray-600">VTR: {officer.vtr}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
+            <SelectedOfficersList officers={selectedOfficers} />
 
             {/* Preview Section */}
             {(selectedFunction || selectedOfficer || selectedVTR) && (
