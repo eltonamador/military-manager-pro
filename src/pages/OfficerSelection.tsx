@@ -6,6 +6,9 @@ import { useToast } from "@/components/ui/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import OfficerForm from "@/components/officer/OfficerForm";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { Separator } from "@/components/ui/separator";
 
 const OfficerSelection = () => {
   const navigate = useNavigate();
@@ -77,13 +80,12 @@ const OfficerSelection = () => {
     }
 
     try {
-      // Insert into servico_oficial table with the tipo field and date
       const { error: servicoError } = await supabase
         .from("servico_oficial")
         .insert({
-          nome_of_sup: selectedOfficer, // Use nome_of_sup for all officer types
-          tipo: selectedFunction, // Save the function type directly in the tipo column
-          data_serv_of: selectedDate.toISOString().split('T')[0] // Save the selected date
+          nome_of_sup: selectedOfficer,
+          tipo: selectedFunction,
+          data_serv_of: selectedDate.toISOString().split('T')[0]
         });
 
       if (servicoError) throw servicoError;
@@ -128,6 +130,36 @@ const OfficerSelection = () => {
               onDateChange={(date) => date && setSelectedDate(date)}
               onVTRChange={setSelectedVTR}
             />
+
+            {/* Preview Section */}
+            {(selectedFunction || selectedOfficer || selectedVTR) && (
+              <>
+                <Separator className="my-6" />
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Confirmação dos Dados</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Função</p>
+                      <p className="text-gray-900">{selectedFunction || "Não selecionado"}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Oficial</p>
+                      <p className="text-gray-900">{selectedOfficer || "Não selecionado"}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Data do Serviço</p>
+                      <p className="text-gray-900">
+                        {selectedDate ? format(selectedDate, "PPP", { locale: ptBR }) : "Não selecionado"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">VTR</p>
+                      <p className="text-gray-900">{selectedVTR || "Não selecionado"}</p>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
 
             <div className="mt-6 flex justify-end gap-4">
               <Button
