@@ -7,12 +7,12 @@ interface ConsultationCardProps {
   selectedMilitaryGBMs: string[];
   selectedVehicleGBMs: string[];
   selectedVTRs: string[];
-  selectedOfficerType: string | null;
+  selectedOfficerTypes: string[];
   onDateChange: (date: Date | undefined) => void;
   onMilitaryGBMChange: (gbm: string, checked: boolean) => void;
   onVehicleGBMChange: (gbm: string, checked: boolean) => void;
   onVTRChange: (vtr: string, checked: boolean) => void;
-  onOfficerTypeChange: (type: string | null) => void;
+  onOfficerTypeChange: (types: string[]) => void;
 }
 
 export const ConsultationCard = ({
@@ -20,7 +20,7 @@ export const ConsultationCard = ({
   selectedMilitaryGBMs,
   selectedVehicleGBMs,
   selectedVTRs,
-  selectedOfficerType,
+  selectedOfficerTypes,
   onDateChange,
   onMilitaryGBMChange,
   onVehicleGBMChange,
@@ -41,7 +41,7 @@ export const ConsultationCard = ({
           selectedMilitaryGBMs={selectedMilitaryGBMs}
           selectedVehicleGBMs={selectedVehicleGBMs}
           selectedVTRs={selectedVTRs}
-          selectedOfficerType={selectedOfficerType}
+          selectedOfficerTypes={selectedOfficerTypes}
           onDateChange={onDateChange}
           onMilitaryGBMChange={onMilitaryGBMChange}
           onVehicleGBMChange={onVehicleGBMChange}

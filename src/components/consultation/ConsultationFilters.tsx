@@ -8,12 +8,12 @@ interface ConsultationFiltersProps {
   selectedMilitaryGBMs: string[];
   selectedVehicleGBMs: string[];
   selectedVTRs: string[];
-  selectedOfficerType: string | null;
+  selectedOfficerTypes: string[];
   onDateChange: (date: Date | undefined) => void;
   onMilitaryGBMChange: (gbm: string, checked: boolean) => void;
   onVehicleGBMChange: (gbm: string, checked: boolean) => void;
   onVTRChange: (vtr: string, checked: boolean) => void;
-  onOfficerTypeChange: (type: string | null) => void;
+  onOfficerTypeChange: (types: string[]) => void;
 }
 
 const gbmOptions = [
@@ -38,7 +38,7 @@ export const ConsultationFilters = ({
   selectedMilitaryGBMs,
   selectedVehicleGBMs,
   selectedVTRs,
-  selectedOfficerType,
+  selectedOfficerTypes,
   onDateChange,
   onMilitaryGBMChange,
   onVehicleGBMChange,
@@ -68,7 +68,7 @@ export const ConsultationFilters = ({
       />
 
       <OfficerFilter
-        selectedOfficerType={selectedOfficerType}
+        selectedOfficerTypes={selectedOfficerTypes}
         onOfficerTypeChange={onOfficerTypeChange}
       />
 
