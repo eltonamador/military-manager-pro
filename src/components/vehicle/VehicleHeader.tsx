@@ -20,7 +20,7 @@ const VehicleHeader = () => {
         >
           <ArrowLeft className="h-4 w-4 text-military-red mr-2" />
           <span className="text-lg sm:text-xl font-bold text-black">
-            Voltar para Recebimento de Militares
+            Militares
           </span>
         </Button>
       </div>
