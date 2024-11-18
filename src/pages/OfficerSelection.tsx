@@ -17,6 +17,11 @@ const OfficerSelection = () => {
   const [selectedOfficer, setSelectedOfficer] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedVTR, setSelectedVTR] = useState("");
+  const [selectedOfficers, setSelectedOfficers] = useState<Array<{
+    function: string;
+    officer: string;
+    vtr: string;
+  }>>([]);
 
   const { data: officerOptions = [], isLoading: isLoadingOfficers } = useQuery({
     queryKey: ["officers", selectedFunction],
@@ -79,28 +84,58 @@ const OfficerSelection = () => {
       return;
     }
 
-    try {
-      const { error: servicoError } = await supabase
-        .from("servico_oficial")
-        .insert({
-          nome_of_sup: selectedOfficer,
-          tipo: selectedFunction,
-          data_serv_of: selectedDate.toISOString().split('T')[0]
-        });
+    // Add current selection to the list
+    const newOfficer = {
+      function: selectedFunction,
+      officer: selectedOfficer,
+      vtr: selectedVTR,
+    };
 
-      if (servicoError) throw servicoError;
+    const updatedOfficers = [...selectedOfficers, newOfficer];
+    setSelectedOfficers(updatedOfficers);
+
+    // Check if we have both required officer types
+    const hasSuperior = updatedOfficers.some(off => off.function === "Superior de dia");
+    const hasArea = updatedOfficers.some(off => off.function.includes("Oficial de Área"));
+
+    if (!hasSuperior || !hasArea) {
+      toast({
+        title: "Oficial Adicionado",
+        description: `Você ainda precisa ${!hasSuperior ? "um Superior de dia" : ""}${!hasSuperior && !hasArea ? " e " : ""}${!hasArea ? "um Oficial de Área" : ""}.`,
+      });
+
+      // Clear form for next selection
+      setSelectedFunction("");
+      setSelectedOfficer("");
+      setSelectedVTR("");
+      return;
+    }
+
+    try {
+      // Insert all selected officers
+      for (const officer of updatedOfficers) {
+        const { error: servicoError } = await supabase
+          .from("servico_oficial")
+          .insert({
+            nome_of_sup: officer.officer,
+            tipo: officer.function,
+            data_serv_of: selectedDate.toISOString().split('T')[0]
+          });
+
+        if (servicoError) throw servicoError;
+      }
 
       toast({
         title: "Sucesso",
-        description: "Oficial selecionado com sucesso!",
+        description: "Oficiais selecionados com sucesso!",
       });
       navigate("/index");
     } catch (error) {
-      console.error("Error saving officer:", error);
+      console.error("Error saving officers:", error);
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Erro ao salvar oficial. Tente novamente.",
+        description: "Erro ao salvar oficiais. Tente novamente.",
       });
     }
   };
@@ -122,14 +157,33 @@ const OfficerSelection = () => {
               selectedOfficer={selectedOfficer}
               selectedDate={selectedDate}
               selectedVTR={selectedVTR}
-              officerOptions={officerOptions}
-              vtrOptions={vtrOptions}
+              officerOptions={officerOptions || []}
+              vtrOptions={vtrOptions || []}
               isLoadingOfficers={isLoadingOfficers}
               onFunctionChange={setSelectedFunction}
               onOfficerChange={setSelectedOfficer}
               onDateChange={(date) => date && setSelectedDate(date)}
               onVTRChange={setSelectedVTR}
             />
+
+            {/* Selected Officers List */}
+            {selectedOfficers.length > 0 && (
+              <>
+                <Separator className="my-6" />
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Oficiais Selecionados</h3>
+                  <div className="space-y-3">
+                    {selectedOfficers.map((officer, index) => (
+                      <div key={index} className="p-3 bg-gray-50 rounded-lg">
+                        <p className="font-medium">{officer.function}</p>
+                        <p className="text-sm text-gray-600">Oficial: {officer.officer}</p>
+                        <p className="text-sm text-gray-600">VTR: {officer.vtr}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
 
             {/* Preview Section */}
             {(selectedFunction || selectedOfficer || selectedVTR) && (
@@ -166,7 +220,7 @@ const OfficerSelection = () => {
                 onClick={handleFinalize}
                 className="bg-military-orange hover:bg-military-red transition-colors text-white font-bold px-8 py-3"
               >
-                Avançar para Recebimento de Militares
+                {selectedOfficers.length === 0 ? "Adicionar Oficial" : "Finalizar Seleção"}
               </Button>
             </div>
           </CardContent>
