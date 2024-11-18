@@ -1,14 +1,9 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { serve } from "https://deno.land/std@0.177.0/http/server.ts"
 import { format, parse } from "npm:date-fns@2.30.0"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
-
-interface DateData {
-  date: string;
-  direction: 'toFrontend' | 'toBackend';
 }
 
 serve(async (req) => {
@@ -18,7 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    const { date, direction } = await req.json() as DateData
+    const { date, direction } = await req.json()
     let formattedDate: string
 
     if (direction === 'toFrontend') {
@@ -33,19 +28,13 @@ serve(async (req) => {
 
     return new Response(
       JSON.stringify({ formattedDate }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      },
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
     console.error('Error formatting date:', error)
     return new Response(
-      JSON.stringify({ error: 'Error formatting date' }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
-      },
+      JSON.stringify({ error: 'Error formatting date', details: error.message }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     )
   }
 })
