@@ -2,7 +2,7 @@ import React from 'react';
 
 const MilitaryHeader = () => {
   return (
-    <header className="bg-white rounded-lg shadow-md p-4 mb-6">
+    <header className="bg-white rounded-lg shadow-md p-4 mb-4">
       <h1 className="text-2xl font-bold text-military-red">
         Recebimento de Militares
       </h1>
