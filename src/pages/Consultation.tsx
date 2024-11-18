@@ -204,6 +204,7 @@ const Consultation = () => {
           <ConsultationResults 
             isLoading={isLoading}
             combinedData={combinedData}
+            selectedDate={selectedDate}
           />
         </div>
 

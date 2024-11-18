@@ -1,64 +1,29 @@
-import { Button } from "@/components/ui/button";
 import MilitaryTable from "@/components/MilitaryTable";
-import { FileDown, Loader2, Share2 } from "lucide-react";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+import { ResultsHeader } from "./results/ResultsHeader";
+import { LoadingState } from "./results/LoadingState";
+import { generatePDF } from "./results/PDFGenerator";
 import { toast } from "sonner";
 
 interface ConsultationResultsProps {
   isLoading: boolean;
   combinedData: any[];
+  selectedDate: Date | undefined;
 }
 
-const ConsultationResults = ({ isLoading, combinedData }: ConsultationResultsProps) => {
-  const generateAndSharePDF = async () => {
-    try {
-      const element = document.getElementById('consultation-results');
-      if (!element) return;
-
-      toast.loading("Gerando PDF...");
-      
-      const canvas = await html2canvas(element);
-      const imgData = canvas.toDataURL('image/png');
-      
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      
-      // Add header text
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(16);
-      pdf.text("CORPO DE BOMBEIROS MILITAR DO AMAPÁ", pdfWidth/2, 20, { align: "center" });
-      pdf.setFontSize(14);
-      pdf.text("COMANDO OPERACIONAL", pdfWidth/2, 30, { align: "center" });
-      pdf.text("MILITARES E VIATURAS NO SERVIÇO OPERACIONAL", pdfWidth/2, 40, { align: "center" });
-      pdf.setFont("helvetica", "normal");
-      
-      // Add the table image below the header
-      pdf.addImage(imgData, 'PNG', 0, 50, pdfWidth, pdfHeight);
-      const pdfBlob = pdf.output('blob');
-      const pdfUrl = URL.createObjectURL(pdfBlob);
-
-      toast.dismiss();
-      toast.success("PDF gerado com sucesso!");
-
-      return pdfUrl;
-    } catch (error) {
-      toast.dismiss();
-      toast.error("Erro ao gerar PDF");
-      return null;
-    }
-  };
-
+const ConsultationResults = ({ 
+  isLoading, 
+  combinedData,
+  selectedDate 
+}: ConsultationResultsProps) => {
   const handleGeneratePDF = async () => {
-    const pdfUrl = await generateAndSharePDF();
+    const pdfUrl = await generatePDF('consultation-results');
     if (pdfUrl) {
       window.open(pdfUrl, '_blank');
     }
   };
 
   const handleShare = async () => {
-    const pdfUrl = await generateAndSharePDF();
+    const pdfUrl = await generatePDF('consultation-results');
     if (pdfUrl) {
       const message = "Relatório do Serviço Operacional - CBMAP";
       if (navigator.share) {
@@ -83,41 +48,23 @@ const ConsultationResults = ({ isLoading, combinedData }: ConsultationResultsPro
   };
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center p-12">
-        <div className="space-y-4 text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-red-600 mx-auto" />
-          <p className="text-gray-600">Carregando dados...</p>
-        </div>
-      </div>
-    );
+    return <LoadingState />;
   }
+
+  // Ensure all data uses the selected date
+  const dataWithSelectedDate = combinedData.map(item => ({
+    ...item,
+    date: selectedDate || item.date
+  }));
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Resultados da Consulta
-        </h2>
-        <div className="flex gap-2">
-          <Button
-            onClick={handleGeneratePDF}
-            className="bg-red-600 hover:bg-red-700 text-white"
-          >
-            <FileDown className="mr-2 h-4 w-4" />
-            Gerar PDF
-          </Button>
-          <Button
-            onClick={handleShare}
-            className="bg-green-600 hover:bg-green-700 text-white"
-          >
-            <Share2 className="mr-2 h-4 w-4" />
-            Compartilhar
-          </Button>
-        </div>
-      </div>
+      <ResultsHeader 
+        onGeneratePDF={handleGeneratePDF}
+        onShare={handleShare}
+      />
       <div id="consultation-results">
-        <MilitaryTable militaryList={combinedData} />
+        <MilitaryTable militaryList={dataWithSelectedDate} />
       </div>
     </div>
   );
