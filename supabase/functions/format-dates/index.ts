@@ -6,6 +6,11 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+interface DateRequest {
+  date: string
+  direction: 'toFrontend' | 'toBackend'
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -13,7 +18,7 @@ serve(async (req) => {
   }
 
   try {
-    const { date, direction } = await req.json()
+    const { date, direction } = await req.json() as DateRequest
     let formattedDate: string
 
     if (direction === 'toFrontend') {
