@@ -3,6 +3,8 @@ import MilitaryForm from "@/components/MilitaryForm";
 import MilitaryTable from "@/components/MilitaryTable";
 import { Military } from "@/types/military";
 import { useNavigate } from "react-router-dom";
+import { useVTRs } from "@/hooks/useVTRs";
+import { useToast } from "@/hooks/use-toast";
 
 interface MilitaryContainerProps {
   selectedGBM: string;
@@ -12,7 +14,6 @@ interface MilitaryContainerProps {
   selectedDate: Date;
   shiftDuration: string;
   gbmOptions: string[];
-  vtrOptions: string[];
   militaryOptions: string[];
   militaryList: Military[];
   onGBMChange: (value: string) => void;
@@ -35,7 +36,6 @@ const MilitaryContainer = ({
   selectedDate,
   shiftDuration,
   gbmOptions,
-  vtrOptions,
   militaryOptions,
   militaryList,
   onGBMChange,
@@ -50,6 +50,16 @@ const MilitaryContainer = ({
   onFinishOperation,
 }: MilitaryContainerProps) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const { data: vtrOptions, isLoading, error } = useVTRs();
+
+  if (error) {
+    toast({
+      variant: "destructive",
+      title: "Erro ao carregar VTRs",
+      description: "Não foi possível carregar a lista de VTRs.",
+    });
+  }
 
   const handleFinishMilitary = () => {
     onFinishOperation();
@@ -66,7 +76,7 @@ const MilitaryContainer = ({
         selectedDate={selectedDate}
         shiftDuration={shiftDuration}
         gbmOptions={gbmOptions}
-        vtrOptions={vtrOptions}
+        vtrOptions={vtrOptions || []}
         militaryOptions={militaryOptions}
         onGBMChange={onGBMChange}
         onVTRChange={onVTRChange}
