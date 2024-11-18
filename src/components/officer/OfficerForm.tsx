@@ -29,6 +29,14 @@ interface OfficerFormProps {
   onVTRChange: (value: string) => void;
 }
 
+const officerTypes = {
+  superiorDeDia: [{ value: "Superior de dia", label: "Superior de dia" }],
+  oficiaisDeArea: [
+    { value: "Oficial de Área 1", label: "Oficial de Área 1" },
+    { value: "Oficial de Área 2", label: "Oficial de Área 2" },
+  ],
+};
+
 const OfficerForm = ({
   selectedFunction,
   selectedOfficer,
@@ -52,9 +60,22 @@ const OfficerForm = ({
               <SelectValue placeholder="Selecione a Função" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Superior de dia">Superior de dia</SelectItem>
-              <SelectItem value="Oficial de Área 1">Oficial de Área 1</SelectItem>
-              <SelectItem value="Oficial de Área 2">Oficial de Área 2</SelectItem>
+              <SelectItem value="" disabled>
+                Superior de Dia
+              </SelectItem>
+              {officerTypes.superiorDeDia.map((type) => (
+                <SelectItem key={type.value} value={type.value}>
+                  {type.label}
+                </SelectItem>
+              ))}
+              <SelectItem value="" disabled>
+                Oficiais de Área
+              </SelectItem>
+              {officerTypes.oficiaisDeArea.map((type) => (
+                <SelectItem key={type.value} value={type.value}>
+                  {type.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
