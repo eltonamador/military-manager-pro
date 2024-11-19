@@ -33,7 +33,7 @@ export const GBMFilter = ({ title, selectedGBMs, onGBMChange, gbmOptions }: GBMF
             htmlFor={`select-all-${title}`}
             className="text-sm text-gray-700"
           >
-            Selecionar Todos
+            Todos
           </Label>
         </div>
       </div>

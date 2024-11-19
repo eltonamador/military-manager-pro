@@ -26,11 +26,11 @@ const gbmOptions = [
 ];
 
 const vtrOptions = [
-  { prefix: "ABT", description: "Auto Bomba Tanque" },
-  { prefix: "ABS", description: "Auto Busca e Salvamento" },
-  { prefix: "USB", description: "Unidade de Suporte Básico" },
-  { prefix: "AEM", description: "Auto Escada Mecânica" },
-  { prefix: "ACA", description: "Auto Comando de Área" }
+  { prefix: "ABT", description: "ABT" },
+  { prefix: "ABS", description: "ABS" },
+  { prefix: "USB", description: "USB" },
+  { prefix: "AEM", description: "AEM" },
+  { prefix: "ACA", description: "ACA" }
 ];
 
 export const ConsultationFilters = ({
@@ -48,14 +48,14 @@ export const ConsultationFilters = ({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
       <GBMFilter
-        title="GBM Militares"
+        title="Militares"
         selectedGBMs={selectedMilitaryGBMs}
         onGBMChange={onMilitaryGBMChange}
         gbmOptions={gbmOptions}
       />
       
       <GBMFilter
-        title="GBM Viaturas"
+        title="Viaturas"
         selectedGBMs={selectedVehicleGBMs}
         onGBMChange={onVehicleGBMChange}
         gbmOptions={gbmOptions}

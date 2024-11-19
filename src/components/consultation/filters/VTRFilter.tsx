@@ -25,7 +25,7 @@ export const VTRFilter = ({ selectedVTRs, onVTRChange, vtrOptions }: VTRFilterPr
   return (
     <Card className="p-3 sm:p-4 border-red-100 shadow-sm">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="font-semibold text-gray-900">Tipo de VTR</h3>
+        <h3 className="font-semibold text-gray-900">Tipo VTR</h3>
         <div className="flex items-center space-x-2">
           <Checkbox
             id="select-all-vtrs"
@@ -37,12 +37,12 @@ export const VTRFilter = ({ selectedVTRs, onVTRChange, vtrOptions }: VTRFilterPr
             htmlFor="select-all-vtrs"
             className="text-sm text-gray-700"
           >
-            Selecionar Todos
+            Todos
           </Label>
         </div>
       </div>
       <div className="space-y-3">
-        {vtrOptions.map(({ prefix, description }) => (
+        {vtrOptions.map(({ prefix }) => (
           <div key={prefix} className="flex items-center space-x-2">
             <Checkbox
               id={`vtr-${prefix}`}
@@ -54,7 +54,7 @@ export const VTRFilter = ({ selectedVTRs, onVTRChange, vtrOptions }: VTRFilterPr
               htmlFor={`vtr-${prefix}`}
               className="text-sm text-gray-700"
             >
-              <span className="font-medium">{prefix}</span> - {description}
+              {prefix}
             </Label>
           </div>
         ))}
