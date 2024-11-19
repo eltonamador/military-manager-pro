@@ -16,12 +16,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ArrowUpDown, Edit, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useState } from "react";
-import { Button } from "./ui/button";
 import { EditRecordDialog } from "./consultation/results/EditRecordDialog";
+import { TableActions } from "./consultation/results/TableActions";
+import { TableHeader } from "./consultation/results/TableHeader";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { getMilitaryTableName } from "@/utils/tableNames";
@@ -78,7 +78,9 @@ const MilitaryTable = ({
 
   const handleSaveEdit = async (updatedRecord: Military) => {
     try {
-      const tableName = getMilitaryTableName(updatedRecord.gbm);
+      if (!editingRecord) return;
+      
+      const tableName = getMilitaryTableName(editingRecord.gbm);
       const { error } = await supabase
         .from(tableName)
         .update({
@@ -87,7 +89,7 @@ const MilitaryTable = ({
           GBM: updatedRecord.gbm,
           viatura: updatedRecord.vtr,
         })
-        .eq('nome_de_guerra', editingRecord?.name);
+        .eq('nome_de_guerra', editingRecord.name);
 
       if (error) throw error;
 
@@ -96,17 +98,17 @@ const MilitaryTable = ({
         onEdit(selectedIndex);
       }
     } catch (error) {
-      toast.error("Erro ao atualizar registro");
       console.error("Error updating record:", error);
+      toast.error("Erro ao atualizar registro");
     }
     setEditingRecord(null);
     setSelectedIndex(null);
   };
 
   const handleConfirmDelete = async () => {
-    if (selectedIndex === null) return;
-
     try {
+      if (selectedIndex === null) return;
+      
       const record = militaryList[selectedIndex];
       const tableName = getMilitaryTableName(record.gbm);
       
@@ -122,8 +124,8 @@ const MilitaryTable = ({
         onDelete(selectedIndex);
       }
     } catch (error) {
-      toast.error("Erro ao excluir registro");
       console.error("Error deleting record:", error);
+      toast.error("Erro ao excluir registro");
     }
     setDeleteConfirmOpen(false);
     setSelectedIndex(null);
@@ -140,41 +142,18 @@ const MilitaryTable = ({
     }
   });
 
-  const SortButton = ({ field, label }: { field: SortField; label: string }) => (
-    <Button
-      variant="ghost"
-      onClick={() => handleSort(field)}
-      className="hover:bg-military-red/10 text-gray-700 font-medium w-full justify-start p-1"
-    >
-      {label}
-      <ArrowUpDown className="ml-1 h-4 w-4" />
-    </Button>
-  );
-
   return (
     <>
       <div className="rounded-xl border border-military-red/20 shadow-sm overflow-hidden">
         <Table>
           <TableHeader className="bg-gradient-to-r from-military-red/10 to-military-orange/10">
             <TableRow className="hover:bg-transparent border-b border-military-red/20">
-              <TableHead className="font-semibold w-[180px] py-2">
-                <SortButton field="name" label="Nome" />
-              </TableHead>
-              <TableHead className="font-semibold w-[80px] py-2">
-                <SortButton field="vtr" label="VTR" />
-              </TableHead>
-              <TableHead className="font-semibold w-[120px] py-2">
-                <SortButton field="function" label="Função" />
-              </TableHead>
-              <TableHead className="font-semibold w-[80px] py-2">
-                <SortButton field="gbm" label="GBM" />
-              </TableHead>
-              <TableHead className="font-semibold w-[100px] py-2">
-                <SortButton field="date" label="Data" />
-              </TableHead>
-              <TableHead className="font-semibold w-[80px] py-2">
-                <SortButton field="shiftDuration" label="Jornada" />
-              </TableHead>
+              <TableHeader field="name" label="Nome" onSort={handleSort} />
+              <TableHeader field="vtr" label="VTR" onSort={handleSort} />
+              <TableHeader field="function" label="Função" onSort={handleSort} />
+              <TableHeader field="gbm" label="GBM" onSort={handleSort} />
+              <TableHeader field="date" label="Data" onSort={handleSort} />
+              <TableHeader field="shiftDuration" label="Jornada" onSort={handleSort} />
               {allowEditing && (
                 <TableHead className="text-right font-semibold w-[100px] py-2">
                   Ações
@@ -197,23 +176,11 @@ const MilitaryTable = ({
                 </TableCell>
                 <TableCell className="text-center py-1.5">{military.shiftDuration}h</TableCell>
                 {allowEditing && (
-                  <TableCell className="text-right space-x-1 py-1.5">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleEditClick(military, index)}
-                      className="hover:bg-military-red/10 h-7 w-7"
-                    >
-                      <Edit className="h-4 w-4 text-military-red" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDeleteClick(index)}
-                      className="hover:bg-military-red/10 h-7 w-7"
-                    >
-                      <Trash2 className="h-4 w-4 text-military-red" />
-                    </Button>
+                  <TableCell className="text-right py-1.5">
+                    <TableActions
+                      onEdit={() => handleEditClick(military, index)}
+                      onDelete={() => handleDeleteClick(index)}
+                    />
                   </TableCell>
                 )}
               </TableRow>
