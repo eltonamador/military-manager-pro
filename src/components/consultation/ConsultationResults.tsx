@@ -8,12 +8,14 @@ interface ConsultationResultsProps {
   isLoading: boolean;
   combinedData: any[];
   selectedDate: Date | undefined;
+  onDataChange?: () => void;
 }
 
 const ConsultationResults = ({ 
   isLoading, 
   combinedData,
-  selectedDate 
+  selectedDate,
+  onDataChange
 }: ConsultationResultsProps) => {
   const handleGeneratePDF = async () => {
     const pdfUrl = await generatePDF('consultation-results');
@@ -47,6 +49,18 @@ const ConsultationResults = ({
     }
   };
 
+  const handleEdit = () => {
+    if (onDataChange) {
+      onDataChange();
+    }
+  };
+
+  const handleDelete = () => {
+    if (onDataChange) {
+      onDataChange();
+    }
+  };
+
   if (isLoading) {
     return <LoadingState />;
   }
@@ -64,7 +78,12 @@ const ConsultationResults = ({
         onShare={handleShare}
       />
       <div id="consultation-results">
-        <MilitaryTable militaryList={dataWithSelectedDate} />
+        <MilitaryTable 
+          militaryList={dataWithSelectedDate} 
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          allowEditing={true}
+        />
       </div>
     </div>
   );
