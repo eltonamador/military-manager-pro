@@ -6,34 +6,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useState } from "react";
 import { EditRecordDialog } from "./consultation/results/EditRecordDialog";
 import { TableActions } from "./consultation/results/TableActions";
 import { SortableHeader } from "./consultation/results/TableHeader";
+import { DeleteConfirmDialog } from "./consultation/results/DeleteConfirmDialog";
+import { TableContent } from "./consultation/results/TableContent";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { getMilitaryTableName } from "@/utils/tableNames";
-
-interface Military {
-  name: string;
-  function: string;
-  gbm: string;
-  vtr: string;
-  date: Date;
-  shiftDuration: string;
-}
+import { Military } from "@/types/military";
 
 interface MilitaryTableProps {
   militaryList: Military[];
@@ -161,41 +145,12 @@ const MilitaryTable = ({
               )}
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {sortedList.map((military, index) => (
-              <TableRow 
-                key={index} 
-                className="hover:bg-military-red/5 transition-colors duration-200 even:bg-gray-100/80"
-              >
-                <TableCell className="font-medium py-1.5">{military.name}</TableCell>
-                <TableCell className="text-center py-1.5">{military.vtr}</TableCell>
-                <TableCell className="py-1.5">{military.function}</TableCell>
-                <TableCell className="text-center py-1.5">{military.gbm}</TableCell>
-                <TableCell className="py-1.5">
-                  {format(military.date, "dd/MM/yyyy", { locale: ptBR })}
-                </TableCell>
-                <TableCell className="text-center py-1.5">{military.shiftDuration}h</TableCell>
-                {allowEditing && (
-                  <TableCell className="text-right py-1.5">
-                    <TableActions
-                      onEdit={() => handleEditClick(military, index)}
-                      onDelete={() => handleDeleteClick(index)}
-                    />
-                  </TableCell>
-                )}
-              </TableRow>
-            ))}
-            {sortedList.length === 0 && (
-              <TableRow>
-                <TableCell 
-                  colSpan={allowEditing ? 7 : 6} 
-                  className="text-center text-gray-500 py-6 bg-gray-50/50"
-                >
-                  Nenhum registro encontrado
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
+          <TableContent 
+            sortedList={sortedList}
+            allowEditing={allowEditing}
+            onEditClick={handleEditClick}
+            onDeleteClick={handleDeleteClick}
+          />
         </Table>
       </div>
 
@@ -208,25 +163,11 @@ const MilitaryTable = ({
         />
       )}
 
-      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja excluir este registro? Esta ação não pode ser desfeita.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirmDelete}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              Excluir
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteConfirmDialog 
+        isOpen={deleteConfirmOpen}
+        onClose={() => setDeleteConfirmOpen(false)}
+        onConfirm={handleConfirmDelete}
+      />
     </>
   );
 };
