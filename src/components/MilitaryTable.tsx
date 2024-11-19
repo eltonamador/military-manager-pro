@@ -73,7 +73,8 @@ const MilitaryTable = ({
           viatura: updatedRecord.vtr,
           data: format(updatedRecord.date, 'yyyy-MM-dd'),
         })
-        .eq('nome_de_guerra', editingRecord.name);
+        .eq('nome_de_guerra', editingRecord.name)
+        .eq('data', format(editingRecord.date, 'yyyy-MM-dd'));
 
       if (error) throw error;
 

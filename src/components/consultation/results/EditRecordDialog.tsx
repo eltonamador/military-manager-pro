@@ -8,13 +8,14 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Military } from "@/types/military";
 import { useState } from "react";
 
 interface EditRecordDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (updatedRecord: any) => void;
-  record: any;
+  onSave: (updatedRecord: Military) => void;
+  record: Military;
 }
 
 export function EditRecordDialog({
@@ -23,19 +24,23 @@ export function EditRecordDialog({
   onSave,
   record,
 }: EditRecordDialogProps) {
-  const [formData, setFormData] = useState(record);
+  const [formData, setFormData] = useState<Military>(record);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
-    onClose();
+    onSave({
+      ...formData,
+      date: record.date, // Preserve the original date
+      shiftDuration: record.shiftDuration // Preserve the shift duration
+    });
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   return (
@@ -96,7 +101,10 @@ export function EditRecordDialog({
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit" className="bg-military-orange hover:bg-military-red">
+            <Button 
+              type="submit" 
+              className="bg-military-orange hover:bg-military-red"
+            >
               Salvar alterações
             </Button>
           </DialogFooter>
