@@ -16,7 +16,7 @@ const Consultation = () => {
   const [selectedMilitaryGBMs, setSelectedMilitaryGBMs] = useState<string[]>([]);
   const [selectedVehicleGBMs, setSelectedVehicleGBMs] = useState<string[]>([]);
   const [selectedVTRs, setSelectedVTRs] = useState<string[]>([]);
-  const [selectedOfficerType, setSelectedOfficerType] = useState<string | null>(null);
+  const [selectedOfficerTypes, setSelectedOfficerTypes] = useState<string[]>([]);
 
   const formatDateForQuery = (date: Date) => {
     return format(date, 'yyyy-MM-dd');
@@ -93,9 +93,9 @@ const Consultation = () => {
   });
 
   const { data: officerData, isLoading: isOfficerLoading } = useQuery({
-    queryKey: ["officer-service", selectedDate, selectedOfficerType],
+    queryKey: ["officer-service", selectedDate, selectedOfficerTypes],
     queryFn: async () => {
-      if (!selectedDate || !selectedOfficerType) return [];
+      if (!selectedDate || !selectedOfficerTypes) return [];
 
       const formattedDate = formatDateForQuery(selectedDate);
       
@@ -103,7 +103,7 @@ const Consultation = () => {
         .from('servico_oficial')
         .select('*')
         .eq('data_serv_of', formattedDate)
-        .eq('tipo', selectedOfficerType)
+        .eq('tipo', selectedOfficerTypes)
         .not('nome_of_sup', 'is', null);
 
       if (error) {
@@ -113,7 +113,7 @@ const Consultation = () => {
 
       return data || [];
     },
-    enabled: !!selectedDate && !!selectedOfficerType,
+    enabled: !!selectedDate && !!selectedOfficerTypes,
   });
 
   const handleMilitaryGBMChange = (gbm: string, checked: boolean) => {
@@ -180,6 +180,10 @@ const Consultation = () => {
     date: selectedDate || item.date // Ensure all items use the selected date
   }));
 
+  const handleOfficerTypeChange = (types: string[]) => {
+    setSelectedOfficerTypes(types);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="container mx-auto p-2 sm:p-4 space-y-4 sm:space-y-6">
@@ -190,12 +194,12 @@ const Consultation = () => {
           selectedMilitaryGBMs={selectedMilitaryGBMs}
           selectedVehicleGBMs={selectedVehicleGBMs}
           selectedVTRs={selectedVTRs}
-          selectedOfficerType={selectedOfficerType}
+          selectedOfficerTypes={selectedOfficerTypes}
           onDateChange={handleDateChange}
           onMilitaryGBMChange={handleMilitaryGBMChange}
           onVehicleGBMChange={handleVehicleGBMChange}
           onVTRChange={handleVTRChange}
-          onOfficerTypeChange={setSelectedOfficerType}
+          onOfficerTypeChange={handleOfficerTypeChange}
         />
 
         <Separator className="my-6 sm:my-8" />

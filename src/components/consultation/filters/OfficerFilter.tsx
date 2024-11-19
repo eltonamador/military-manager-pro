@@ -13,7 +13,10 @@ const officerTypes = [
   { value: 'Oficial de Área 2', label: 'Oficial de Área 2' }
 ];
 
-export const OfficerFilter = ({ selectedOfficerTypes, onOfficerTypeChange }: OfficerFilterProps) => {
+export const OfficerFilter = ({ 
+  selectedOfficerTypes = [], // Provide default empty array
+  onOfficerTypeChange 
+}: OfficerFilterProps) => {
   const handleCheckboxChange = (type: string, checked: boolean) => {
     if (checked) {
       onOfficerTypeChange([...selectedOfficerTypes, type]);
