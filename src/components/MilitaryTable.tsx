@@ -3,7 +3,6 @@ import {
   TableBody,
   TableCell,
   TableHead,
-  TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { format } from "date-fns";
@@ -12,8 +11,8 @@ import { useState } from "react";
 import { EditRecordDialog } from "./consultation/results/EditRecordDialog";
 import { TableActions } from "./consultation/results/TableActions";
 import { SortableHeader } from "./consultation/results/TableHeader";
-import { DeleteConfirmDialog } from "./consultation/results/DeleteConfirmDialog";
 import { TableContent } from "./consultation/results/TableContent";
+import { DeleteConfirmDialog } from "./consultation/results/DeleteConfirmDialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { getMilitaryTableName } from "@/utils/tableNames";
@@ -72,6 +71,7 @@ const MilitaryTable = ({
           funcao: updatedRecord.function,
           GBM: updatedRecord.gbm,
           viatura: updatedRecord.vtr,
+          data: format(updatedRecord.date, 'yyyy-MM-dd'),
         })
         .eq('nome_de_guerra', editingRecord.name);
 
@@ -99,7 +99,8 @@ const MilitaryTable = ({
       const { error } = await supabase
         .from(tableName)
         .delete()
-        .eq('nome_de_guerra', record.name);
+        .eq('nome_de_guerra', record.name)
+        .eq('data', format(record.date, 'yyyy-MM-dd'));
 
       if (error) throw error;
 
@@ -130,7 +131,7 @@ const MilitaryTable = ({
     <>
       <div className="rounded-xl border border-military-red/20 shadow-sm overflow-hidden">
         <Table>
-          <TableHeader className="bg-gradient-to-r from-military-red/10 to-military-orange/10">
+          <TableHead className="bg-gradient-to-r from-military-red/10 to-military-orange/10">
             <TableRow className="hover:bg-transparent border-b border-military-red/20">
               <SortableHeader field="name" label="Nome" onSort={handleSort} />
               <SortableHeader field="vtr" label="VTR" onSort={handleSort} />
@@ -144,7 +145,7 @@ const MilitaryTable = ({
                 </TableHead>
               )}
             </TableRow>
-          </TableHeader>
+          </TableHead>
           <TableContent 
             sortedList={sortedList}
             allowEditing={allowEditing}

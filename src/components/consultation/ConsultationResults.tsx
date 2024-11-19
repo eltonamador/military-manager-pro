@@ -3,6 +3,9 @@ import { ResultsHeader } from "./results/ResultsHeader";
 import { LoadingState } from "./results/LoadingState";
 import { generatePDF } from "./results/PDFGenerator";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { getMilitaryTableName } from "@/utils/tableNames";
 
 interface ConsultationResultsProps {
   isLoading: boolean;
@@ -37,12 +40,10 @@ const ConsultationResults = ({
           });
           toast.success("Compartilhado com sucesso!");
         } catch (error) {
-          // Fallback to WhatsApp if share API fails or is cancelled
           const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message + "\n" + pdfUrl)}`;
           window.open(whatsappUrl, '_blank');
         }
       } else {
-        // Fallback for browsers that don't support the Web Share API
         const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message + "\n" + pdfUrl)}`;
         window.open(whatsappUrl, '_blank');
       }
@@ -65,7 +66,6 @@ const ConsultationResults = ({
     return <LoadingState />;
   }
 
-  // Ensure all data uses the selected date
   const dataWithSelectedDate = combinedData.map(item => ({
     ...item,
     date: selectedDate || item.date
