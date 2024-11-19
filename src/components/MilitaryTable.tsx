@@ -58,7 +58,7 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
     <Button
       variant="ghost"
       onClick={() => handleSort(field)}
-      className="hover:bg-military-red/10 text-gray-700 font-medium"
+      className="hover:bg-military-red/10 text-gray-700 font-medium w-full justify-start px-2"
     >
       {label}
       <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -66,30 +66,30 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
   );
 
   return (
-    <div className="rounded-xl border border-military-red/20 shadow-sm">
+    <div className="rounded-xl border border-military-red/20 shadow-sm overflow-hidden">
       <Table>
-        <TableHeader className="bg-gradient-to-r from-military-red/5 to-military-orange/5">
-          <TableRow className="hover:bg-transparent">
-            <TableHead className="font-semibold">
+        <TableHeader className="bg-gradient-to-r from-military-red/10 to-military-orange/10">
+          <TableRow className="hover:bg-transparent border-b border-military-red/20">
+            <TableHead className="font-semibold w-[200px]">
               <SortButton field="name" label="Nome" />
             </TableHead>
-            <TableHead className="font-semibold">
+            <TableHead className="font-semibold w-[100px]">
               <SortButton field="vtr" label="VTR" />
             </TableHead>
-            <TableHead className="font-semibold">
+            <TableHead className="font-semibold w-[150px]">
               <SortButton field="function" label="Função" />
             </TableHead>
-            <TableHead className="font-semibold">
+            <TableHead className="font-semibold w-[100px]">
               <SortButton field="gbm" label="GBM" />
             </TableHead>
-            <TableHead className="font-semibold">
+            <TableHead className="font-semibold w-[120px]">
               <SortButton field="date" label="Data" />
             </TableHead>
-            <TableHead className="font-semibold">
+            <TableHead className="font-semibold w-[100px]">
               <SortButton field="shiftDuration" label="Jornada" />
             </TableHead>
             {(onEdit || onDelete) && (
-              <TableHead className="text-right font-semibold">Ações</TableHead>
+              <TableHead className="text-right font-semibold w-[100px]">Ações</TableHead>
             )}
           </TableRow>
         </TableHeader>
@@ -97,14 +97,14 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
           {sortedList.map((military, index) => (
             <TableRow 
               key={index} 
-              className="hover:bg-military-red/5 transition-colors duration-200 even:bg-gray-50/50"
+              className="hover:bg-military-red/5 transition-colors duration-200 even:bg-gray-100/80"
             >
               <TableCell className="font-medium">{military.name}</TableCell>
-              <TableCell>{military.vtr}</TableCell>
+              <TableCell className="text-center">{military.vtr}</TableCell>
               <TableCell>{military.function}</TableCell>
-              <TableCell>{military.gbm}</TableCell>
+              <TableCell className="text-center">{military.gbm}</TableCell>
               <TableCell>{format(military.date, "dd/MM/yyyy", { locale: ptBR })}</TableCell>
-              <TableCell>{military.shiftDuration}h</TableCell>
+              <TableCell className="text-center">{military.shiftDuration}h</TableCell>
               {(onEdit || onDelete) && (
                 <TableCell className="text-right space-x-2">
                   {onEdit && (

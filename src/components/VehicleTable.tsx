@@ -57,7 +57,7 @@ const VehicleTable = ({ vehicleList, onEdit, onDelete }: VehicleTableProps) => {
     <Button
       variant="ghost"
       onClick={() => handleSort(field)}
-      className="hover:bg-military-orange/10 text-gray-700 font-medium"
+      className="hover:bg-military-orange/10 text-gray-700 font-medium w-full justify-start px-2"
     >
       {label}
       <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -65,36 +65,36 @@ const VehicleTable = ({ vehicleList, onEdit, onDelete }: VehicleTableProps) => {
   );
 
   return (
-    <div className="rounded-xl border border-military-orange/20 shadow-sm">
+    <div className="rounded-xl border border-military-orange/20 shadow-sm overflow-hidden">
       <Table>
-        <TableHeader className="bg-gradient-to-r from-military-orange/5 to-military-red/5">
-          <TableRow className="hover:bg-transparent">
-            <TableHead className="font-semibold">
+        <TableHeader className="bg-gradient-to-r from-military-orange/10 to-military-red/10">
+          <TableRow className="hover:bg-transparent border-b border-military-orange/20">
+            <TableHead className="font-semibold w-[100px]">
               <SortButton field="gbm" label="GBM" />
             </TableHead>
-            <TableHead className="font-semibold">
+            <TableHead className="font-semibold w-[120px]">
               <SortButton field="vtr" label="VTR" />
             </TableHead>
-            <TableHead className="font-semibold">
+            <TableHead className="font-semibold w-[120px]">
               <SortButton field="status" label="Status" />
             </TableHead>
-            <TableHead className="font-semibold">
+            <TableHead className="font-semibold w-[250px]">
               <SortButton field="description" label="Descrição" />
             </TableHead>
-            <TableHead className="font-semibold">
+            <TableHead className="font-semibold w-[120px]">
               <SortButton field="date" label="Data" />
             </TableHead>
-            <TableHead className="text-right font-semibold">Ações</TableHead>
+            <TableHead className="text-right font-semibold w-[100px]">Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {sortedList.map((vehicle, index) => (
             <TableRow 
               key={index}
-              className="hover:bg-military-orange/5 transition-colors duration-200 even:bg-gray-50/50"
+              className="hover:bg-military-orange/5 transition-colors duration-200 even:bg-gray-100/80"
             >
-              <TableCell className="font-medium">{vehicle.gbm}</TableCell>
-              <TableCell>{vehicle.vtr}</TableCell>
+              <TableCell className="font-medium text-center">{vehicle.gbm}</TableCell>
+              <TableCell className="text-center">{vehicle.vtr}</TableCell>
               <TableCell>{vehicle.status}</TableCell>
               <TableCell>{vehicle.description}</TableCell>
               <TableCell>{vehicle.date ? format(vehicle.date, "dd/MM/yyyy", { locale: ptBR }) : ""}</TableCell>
