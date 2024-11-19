@@ -58,10 +58,10 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
     <Button
       variant="ghost"
       onClick={() => handleSort(field)}
-      className="hover:bg-military-red/10 text-gray-700 font-medium w-full justify-start px-2"
+      className="hover:bg-military-red/10 text-gray-700 font-medium w-full justify-start p-1"
     >
       {label}
-      <ArrowUpDown className="ml-2 h-4 w-4" />
+      <ArrowUpDown className="ml-1 h-4 w-4" />
     </Button>
   );
 
@@ -70,26 +70,26 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
       <Table>
         <TableHeader className="bg-gradient-to-r from-military-red/10 to-military-orange/10">
           <TableRow className="hover:bg-transparent border-b border-military-red/20">
-            <TableHead className="font-semibold w-[200px]">
+            <TableHead className="font-semibold w-[180px] py-2">
               <SortButton field="name" label="Nome" />
             </TableHead>
-            <TableHead className="font-semibold w-[100px]">
+            <TableHead className="font-semibold w-[80px] py-2">
               <SortButton field="vtr" label="VTR" />
             </TableHead>
-            <TableHead className="font-semibold w-[150px]">
+            <TableHead className="font-semibold w-[120px] py-2">
               <SortButton field="function" label="Função" />
             </TableHead>
-            <TableHead className="font-semibold w-[100px]">
+            <TableHead className="font-semibold w-[80px] py-2">
               <SortButton field="gbm" label="GBM" />
             </TableHead>
-            <TableHead className="font-semibold w-[120px]">
+            <TableHead className="font-semibold w-[100px] py-2">
               <SortButton field="date" label="Data" />
             </TableHead>
-            <TableHead className="font-semibold w-[100px]">
+            <TableHead className="font-semibold w-[80px] py-2">
               <SortButton field="shiftDuration" label="Jornada" />
             </TableHead>
             {(onEdit || onDelete) && (
-              <TableHead className="text-right font-semibold w-[100px]">Ações</TableHead>
+              <TableHead className="text-right font-semibold w-[80px] py-2">Ações</TableHead>
             )}
           </TableRow>
         </TableHeader>
@@ -99,20 +99,20 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
               key={index} 
               className="hover:bg-military-red/5 transition-colors duration-200 even:bg-gray-100/80"
             >
-              <TableCell className="font-medium">{military.name}</TableCell>
-              <TableCell className="text-center">{military.vtr}</TableCell>
-              <TableCell>{military.function}</TableCell>
-              <TableCell className="text-center">{military.gbm}</TableCell>
-              <TableCell>{format(military.date, "dd/MM/yyyy", { locale: ptBR })}</TableCell>
-              <TableCell className="text-center">{military.shiftDuration}h</TableCell>
+              <TableCell className="font-medium py-1.5">{military.name}</TableCell>
+              <TableCell className="text-center py-1.5">{military.vtr}</TableCell>
+              <TableCell className="py-1.5">{military.function}</TableCell>
+              <TableCell className="text-center py-1.5">{military.gbm}</TableCell>
+              <TableCell className="py-1.5">{format(military.date, "dd/MM/yyyy", { locale: ptBR })}</TableCell>
+              <TableCell className="text-center py-1.5">{military.shiftDuration}h</TableCell>
               {(onEdit || onDelete) && (
-                <TableCell className="text-right space-x-2">
+                <TableCell className="text-right space-x-1 py-1.5">
                   {onEdit && (
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => onEdit(index)}
-                      className="hover:bg-military-red/10"
+                      className="hover:bg-military-red/10 h-7 w-7"
                     >
                       <Edit className="h-4 w-4 text-military-red" />
                     </Button>
@@ -122,7 +122,7 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
                       variant="ghost"
                       size="icon"
                       onClick={() => onDelete(index)}
-                      className="hover:bg-military-red/10"
+                      className="hover:bg-military-red/10 h-7 w-7"
                     >
                       <Trash2 className="h-4 w-4 text-military-red" />
                     </Button>
@@ -135,7 +135,7 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
             <TableRow>
               <TableCell 
                 colSpan={7} 
-                className="text-center text-gray-500 py-8 bg-gray-50/50"
+                className="text-center text-gray-500 py-6 bg-gray-50/50"
               >
                 Nenhum registro encontrado
               </TableCell>
