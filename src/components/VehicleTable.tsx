@@ -57,7 +57,7 @@ const VehicleTable = ({ vehicleList, onEdit, onDelete }: VehicleTableProps) => {
     <Button
       variant="ghost"
       onClick={() => handleSort(field)}
-      className="hover:bg-transparent"
+      className="hover:bg-military-orange/10 text-gray-700 font-medium"
     >
       {label}
       <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -65,31 +65,34 @@ const VehicleTable = ({ vehicleList, onEdit, onDelete }: VehicleTableProps) => {
   );
 
   return (
-    <div className="rounded-lg border">
+    <div className="rounded-xl border border-military-orange/20 shadow-sm">
       <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>
+        <TableHeader className="bg-gradient-to-r from-military-orange/5 to-military-red/5">
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="font-semibold">
               <SortButton field="gbm" label="GBM" />
             </TableHead>
-            <TableHead>
+            <TableHead className="font-semibold">
               <SortButton field="vtr" label="VTR" />
             </TableHead>
-            <TableHead>
+            <TableHead className="font-semibold">
               <SortButton field="status" label="Status" />
             </TableHead>
-            <TableHead>
+            <TableHead className="font-semibold">
               <SortButton field="description" label="Descrição" />
             </TableHead>
-            <TableHead>
+            <TableHead className="font-semibold">
               <SortButton field="date" label="Data" />
             </TableHead>
-            <TableHead className="text-right">Ações</TableHead>
+            <TableHead className="text-right font-semibold">Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {sortedList.map((vehicle, index) => (
-            <TableRow key={index}>
+            <TableRow 
+              key={index}
+              className="hover:bg-military-orange/5 transition-colors duration-200 even:bg-gray-50/50"
+            >
               <TableCell className="font-medium">{vehicle.gbm}</TableCell>
               <TableCell>{vehicle.vtr}</TableCell>
               <TableCell>{vehicle.status}</TableCell>
@@ -98,26 +101,29 @@ const VehicleTable = ({ vehicleList, onEdit, onDelete }: VehicleTableProps) => {
               <TableCell className="text-right space-x-2">
                 <Button
                   onClick={() => onEdit(index)}
-                  variant="outline"
-                  size="sm"
-                  className="text-blue-600 hover:text-blue-700"
+                  variant="ghost"
+                  size="icon"
+                  className="hover:bg-military-orange/10"
                 >
-                  <Pencil className="h-4 w-4" />
+                  <Pencil className="h-4 w-4 text-military-orange" />
                 </Button>
                 <Button
                   onClick={() => onDelete(index)}
-                  variant="outline"
-                  size="sm"
-                  className="text-red-600 hover:text-red-700"
+                  variant="ghost"
+                  size="icon"
+                  className="hover:bg-military-orange/10"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-4 w-4 text-military-orange" />
                 </Button>
               </TableCell>
             </TableRow>
           ))}
           {sortedList.length === 0 && (
             <TableRow>
-              <TableCell colSpan={6} className="text-center text-muted-foreground">
+              <TableCell 
+                colSpan={6} 
+                className="text-center text-gray-500 py-8 bg-gray-50/50"
+              >
                 Nenhuma VTR adicionada
               </TableCell>
             </TableRow>
