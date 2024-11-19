@@ -17,9 +17,8 @@ export const generatePDF = async (elementId: string) => {
       putOnlyUsedFonts: true
     });
 
-    // Add fonts
-    pdf.addFont("helvetica", "Arial");
-    pdf.addFont("times", "Times New Roman");
+    // Add fonts - using setFont instead of addFont since we're using standard fonts
+    pdf.setFont("helvetica", "normal");
 
     // Set margins (2cm on all sides)
     const margin = 2;
@@ -29,7 +28,7 @@ export const generatePDF = async (elementId: string) => {
     const contentHeight = pageHeight - (margin * 2);
 
     // Header
-    pdf.setFont("Arial", "bold");
+    pdf.setFont("helvetica", "bold");
     pdf.setFontSize(14);
     const headerText = "CORPO DE BOMBEIROS MILITAR DO AMAPÁ";
     const headerWidth = pdf.getStringUnitWidth(headerText) * 14 / pdf.internal.scaleFactor;
@@ -65,13 +64,13 @@ export const generatePDF = async (elementId: string) => {
     pdf.addImage(imgData, 'PNG', margin, margin + 4, imgWidth, imgHeight);
 
     // Add page numbers
-    const totalPages = pdf.internal.getNumberOfPages();
-    for (let i = 1; i <= totalPages; i++) {
+    const pages = (pdf as any)._getPageCount();
+    for (let i = 1; i <= pages; i++) {
       pdf.setPage(i);
-      pdf.setFont("Times New Roman", "normal");
+      pdf.setFont("helvetica", "normal");
       pdf.setFontSize(10);
       pdf.text(
-        `Página ${i} de ${totalPages}`,
+        `Página ${i} de ${pages}`,
         pageWidth - margin - 3,
         pageHeight - margin
       );
