@@ -2,13 +2,13 @@ import { Button } from "@/components/ui/button";
 import { TableHead } from "@/components/ui/table";
 import { ArrowUpDown } from "lucide-react";
 
-interface TableHeaderProps {
+interface SortableHeaderProps {
   field: string;
   label: string;
   onSort: (field: string) => void;
 }
 
-export const TableHeader = ({ field, label, onSort }: TableHeaderProps) => {
+export const SortableHeader = ({ field, label, onSort }: SortableHeaderProps) => {
   return (
     <TableHead className="font-semibold py-2">
       <Button

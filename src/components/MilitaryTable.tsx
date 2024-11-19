@@ -21,7 +21,7 @@ import { ptBR } from "date-fns/locale";
 import { useState } from "react";
 import { EditRecordDialog } from "./consultation/results/EditRecordDialog";
 import { TableActions } from "./consultation/results/TableActions";
-import { TableHeader } from "./consultation/results/TableHeader";
+import { SortableHeader } from "./consultation/results/TableHeader";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { getMilitaryTableName } from "@/utils/tableNames";
@@ -148,12 +148,12 @@ const MilitaryTable = ({
         <Table>
           <TableHeader className="bg-gradient-to-r from-military-red/10 to-military-orange/10">
             <TableRow className="hover:bg-transparent border-b border-military-red/20">
-              <TableHeader field="name" label="Nome" onSort={handleSort} />
-              <TableHeader field="vtr" label="VTR" onSort={handleSort} />
-              <TableHeader field="function" label="Função" onSort={handleSort} />
-              <TableHeader field="gbm" label="GBM" onSort={handleSort} />
-              <TableHeader field="date" label="Data" onSort={handleSort} />
-              <TableHeader field="shiftDuration" label="Jornada" onSort={handleSort} />
+              <SortableHeader field="name" label="Nome" onSort={handleSort} />
+              <SortableHeader field="vtr" label="VTR" onSort={handleSort} />
+              <SortableHeader field="function" label="Função" onSort={handleSort} />
+              <SortableHeader field="gbm" label="GBM" onSort={handleSort} />
+              <SortableHeader field="date" label="Data" onSort={handleSort} />
+              <SortableHeader field="shiftDuration" label="Jornada" onSort={handleSort} />
               {allowEditing && (
                 <TableHead className="text-right font-semibold w-[100px] py-2">
                   Ações
