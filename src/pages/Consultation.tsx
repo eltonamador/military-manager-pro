@@ -95,7 +95,7 @@ const Consultation = () => {
   const { data: officerData, isLoading: isOfficerLoading } = useQuery({
     queryKey: ["officer-service", selectedDate, selectedOfficerTypes],
     queryFn: async () => {
-      if (!selectedDate || !selectedOfficerTypes) return [];
+      if (!selectedDate || selectedOfficerTypes.length === 0) return [];
 
       const formattedDate = formatDateForQuery(selectedDate);
       
@@ -103,7 +103,7 @@ const Consultation = () => {
         .from('servico_oficial')
         .select('*')
         .eq('data_serv_of', formattedDate)
-        .eq('tipo', selectedOfficerTypes)
+        .in('tipo', selectedOfficerTypes)
         .not('nome_of_sup', 'is', null);
 
       if (error) {
@@ -113,7 +113,7 @@ const Consultation = () => {
 
       return data || [];
     },
-    enabled: !!selectedDate && !!selectedOfficerTypes,
+    enabled: !!selectedDate && selectedOfficerTypes.length > 0,
   });
 
   const handleMilitaryGBMChange = (gbm: string, checked: boolean) => {
@@ -177,7 +177,7 @@ const Consultation = () => {
   const isLoading = isMilitaryLoading || isVehicleLoading || isOfficerLoading;
   const combinedData = [...formattedMilitaryData, ...formattedVehicleData, ...formattedOfficerData].map(item => ({
     ...item,
-    date: selectedDate || item.date // Ensure all items use the selected date
+    date: selectedDate || item.date
   }));
 
   const handleOfficerTypeChange = (types: string[]) => {
