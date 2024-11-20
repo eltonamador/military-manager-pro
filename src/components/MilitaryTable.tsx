@@ -39,43 +39,54 @@ const MilitaryTable = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {militaryList.map((military, index) => (
-            <TableRow key={index}>
-              <TableCell>{military.name}</TableCell>
-              <TableCell>{military.function}</TableCell>
-              <TableCell>{military.gbm}</TableCell>
-              <TableCell>{military.vtr}</TableCell>
-              <TableCell>
-                {military.date
-                  ? format(new Date(military.date), "dd/MM/yyyy", { locale: ptBR })
-                  : ""}
-              </TableCell>
-              <TableCell>{military.alterations || "-"}</TableCell>
-              {showInclusionTime && (
-                <TableCell>{military.inclusionTime}</TableCell>
-              )}
-              {(onEdit || onDelete) && (
-                <TableCell className="flex gap-2">
-                  {onEdit && (
-                    <button
-                      onClick={() => onEdit(index)}
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      Editar
-                    </button>
-                  )}
-                  {onDelete && (
-                    <button
-                      onClick={() => onDelete(index)}
-                      className="text-red-600 hover:text-red-800"
-                    >
-                      Excluir
-                    </button>
-                  )}
+          {militaryList.map((military, index) => {
+            // Check if this entry is a VTR (vehicle) by checking if the name matches a VTR pattern
+            const isVehicle = /^[A-Z]+-\d+$/.test(military.name);
+            
+            return (
+              <TableRow key={index}>
+                <TableCell>{military.name}</TableCell>
+                <TableCell>{military.function}</TableCell>
+                <TableCell>{military.gbm}</TableCell>
+                <TableCell>
+                  {/* Only show VTR if it's not a vehicle entry */}
+                  {!isVehicle ? military.vtr : ""}
                 </TableCell>
-              )}
-            </TableRow>
-          ))}
+                <TableCell>
+                  {military.date
+                    ? format(new Date(military.date), "dd/MM/yyyy", { locale: ptBR })
+                    : ""}
+                </TableCell>
+                <TableCell>
+                  {/* For vehicles, show VTR in alterations. For others, show alterations */}
+                  {isVehicle ? military.vtr : (military.alterations || "-")}
+                </TableCell>
+                {showInclusionTime && (
+                  <TableCell>{military.inclusionTime}</TableCell>
+                )}
+                {(onEdit || onDelete) && (
+                  <TableCell className="flex gap-2">
+                    {onEdit && (
+                      <button
+                        onClick={() => onEdit(index)}
+                        className="text-blue-600 hover:text-blue-800"
+                      >
+                        Editar
+                      </button>
+                    )}
+                    {onDelete && (
+                      <button
+                        onClick={() => onDelete(index)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        Excluir
+                      </button>
+                    )}
+                  </TableCell>
+                )}
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </div>
