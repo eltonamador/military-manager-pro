@@ -8,7 +8,6 @@ interface Vehicle {
   status: string;
   description: string;
   date: Date;
-  time?: string;
 }
 
 export const useVehicleService = () => {
@@ -27,7 +26,6 @@ export const useVehicleService = () => {
             alteracao: vehicle.description,
             gbm: vehicle.gbm,
             data: selectedDate.toISOString().split('T')[0],
-            hora_inclusao_vtr: vehicle.time || null,
           });
 
         if (error) {
