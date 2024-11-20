@@ -153,7 +153,8 @@ const Consultation = () => {
     gbm: item.GBM || "",
     vtr: item.viatura || "",
     date: item.data ? new Date(item.data) : new Date(),
-    shiftDuration: "24"
+    shiftDuration: "24",
+    time: item.horario_inclusao || ""
   })) || [];
 
   const formattedVehicleData = vehicleData?.map(item => ({
