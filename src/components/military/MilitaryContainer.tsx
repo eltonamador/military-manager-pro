@@ -5,18 +5,9 @@ import { Military } from "@/types/military";
 import { useNavigate } from "react-router-dom";
 import { useVTRs } from "@/hooks/useVTRs";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { useState } from "react";
+import MilitaryUpdateDialog from "./MilitaryUpdateDialog";
+import { checkExistingMilitary, saveMilitaryService } from "@/utils/militaryService";
 
 interface MilitaryContainerProps {
   selectedGBM: string;
@@ -74,61 +65,6 @@ const MilitaryContainer = ({
       description: "Não foi possível carregar a lista de VTRs.",
     });
   }
-
-  const getTableName = (gbm: string) => {
-    if (["GAPH", "GMAF", "MCPB"].includes(gbm)) {
-      return `servico_militar_${gbm.toLowerCase()}`;
-    }
-    return `servico_militar_${gbm.replace("°", "")}gbm`.toLowerCase();
-  };
-
-  const checkExistingMilitary = async (military: Military) => {
-    try {
-      const { data, error } = await supabase.rpc('check_military_service_exists', {
-        p_nome: military.name,
-        p_data: military.date.toISOString().split('T')[0],
-        p_gbm: military.gbm
-      });
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error checking existing military:', error);
-      return false;
-    }
-  };
-
-  const saveMilitaryService = async (military: Military, isUpdate = false) => {
-    const tableName = getTableName(military.gbm);
-    
-    try {
-      const { error } = await supabase
-        .from(tableName)
-        .upsert({
-          nome_de_guerra: military.name,
-          funcao: military.function,
-          GBM: military.gbm,
-          viatura: military.vtr,
-          data: military.date.toISOString().split('T')[0],
-        });
-
-      if (error) throw error;
-
-      toast({
-        title: isUpdate ? "Registro atualizado" : "Registro salvo",
-        description: isUpdate 
-          ? "O registro do militar foi atualizado com sucesso!"
-          : "O registro do militar foi salvo com sucesso!",
-      });
-    } catch (error) {
-      console.error('Error saving military service:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao salvar",
-        description: "Ocorreu um erro ao salvar o registro do militar.",
-      });
-    }
-  };
 
   const handleFinishMilitary = async () => {
     for (const military of militaryList) {
@@ -192,22 +128,11 @@ const MilitaryContainer = ({
         Finalizar Militares
       </Button>
 
-      <AlertDialog open={showUpdateDialog} onOpenChange={setShowUpdateDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Militar já registrado</AlertDialogTitle>
-            <AlertDialogDescription>
-              Este militar já possui um registro para esta data. Deseja atualizar o registro existente?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleUpdateConfirm}>
-              Atualizar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <MilitaryUpdateDialog
+        open={showUpdateDialog}
+        onOpenChange={setShowUpdateDialog}
+        onConfirm={handleUpdateConfirm}
+      />
     </main>
   );
 };
