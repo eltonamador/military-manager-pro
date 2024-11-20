@@ -5,6 +5,7 @@ import { Military } from "@/types/military";
 import { useNavigate } from "react-router-dom";
 import { useVTRs } from "@/hooks/useVTRs";
 import { useToast } from "@/hooks/use-toast";
+import { saveMilitaryList } from "@/utils/militaryService";
 
 interface MilitaryContainerProps {
   selectedGBM: string;
@@ -61,9 +62,32 @@ const MilitaryContainer = ({
     });
   }
 
-  const handleFinishMilitary = () => {
-    onFinishOperation();
-    navigate("/vehicle-receiving");
+  const handleFinishMilitary = async () => {
+    if (militaryList.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Adicione pelo menos um militar antes de finalizar.",
+      });
+      return;
+    }
+
+    try {
+      await saveMilitaryList(militaryList);
+      toast({
+        title: "Sucesso",
+        description: "Militares salvos com sucesso!",
+      });
+      onFinishOperation();
+      navigate("/vehicle-receiving");
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao salvar militares",
+        description: "Ocorreu um erro ao salvar os militares. Tente novamente.",
+      });
+      console.error("Error saving military list:", error);
+    }
   };
 
   return (
