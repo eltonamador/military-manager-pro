@@ -6,4 +6,5 @@ export interface Military {
   date: Date;
   shiftDuration: string;
   alterations?: string;
+  time?: string;
 }

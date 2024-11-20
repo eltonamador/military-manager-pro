@@ -19,6 +19,7 @@ interface Military {
   vtr: string;
   date: Date;
   shiftDuration: string;
+  time?: string;
 }
 
 interface MilitaryTableProps {
@@ -27,7 +28,7 @@ interface MilitaryTableProps {
   onDelete?: (index: number) => void;
 }
 
-type SortField = 'name' | 'vtr' | 'function' | 'gbm' | 'date' | 'shiftDuration';
+type SortField = 'name' | 'vtr' | 'function' | 'gbm' | 'date' | 'shiftDuration' | 'time';
 type SortOrder = 'asc' | 'desc';
 
 const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) => {
@@ -49,6 +50,8 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
     switch (sortField) {
       case 'date':
         return multiplier * (new Date(a.date).getTime() - new Date(b.date).getTime());
+      case 'time':
+        return multiplier * ((a.time || '').localeCompare(b.time || ''));
       default:
         return multiplier * (a[sortField] < b[sortField] ? -1 : a[sortField] > b[sortField] ? 1 : 0);
     }
@@ -85,6 +88,9 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
             <TableHead className="font-semibold w-[100px] py-2">
               <SortButton field="date" label="Data" />
             </TableHead>
+            <TableHead className="font-semibold w-[100px] py-2">
+              <SortButton field="time" label="Horário" />
+            </TableHead>
             <TableHead className="font-semibold w-[80px] py-2">
               <SortButton field="shiftDuration" label="Jornada" />
             </TableHead>
@@ -104,6 +110,7 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
               <TableCell className="py-1.5">{military.function}</TableCell>
               <TableCell className="text-center py-1.5">{military.gbm}</TableCell>
               <TableCell className="py-1.5">{format(military.date, "dd/MM/yyyy", { locale: ptBR })}</TableCell>
+              <TableCell className="py-1.5">{military.time || ""}</TableCell>
               <TableCell className="text-center py-1.5">{military.shiftDuration}h</TableCell>
               {(onEdit || onDelete) && (
                 <TableCell className="text-right space-x-1 py-1.5">
@@ -134,7 +141,7 @@ const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) =
           {sortedList.length === 0 && (
             <TableRow>
               <TableCell 
-                colSpan={7} 
+                colSpan={8} 
                 className="text-center text-gray-500 py-6 bg-gray-50/50"
               >
                 Nenhum registro encontrado

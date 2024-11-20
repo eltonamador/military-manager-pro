@@ -88,6 +88,7 @@ export type Database = {
           data: string | null
           funcao: string | null
           GBM: string | null
+          horario_inclusao: string | null
           id: number
           nome_de_guerra: string | null
           telefone: string | null
@@ -99,6 +100,7 @@ export type Database = {
           data?: string | null
           funcao?: string | null
           GBM?: string | null
+          horario_inclusao?: string | null
           id?: number
           nome_de_guerra?: string | null
           telefone?: string | null
@@ -110,6 +112,7 @@ export type Database = {
           data?: string | null
           funcao?: string | null
           GBM?: string | null
+          horario_inclusao?: string | null
           id?: number
           nome_de_guerra?: string | null
           telefone?: string | null
@@ -124,6 +127,7 @@ export type Database = {
           data: string | null
           funcao: string | null
           GBM: string | null
+          horario_inclusao: string | null
           id: number
           nome_de_guerra: string | null
           telefone: string | null
@@ -135,6 +139,7 @@ export type Database = {
           data?: string | null
           funcao?: string | null
           GBM?: string | null
+          horario_inclusao?: string | null
           id?: number
           nome_de_guerra?: string | null
           telefone?: string | null
@@ -146,6 +151,7 @@ export type Database = {
           data?: string | null
           funcao?: string | null
           GBM?: string | null
+          horario_inclusao?: string | null
           id?: number
           nome_de_guerra?: string | null
           telefone?: string | null
@@ -160,6 +166,7 @@ export type Database = {
           data: string | null
           funcao: string | null
           GBM: string | null
+          horario_inclusao: string | null
           id: number
           nome_de_guerra: string | null
           telefone: string | null
@@ -171,6 +178,7 @@ export type Database = {
           data?: string | null
           funcao?: string | null
           GBM?: string | null
+          horario_inclusao?: string | null
           id?: number
           nome_de_guerra?: string | null
           telefone?: string | null
@@ -182,6 +190,7 @@ export type Database = {
           data?: string | null
           funcao?: string | null
           GBM?: string | null
+          horario_inclusao?: string | null
           id?: number
           nome_de_guerra?: string | null
           telefone?: string | null
@@ -196,6 +205,7 @@ export type Database = {
           data: string | null
           funcao: string | null
           GBM: string | null
+          horario_inclusao: string | null
           id: number
           nome_de_guerra: string | null
           telefone: string | null
@@ -207,6 +217,7 @@ export type Database = {
           data?: string | null
           funcao?: string | null
           GBM?: string | null
+          horario_inclusao?: string | null
           id?: number
           nome_de_guerra?: string | null
           telefone?: string | null
@@ -218,6 +229,7 @@ export type Database = {
           data?: string | null
           funcao?: string | null
           GBM?: string | null
+          horario_inclusao?: string | null
           id?: number
           nome_de_guerra?: string | null
           telefone?: string | null
@@ -232,6 +244,7 @@ export type Database = {
           data: string | null
           funcao: string | null
           GBM: string | null
+          horario_inclusao: string | null
           id: number
           nome_de_guerra: string | null
           telefone: string | null
@@ -243,6 +256,7 @@ export type Database = {
           data?: string | null
           funcao?: string | null
           GBM?: string | null
+          horario_inclusao?: string | null
           id?: number
           nome_de_guerra?: string | null
           telefone?: string | null
@@ -254,6 +268,7 @@ export type Database = {
           data?: string | null
           funcao?: string | null
           GBM?: string | null
+          horario_inclusao?: string | null
           id?: number
           nome_de_guerra?: string | null
           telefone?: string | null
@@ -268,6 +283,7 @@ export type Database = {
           data: string | null
           funcao: string | null
           GBM: string | null
+          horario_inclusao: string | null
           id: number
           nome_de_guerra: string | null
           telefone: string | null
@@ -279,6 +295,7 @@ export type Database = {
           data?: string | null
           funcao?: string | null
           GBM?: string | null
+          horario_inclusao?: string | null
           id?: number
           nome_de_guerra?: string | null
           telefone?: string | null
@@ -290,6 +307,7 @@ export type Database = {
           data?: string | null
           funcao?: string | null
           GBM?: string | null
+          horario_inclusao?: string | null
           id?: number
           nome_de_guerra?: string | null
           telefone?: string | null
