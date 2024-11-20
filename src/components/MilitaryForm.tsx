@@ -71,6 +71,8 @@ const MilitaryForm = ({
   const [alterations, setAlterations] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
 
+  const isAdjuntoDoOficial = militaryFunction === "Adjunto do Oficial";
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -88,21 +90,23 @@ const MilitaryForm = ({
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <Label htmlFor="vtr">VTR</Label>
-          <Select onValueChange={onVTRChange} value={selectedVTR}>
-            <SelectTrigger id="vtr">
-              <SelectValue placeholder="Selecione a VTR" />
-            </SelectTrigger>
-            <SelectContent>
-              {vtrOptions.map((vtr) => (
-                <SelectItem key={vtr} value={vtr}>
-                  {vtr}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        {!isAdjuntoDoOficial && (
+          <div>
+            <Label htmlFor="vtr">VTR</Label>
+            <Select onValueChange={onVTRChange} value={selectedVTR}>
+              <SelectTrigger id="vtr">
+                <SelectValue placeholder="Selecione a VTR" />
+              </SelectTrigger>
+              <SelectContent>
+                {vtrOptions.map((vtr) => (
+                  <SelectItem key={vtr} value={vtr}>
+                    {vtr}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
         
         <MilitarySearch 
           selectedMilitary={selectedMilitary}
@@ -169,7 +173,14 @@ const MilitaryForm = ({
           <Button
             onClick={() => onAddMilitary(alterations, selectedTime)}
             className="w-full bg-military-orange hover:bg-military-red transition-colors"
-            disabled={!selectedMilitary || !militaryFunction || !selectedDate || !shiftDuration || !selectedTime}
+            disabled={
+              !selectedMilitary || 
+              !militaryFunction || 
+              !selectedDate || 
+              !shiftDuration || 
+              !selectedTime || 
+              (!isAdjuntoDoOficial && !selectedVTR)
+            }
           >
             <Plus className="mr-2 h-4 w-4" /> Adicionar Militar
           </Button>
