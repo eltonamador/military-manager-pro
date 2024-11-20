@@ -319,23 +319,29 @@ export type Database = {
         Row: {
           created_at: string
           data_serv_of: string | null
+          hora_inclusao_sup: string | null
           id: number
           nome_of_sup: string | null
           tipo: string | null
+          vtr_sup: string | null
         }
         Insert: {
           created_at?: string
           data_serv_of?: string | null
+          hora_inclusao_sup?: string | null
           id?: number
           nome_of_sup?: string | null
           tipo?: string | null
+          vtr_sup?: string | null
         }
         Update: {
           created_at?: string
           data_serv_of?: string | null
+          hora_inclusao_sup?: string | null
           id?: number
           nome_of_sup?: string | null
           tipo?: string | null
+          vtr_sup?: string | null
         }
         Relationships: []
       }
