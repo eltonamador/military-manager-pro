@@ -13,7 +13,7 @@ interface MilitaryContainerProps {
   selectedMilitary: string;
   militaryFunction: string;
   selectedDate: Date;
-  shiftDuration: string;
+  shiftDuration?: string;  // Made optional
   gbmOptions: string[];
   militaryOptions: string[];
   militaryList: Military[];
@@ -22,7 +22,7 @@ interface MilitaryContainerProps {
   onMilitaryChange: (value: string) => void;
   onFunctionChange: (value: string) => void;
   onDateChange: (date: Date) => void;
-  onShiftDurationChange: (value: string) => void;
+  onShiftDurationChange?: (value: string) => void;  // Made optional
   onAddMilitary: (alterations?: string) => void;
   onEdit: (index: number) => void;
   onDelete: (index: number) => void;
