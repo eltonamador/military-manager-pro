@@ -13,6 +13,7 @@ export const saveMilitaryService = async (military: Military) => {
       nome_de_guerra: military.name,
       funcao: military.function,
       data: format(military.date, 'yyyy-MM-dd'),
+      alteracao_mil: military.alterations || null,
     });
 
   if (error) {

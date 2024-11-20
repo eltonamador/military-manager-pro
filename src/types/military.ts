@@ -5,4 +5,5 @@ export interface Military {
   vtr: string;
   date: Date;
   shiftDuration: string;
+  alterations?: string;
 }

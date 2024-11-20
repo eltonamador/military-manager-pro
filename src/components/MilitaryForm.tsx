@@ -1,6 +1,8 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -15,6 +17,7 @@ import { ptBR } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import MilitarySearch from "./military/MilitarySearch";
+import { useState } from "react";
 
 interface MilitaryFormProps {
   selectedGBM: string;
@@ -32,7 +35,7 @@ interface MilitaryFormProps {
   onFunctionChange: (value: string) => void;
   onDateChange: (date: Date | undefined) => void;
   onShiftDurationChange: (value: string) => void;
-  onAddMilitary: () => void;
+  onAddMilitary: (alterations?: string) => void;
 }
 
 const militaryFunctionOptions = [
@@ -68,6 +71,9 @@ const MilitaryForm = ({
   onShiftDurationChange,
   onAddMilitary,
 }: MilitaryFormProps) => {
+  const [hasAlterations, setHasAlterations] = useState(false);
+  const [alterations, setAlterations] = useState("");
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -166,9 +172,35 @@ const MilitaryForm = ({
             </SelectContent>
           </Select>
         </div>
+
+        <div className="md:col-span-2 flex items-center space-x-2">
+          <Checkbox
+            id="alterations"
+            checked={hasAlterations}
+            onCheckedChange={(checked) => {
+              setHasAlterations(checked === true);
+              if (!checked) setAlterations("");
+            }}
+          />
+          <Label htmlFor="alterations">Alterações</Label>
+        </div>
+
+        {hasAlterations && (
+          <div className="md:col-span-2">
+            <Label htmlFor="alterationsText">Descrição das Alterações</Label>
+            <Textarea
+              id="alterationsText"
+              value={alterations}
+              onChange={(e) => setAlterations(e.target.value)}
+              placeholder="Descreva as alterações"
+              className="min-h-[100px]"
+            />
+          </div>
+        )}
+
         <div className="md:col-span-2">
           <Button
-            onClick={onAddMilitary}
+            onClick={() => onAddMilitary(alterations)}
             className="w-full bg-military-orange hover:bg-military-red transition-colors"
             disabled={!selectedMilitary || !militaryFunction || !selectedDate || !shiftDuration}
           >

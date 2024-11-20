@@ -25,7 +25,7 @@ const Index = () => {
   const gbmOptions = ["1°GBM", "2°GBM", "5°GBM", "GAPH", "GMAF", "MCPB"];
   const militaryOptions = [];
 
-  const handleAddMilitary = () => {
+  const handleAddMilitary = (alterations?: string) => {
     if (!selectedMilitary || !militaryFunction || !selectedDate || !shiftDuration) {
       toast({
         variant: "destructive",
@@ -42,6 +42,7 @@ const Index = () => {
       vtr: selectedVTR,
       date: selectedDate,
       shiftDuration: shiftDuration,
+      alterations,
     };
 
     setMilitaryList([...militaryList, newMilitary]);

@@ -23,7 +23,7 @@ interface MilitaryContainerProps {
   onFunctionChange: (value: string) => void;
   onDateChange: (date: Date) => void;
   onShiftDurationChange: (value: string) => void;
-  onAddMilitary: () => void;
+  onAddMilitary: (alterations?: string) => void;
   onEdit: (index: number) => void;
   onDelete: (index: number) => void;
   onFinishOperation: () => void;
