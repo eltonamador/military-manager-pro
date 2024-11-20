@@ -23,11 +23,14 @@ import { Vehicle } from "@/types/vehicle";
 const MilitaryContainer = () => {
   const [selectedVTR, setSelectedVTR] = useState("");
   const [selectedGBM, setSelectedGBM] = useState("");
+  const [selectedMilitary, setSelectedMilitary] = useState("");
+  const [militaryFunction, setMilitaryFunction] = useState("");
   const [status, setStatus] = useState("");
   const [description, setDescription] = useState("");
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [shiftDuration, setShiftDuration] = useState("24");
   const [showGoodServiceDialog, setShowGoodServiceDialog] = useState(false);
   const { toast } = useToast();
   const { saveVehicleService } = useVehicleService();
@@ -66,7 +69,6 @@ const MilitaryContainer = () => {
         });
       }
 
-      // Convert Military to Vehicle type
       const updatedVehicle: Vehicle = {
         gbm: updatedMilitary.gbm,
         vtr: updatedMilitary.vtr,
@@ -89,7 +91,15 @@ const MilitaryContainer = () => {
     }
   };
 
-  const handleAddMilitary = (military: Military) => {
+  const handleAddMilitary = () => {
+    const military: Military = {
+      gbm: selectedGBM,
+      vtr: selectedVTR,
+      name: selectedMilitary,
+      function: militaryFunction,
+      date: selectedDate,
+    };
+
     const newVehicle: Vehicle = {
       gbm: military.gbm,
       vtr: military.vtr,
@@ -97,6 +107,7 @@ const MilitaryContainer = () => {
       description: description,
       date: military.date,
     };
+
     setVehicles([...vehicles, newVehicle]);
     toast({
       title: "Militar adicionado",
@@ -124,21 +135,35 @@ const MilitaryContainer = () => {
     }
   };
 
+  const gbmOptions = [
+    "1º GBM",
+    "2º GBM",
+    "5º GBM",
+    "GAPH",
+    "GMAF",
+    "MCPB"
+  ];
+
+  const vtrOptions = ["VTR1", "VTR2", "VTR3"]; // This should be fetched from your backend
+
   return (
     <main className="flex-grow bg-white rounded-lg shadow-md p-3 sm:p-6">
       <MilitaryForm
         selectedVTR={selectedVTR}
         selectedGBM={selectedGBM}
+        selectedMilitary={selectedMilitary}
+        militaryFunction={militaryFunction}
         selectedDate={selectedDate}
-        status={status}
-        description={description}
+        shiftDuration={shiftDuration}
+        gbmOptions={gbmOptions}
+        vtrOptions={vtrOptions}
         onGBMChange={setSelectedGBM}
         onVTRChange={setSelectedVTR}
+        onMilitaryChange={setSelectedMilitary}
+        onFunctionChange={setMilitaryFunction}
         onDateChange={setSelectedDate}
-        onStatusChange={setStatus}
-        onDescriptionChange={setDescription}
+        onShiftDurationChange={setShiftDuration}
         onAddMilitary={handleAddMilitary}
-        editingIndex={editingIndex}
       />
 
       <div className="overflow-x-auto">

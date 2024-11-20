@@ -15,6 +15,7 @@ import { ptBR } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import MilitarySearch from "./military/MilitarySearch";
+import { Military } from "@/types/military";
 
 interface MilitaryFormProps {
   selectedGBM: string;
@@ -25,7 +26,6 @@ interface MilitaryFormProps {
   shiftDuration: string;
   gbmOptions: string[];
   vtrOptions: string[];
-  militaryOptions: string[];
   onGBMChange: (value: string) => void;
   onVTRChange: (value: string) => void;
   onMilitaryChange: (value: string) => void;
@@ -78,7 +78,7 @@ const MilitaryForm = ({
               <SelectValue placeholder="Selecione o GBM" />
             </SelectTrigger>
             <SelectContent>
-              {gbmOptions.map((gbm) => (
+              {gbmOptions?.map((gbm) => (
                 <SelectItem key={gbm} value={gbm}>
                   {gbm}
                 </SelectItem>
@@ -122,7 +122,7 @@ const MilitaryForm = ({
               <SelectValue placeholder="Selecione a VTR" />
             </SelectTrigger>
             <SelectContent>
-              {vtrOptions.map((vtr) => (
+              {vtrOptions?.map((vtr) => (
                 <SelectItem key={vtr} value={vtr}>
                   {vtr}
                 </SelectItem>
