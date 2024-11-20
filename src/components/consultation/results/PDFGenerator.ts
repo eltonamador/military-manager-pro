@@ -3,12 +3,14 @@ import jsPDF from "jspdf";
 import { toast } from "sonner";
 
 export const generatePDF = async (elementId: string) => {
+  const loadingToast = toast.loading("Gerando PDF...");
+  
   try {
     const element = document.getElementById(elementId);
-    if (!element) return null;
+    if (!element) {
+      throw new Error("Element not found");
+    }
 
-    toast.loading("Gerando PDF...");
-    
     // Create PDF with A4 dimensions (210mm x 297mm)
     const pdf = new jsPDF('p', 'mm', 'a4');
     
@@ -19,7 +21,16 @@ export const generatePDF = async (elementId: string) => {
     const contentWidth = pageWidth - (margin * 2);
     
     // Add military logo/header image
-    pdf.addImage("/escaladohj2.webp", "WEBP", margin, margin, 20, 20);
+    const logoImg = new Image();
+    logoImg.src = "/escaladohj2.webp";
+    
+    // Wait for image to load before proceeding
+    await new Promise((resolve, reject) => {
+      logoImg.onload = resolve;
+      logoImg.onerror = () => reject(new Error("Failed to load logo"));
+    });
+    
+    pdf.addImage(logoImg, "WEBP", margin, margin, 20, 20);
     
     // Header styling
     pdf.setDrawColor(243, 113, 33); // Military orange color
@@ -29,15 +40,15 @@ export const generatePDF = async (elementId: string) => {
     // Header text configuration
     pdf.setFont("helvetica", "bold");
     pdf.setFontSize(16);
-    pdf.setTextColor(35, 35, 35); // Dark gray for better readability
+    pdf.setTextColor(35, 35, 35);
     const headerText = "CORPO DE BOMBEIROS MILITAR DO AMAPÁ";
     const headerWidth = pdf.getStringUnitWidth(headerText) * 16 / pdf.internal.scaleFactor;
     const headerX = (pageWidth - headerWidth) / 2;
     pdf.text(headerText, headerX, margin + 35);
 
-    // Subheader text with different styling
+    // Subheader text
     pdf.setFontSize(12);
-    pdf.setTextColor(80, 80, 80); // Lighter gray for subheader
+    pdf.setTextColor(80, 80, 80);
     const subHeader1 = "COMANDO OPERACIONAL";
     const subHeader2 = "MILITARES E VIATURAS NO SERVIÇO OPERACIONAL";
     const subHeader1Width = pdf.getStringUnitWidth(subHeader1) * 12 / pdf.internal.scaleFactor;
@@ -45,8 +56,8 @@ export const generatePDF = async (elementId: string) => {
     pdf.text(subHeader1, (pageWidth - subHeader1Width) / 2, margin + 45);
     pdf.text(subHeader2, (pageWidth - subHeader2Width) / 2, margin + 55);
 
-    // Add decorative line below headers
-    pdf.setDrawColor(243, 113, 33); // Military orange
+    // Add decorative line
+    pdf.setDrawColor(243, 113, 33);
     pdf.setLineWidth(0.3);
     pdf.line(margin, margin + 60, pageWidth - margin, margin + 60);
 
@@ -60,23 +71,48 @@ export const generatePDF = async (elementId: string) => {
     pdf.setTextColor(100, 100, 100);
     pdf.text(`Data: ${currentDate}`, margin, margin + 70);
 
-    // Style the table before conversion
+    // Prepare table for conversion
     const tableElement = element.querySelector('table');
     if (tableElement) {
-      // Add CSS classes for better table styling
-      tableElement.classList.add('border-collapse', 'w-full');
+      // Add table styling classes
+      tableElement.classList.add(
+        'border-collapse',
+        'w-full',
+        'bg-white',
+        'shadow-sm'
+      );
+      
+      // Style table rows
       const rows = tableElement.querySelectorAll('tr');
       rows.forEach((row, index) => {
         if (index === 0) {
-          row.classList.add('bg-military-orange/20');
+          row.classList.add(
+            'bg-military-orange/20',
+            'text-gray-800',
+            'font-semibold'
+          );
         } else {
-          row.classList.add(index % 2 === 0 ? 'bg-gray-50' : 'bg-white');
+          row.classList.add(
+            index % 2 === 0 ? 'bg-gray-50' : 'bg-white',
+            'border-b',
+            'border-military-orange/20'
+          );
         }
-        row.classList.add('border-b', 'border-military-orange/20');
+      });
+
+      // Style table cells
+      const cells = tableElement.querySelectorAll('td, th');
+      cells.forEach(cell => {
+        cell.classList.add(
+          'px-4',
+          'py-2',
+          'text-sm',
+          'border-military-orange/10'
+        );
       });
     }
 
-    // Convert table to canvas with higher scale for better quality
+    // Convert table to canvas with improved quality
     const canvas = await html2canvas(element, {
       scale: 2,
       useCORS: true,
@@ -93,22 +129,22 @@ export const generatePDF = async (elementId: string) => {
       }
     });
 
-    // Calculate dimensions to fit content within margins
+    // Calculate dimensions
     const imgData = canvas.toDataURL('image/png');
     const imgWidth = contentWidth;
     const imgHeight = (canvas.height * contentWidth) / canvas.width;
     
-    // Add table image with proper positioning
+    // Add table image
     pdf.addImage(
       imgData, 
       'PNG', 
       margin, 
-      margin + 75, // Position below header and date
+      margin + 75,
       imgWidth,
       imgHeight
     );
 
-    // Check if content needs multiple pages
+    // Handle multiple pages if needed
     if (margin + 75 + imgHeight > pageHeight - margin) {
       const firstPageHeight = pageHeight - (margin + 75);
       const remainingHeight = imgHeight - firstPageHeight;
@@ -118,7 +154,7 @@ export const generatePDF = async (elementId: string) => {
         pdf.addPage();
         const heightOnThisPage = Math.min(pageHeight - (margin * 2), remainingHeight - currentY);
         
-        // Add header line on each new page
+        // Add header line on new pages
         pdf.setDrawColor(243, 113, 33);
         pdf.setLineWidth(0.3);
         pdf.line(margin, margin, pageWidth - margin, margin);
@@ -136,7 +172,7 @@ export const generatePDF = async (elementId: string) => {
       }
     }
 
-    // Add page numbers with styling
+    // Add page numbers
     const totalPages = pdf.getNumberOfPages();
     for (let i = 1; i <= totalPages; i++) {
       pdf.setPage(i);
@@ -160,14 +196,14 @@ export const generatePDF = async (elementId: string) => {
     const pdfBlob = pdf.output('blob');
     const pdfUrl = URL.createObjectURL(pdfBlob);
 
-    toast.dismiss();
+    toast.dismiss(loadingToast);
     toast.success("PDF gerado com sucesso!");
 
     return pdfUrl;
   } catch (error) {
     console.error('Error generating PDF:', error);
-    toast.dismiss();
-    toast.error("Erro ao gerar PDF");
+    toast.dismiss(loadingToast);
+    toast.error("Erro ao gerar PDF. Por favor, tente novamente.");
     return null;
   }
 };
