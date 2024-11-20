@@ -12,7 +12,6 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { getMilitaryTableName, getVehicleTableName } from "@/utils/tableNames";
-import { useVTRs } from "@/hooks/useVTRs";
 
 interface Military {
   name: string;
@@ -37,8 +36,6 @@ interface FinalReportProps {
   onFinish: () => void;
 }
 
-const gbmOptions = ["1º GBM", "2º GBM", "MCPB", "5º GBM", "GAPH", "GMAF"];
-
 const FinalReport = ({
   vehicles,
   onClose,
@@ -46,7 +43,6 @@ const FinalReport = ({
 }: FinalReportProps) => {
   const [serviceMilitaryList, setServiceMilitaryList] = useState<Military[]>([]);
   const { toast } = useToast();
-  const { data: vtrOptions } = useVTRs();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,7 +56,7 @@ const FinalReport = ({
 
         // Fetch military service data from all GBM tables
         const militaryData = [];
-        for (const gbm of gbmOptions) {
+        for (const gbm of ["1º GBM", "2º GBM", "MCPB", "5º GBM", "GAPH", "GMAF"]) {
           try {
             const tableName = getMilitaryTableName(gbm);
             const { data, error } = await supabase
@@ -107,11 +103,7 @@ const FinalReport = ({
           <div>
             <h3 className="text-lg font-semibold mb-4">Militares</h3>
             <div className="overflow-x-auto">
-              <MilitaryTable 
-                militaryList={serviceMilitaryList} 
-                gbmOptions={gbmOptions}
-                vtrOptions={vtrOptions || []}
-              />
+              <MilitaryTable militaryList={serviceMilitaryList} />
             </div>
           </div>
           <div>
