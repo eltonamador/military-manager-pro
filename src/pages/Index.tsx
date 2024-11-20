@@ -7,12 +7,23 @@ import MilitaryActions from "@/components/military/MilitaryActions";
 import MilitaryHeader from "@/components/military/MilitaryHeader";
 import { Military } from "@/types/military";
 import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
 
 const Index = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  // State management for all required props
   const [selectedGBM, setSelectedGBM] = useState("");
   const [selectedVTR, setSelectedVTR] = useState("");
   const [selectedMilitary, setSelectedMilitary] = useState("");
@@ -20,12 +31,36 @@ const Index = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [shiftDuration, setShiftDuration] = useState("24");
   const [militaryList, setMilitaryList] = useState<Military[]>([]);
+  const [showUpdateDialog, setShowUpdateDialog] = useState(false);
+  const [pendingMilitary, setPendingMilitary] = useState<Military | null>(null);
 
-  // Mock data for options (replace with actual data from your backend)
   const gbmOptions = ["1°GBM", "2°GBM", "5°GBM", "GAPH", "GMAF", "MCPB"];
   const militaryOptions = [];
 
-  const handleAddMilitary = (alterations?: string) => {
+  const checkExistingMilitary = async (military: Military) => {
+    const tableName = `servico_militar_${military.gbm.toLowerCase().replace(/[°º]/, '')}`;
+    const formattedDate = format(military.date, 'yyyy-MM-dd');
+
+    const { data, error } = await supabase
+      .from(tableName)
+      .select()
+      .eq('nome_de_guerra', military.name)
+      .eq('data', formattedDate)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Erro ao verificar registros existentes.",
+      });
+      return false;
+    }
+
+    return !!data;
+  };
+
+  const handleAddMilitary = async (alterations?: string) => {
     if (!selectedMilitary || !militaryFunction || !selectedDate || !shiftDuration) {
       toast({
         variant: "destructive",
@@ -45,11 +80,27 @@ const Index = () => {
       alterations,
     };
 
-    setMilitaryList([...militaryList, newMilitary]);
+    const exists = await checkExistingMilitary(newMilitary);
     
-    // Reset form
+    if (exists) {
+      setPendingMilitary(newMilitary);
+      setShowUpdateDialog(true);
+      return;
+    }
+
+    setMilitaryList([...militaryList, newMilitary]);
     setSelectedMilitary("");
     setMilitaryFunction("");
+  };
+
+  const handleUpdateConfirm = () => {
+    if (pendingMilitary) {
+      setMilitaryList([...militaryList, pendingMilitary]);
+      setSelectedMilitary("");
+      setMilitaryFunction("");
+      setPendingMilitary(null);
+    }
+    setShowUpdateDialog(false);
   };
 
   const handleEdit = (index: number) => {
@@ -134,6 +185,28 @@ const Index = () => {
           onDelete={handleDelete}
           onFinishOperation={handleFinishOperation}
         />
+
+        <AlertDialog open={showUpdateDialog} onOpenChange={setShowUpdateDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Militar já cadastrado</AlertDialogTitle>
+              <AlertDialogDescription>
+                Já existe um registro para este militar na data selecionada. Deseja atualizar os dados?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => {
+                setShowUpdateDialog(false);
+                setPendingMilitary(null);
+              }}>
+                Cancelar
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={handleUpdateConfirm}>
+                Atualizar
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
