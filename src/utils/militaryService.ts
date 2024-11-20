@@ -22,7 +22,7 @@ export const saveMilitaryService = async (military: Military) => {
       funcao: military.function,
       data: format(military.date, 'yyyy-MM-dd'),
       alteracao_mil: military.alterations || null,
-      horario_inclusao: military.time,
+      horario_inclusao: military.time || format(new Date(), 'HH:mm'),
     });
 
   if (error) {
