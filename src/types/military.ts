@@ -7,4 +7,5 @@ export interface Military {
   shiftDuration: string;
   alterations?: string;
   time?: string;
+  inclusionTime?: string;
 }

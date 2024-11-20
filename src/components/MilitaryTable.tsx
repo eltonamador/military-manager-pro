@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import {
   Table,
   TableBody,
@@ -6,155 +8,74 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowUpDown, Edit, Trash2 } from "lucide-react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { useState } from "react";
-import { Button } from "./ui/button";
-
-interface Military {
-  name: string;
-  function: string;
-  gbm: string;
-  vtr: string;
-  date: Date;
-  shiftDuration: string;
-  time?: string;
-  alterations?: string;
-}
+import { Military } from "@/types/military";
 
 interface MilitaryTableProps {
   militaryList: Military[];
   onEdit?: (index: number) => void;
   onDelete?: (index: number) => void;
+  showInclusionTime?: boolean;
 }
 
-type SortField = 'name' | 'vtr' | 'function' | 'gbm' | 'date' | 'shiftDuration' | 'time' | 'alterations';
-type SortOrder = 'asc' | 'desc';
-
-const MilitaryTable = ({ militaryList, onEdit, onDelete }: MilitaryTableProps) => {
-  const [sortField, setSortField] = useState<SortField>('name');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
-
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortOrder('asc');
-    }
-  };
-
-  const sortedList = [...militaryList].sort((a, b) => {
-    const multiplier = sortOrder === 'asc' ? 1 : -1;
-    
-    switch (sortField) {
-      case 'date':
-        return multiplier * (new Date(a.date).getTime() - new Date(b.date).getTime());
-      case 'time':
-        return multiplier * ((a.time || '').localeCompare(b.time || ''));
-      case 'alterations':
-        return multiplier * ((a.alterations || '').localeCompare(b.alterations || ''));
-      default:
-        return multiplier * (a[sortField] < b[sortField] ? -1 : a[sortField] > b[sortField] ? 1 : 0);
-    }
-  });
-
-  const SortButton = ({ field, label }: { field: SortField; label: string }) => (
-    <Button
-      variant="ghost"
-      onClick={() => handleSort(field)}
-      className="hover:bg-military-red/10 text-gray-700 font-medium w-full justify-start p-1"
-    >
-      {label}
-      <ArrowUpDown className="ml-1 h-4 w-4" />
-    </Button>
-  );
-
+const MilitaryTable = ({ 
+  militaryList, 
+  onEdit, 
+  onDelete,
+  showInclusionTime = false 
+}: MilitaryTableProps) => {
   return (
-    <div className="rounded-xl border border-military-red/20 shadow-sm overflow-hidden">
+    <div className="border rounded-lg">
       <Table>
-        <TableHeader className="bg-gradient-to-r from-military-red/10 to-military-orange/10">
-          <TableRow className="hover:bg-transparent border-b border-military-red/20">
-            <TableHead className="font-semibold w-[180px] py-2">
-              <SortButton field="name" label="Nome" />
-            </TableHead>
-            <TableHead className="font-semibold w-[80px] py-2">
-              <SortButton field="vtr" label="VTR" />
-            </TableHead>
-            <TableHead className="font-semibold w-[120px] py-2">
-              <SortButton field="function" label="Função" />
-            </TableHead>
-            <TableHead className="font-semibold w-[80px] py-2">
-              <SortButton field="gbm" label="GBM" />
-            </TableHead>
-            <TableHead className="font-semibold w-[100px] py-2">
-              <SortButton field="date" label="Data" />
-            </TableHead>
-            <TableHead className="font-semibold w-[100px] py-2">
-              <SortButton field="time" label="Horário" />
-            </TableHead>
-            <TableHead className="font-semibold w-[80px] py-2">
-              <SortButton field="shiftDuration" label="Jornada" />
-            </TableHead>
-            <TableHead className="font-semibold w-[200px] py-2">
-              <SortButton field="alterations" label="Alterações" />
-            </TableHead>
-            {(onEdit || onDelete) && (
-              <TableHead className="text-right font-semibold w-[80px] py-2">Ações</TableHead>
-            )}
+        <TableHeader>
+          <TableRow>
+            <TableHead>Nome</TableHead>
+            <TableHead>Função</TableHead>
+            <TableHead>GBM</TableHead>
+            <TableHead>VTR</TableHead>
+            <TableHead>Data</TableHead>
+            <TableHead>Duração</TableHead>
+            {showInclusionTime && <TableHead>Horário de Inclusão</TableHead>}
+            {(onEdit || onDelete) && <TableHead>Ações</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedList.map((military, index) => (
-            <TableRow 
-              key={index} 
-              className="hover:bg-military-red/5 transition-colors duration-200 even:bg-gray-100/80"
-            >
-              <TableCell className="font-medium py-1.5">{military.name}</TableCell>
-              <TableCell className="text-center py-1.5">{military.vtr}</TableCell>
-              <TableCell className="py-1.5">{military.function}</TableCell>
-              <TableCell className="text-center py-1.5">{military.gbm}</TableCell>
-              <TableCell className="py-1.5">{format(military.date, "dd/MM/yyyy", { locale: ptBR })}</TableCell>
-              <TableCell className="py-1.5">{military.time || ""}</TableCell>
-              <TableCell className="text-center py-1.5">{military.shiftDuration}h</TableCell>
-              <TableCell className="py-1.5">{military.alterations || ""}</TableCell>
+          {militaryList.map((military, index) => (
+            <TableRow key={index}>
+              <TableCell>{military.name}</TableCell>
+              <TableCell>{military.function}</TableCell>
+              <TableCell>{military.gbm}</TableCell>
+              <TableCell>{military.vtr}</TableCell>
+              <TableCell>
+                {military.date
+                  ? format(new Date(military.date), "dd/MM/yyyy", { locale: ptBR })
+                  : ""}
+              </TableCell>
+              <TableCell>{military.shiftDuration}h</TableCell>
+              {showInclusionTime && (
+                <TableCell>{military.inclusionTime}</TableCell>
+              )}
               {(onEdit || onDelete) && (
-                <TableCell className="text-right space-x-1 py-1.5">
+                <TableCell className="flex gap-2">
                   {onEdit && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
+                    <button
                       onClick={() => onEdit(index)}
-                      className="hover:bg-military-red/10 h-7 w-7"
+                      className="text-blue-600 hover:text-blue-800"
                     >
-                      <Edit className="h-4 w-4 text-military-red" />
-                    </Button>
+                      Editar
+                    </button>
                   )}
                   {onDelete && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
+                    <button
                       onClick={() => onDelete(index)}
-                      className="hover:bg-military-red/10 h-7 w-7"
+                      className="text-red-600 hover:text-red-800"
                     >
-                      <Trash2 className="h-4 w-4 text-military-red" />
-                    </Button>
+                      Excluir
+                    </button>
                   )}
                 </TableCell>
               )}
             </TableRow>
           ))}
-          {sortedList.length === 0 && (
-            <TableRow>
-              <TableCell 
-                colSpan={9} 
-                className="text-center text-gray-500 py-6 bg-gray-50/50"
-              >
-                Nenhum registro encontrado
-              </TableCell>
-            </TableRow>
-          )}
         </TableBody>
       </Table>
     </div>

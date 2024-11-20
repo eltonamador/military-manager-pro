@@ -51,10 +51,11 @@ const ConsultationResults = ({
     return <LoadingState />;
   }
 
-  // Ensure all data uses the selected date
+  // Ensure all data uses the selected date and includes time information
   const dataWithSelectedDate = combinedData.map(item => ({
     ...item,
-    date: selectedDate || item.date
+    date: selectedDate || item.date,
+    inclusionTime: item.time || "Não informado" // Ensure time is always present
   }));
 
   return (
@@ -64,7 +65,10 @@ const ConsultationResults = ({
         onShare={handleShare}
       />
       <div id="consultation-results">
-        <MilitaryTable militaryList={dataWithSelectedDate} />
+        <MilitaryTable 
+          militaryList={dataWithSelectedDate} 
+          showInclusionTime={true}
+        />
       </div>
     </div>
   );
