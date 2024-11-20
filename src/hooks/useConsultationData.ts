@@ -1,9 +1,24 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+import { Database } from "@/integrations/supabase/types";
 
 const formatDateForQuery = (date: Date) => {
   return format(date, 'yyyy-MM-dd');
+};
+
+type MilitaryServiceTable = Database["public"]["Tables"]["servico_militar_1gbm"]["Row"];
+type VehicleServiceTable = Database["public"]["Tables"]["servico_vtrs_1gbm"]["Row"];
+type OfficerServiceTable = Database["public"]["Tables"]["servico_oficial"]["Row"];
+
+const getMilitaryTableName = (gbm: string) => {
+  const formattedGBM = gbm.toLowerCase().replace('º', '').replace(' ', '');
+  return `servico_militar_${formattedGBM}` as keyof Database["public"]["Tables"];
+};
+
+const getVehicleTableName = (gbm: string) => {
+  const formattedGBM = gbm.toLowerCase().replace('º', '').replace(' ', '');
+  return `servico_vtrs_${formattedGBM}` as keyof Database["public"]["Tables"];
 };
 
 export const useConsultationData = (
@@ -21,8 +36,7 @@ export const useConsultationData = (
       const formattedDate = formatDateForQuery(selectedDate);
 
       const promises = selectedMilitaryGBMs.map(async (gbm) => {
-        const formattedGBM = gbm.toLowerCase().replace('º', '').replace(' ', '');
-        const tableName = `servico_militar_${formattedGBM}`;
+        const tableName = getMilitaryTableName(gbm);
         const query = supabase
           .from(tableName)
           .select("*")
@@ -40,7 +54,7 @@ export const useConsultationData = (
           throw error;
         }
         
-        return queryData || [];
+        return (queryData || []) as MilitaryServiceTable[];
       });
 
       const results = await Promise.all(promises);
@@ -57,8 +71,7 @@ export const useConsultationData = (
       const formattedDate = formatDateForQuery(selectedDate);
 
       const promises = selectedVehicleGBMs.map(async (gbm) => {
-        const formattedGBM = gbm.toLowerCase().replace('º', '').replace(' ', '');
-        const tableName = `servico_vtrs_${formattedGBM}`;
+        const tableName = getVehicleTableName(gbm);
         const query = supabase
           .from(tableName)
           .select("*")
@@ -76,7 +89,7 @@ export const useConsultationData = (
           throw error;
         }
         
-        return queryData || [];
+        return (queryData || []) as VehicleServiceTable[];
       });
 
       const results = await Promise.all(promises);
@@ -104,7 +117,7 @@ export const useConsultationData = (
         throw error;
       }
 
-      return data || [];
+      return (data || []) as OfficerServiceTable[];
     },
     enabled: !!selectedDate && selectedOfficerTypes.length > 0,
   });

@@ -28,7 +28,6 @@ const Index = () => {
   const [selectedMilitary, setSelectedMilitary] = useState("");
   const [militaryFunction, setMilitaryFunction] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [shiftDuration, setShiftDuration] = useState("24");
   const [militaryList, setMilitaryList] = useState<Military[]>([]);
   const [showUpdateDialog, setShowUpdateDialog] = useState(false);
   const [pendingMilitary, setPendingMilitary] = useState<Military | null>(null);
@@ -37,7 +36,7 @@ const Index = () => {
   const militaryOptions = [];
 
   const handleAddMilitary = async (alterations?: string) => {
-    if (!selectedMilitary || !militaryFunction || !selectedDate || !shiftDuration) {
+    if (!selectedMilitary || !militaryFunction || !selectedDate) {
       toast({
         variant: "destructive",
         title: "Erro",
@@ -52,7 +51,6 @@ const Index = () => {
       gbm: selectedGBM,
       vtr: selectedVTR,
       date: selectedDate,
-      shiftDuration: shiftDuration,
       alterations,
     };
 
@@ -94,7 +92,6 @@ const Index = () => {
     setSelectedGBM(military.gbm);
     setSelectedVTR(military.vtr);
     setSelectedDate(military.date);
-    setShiftDuration(military.shiftDuration);
 
     // Remove the edited item from the list
     const newList = [...militaryList];
@@ -154,7 +151,6 @@ const Index = () => {
           selectedMilitary={selectedMilitary}
           militaryFunction={militaryFunction}
           selectedDate={selectedDate}
-          shiftDuration={shiftDuration}
           gbmOptions={gbmOptions}
           militaryOptions={militaryOptions}
           militaryList={militaryList}
@@ -163,7 +159,6 @@ const Index = () => {
           onMilitaryChange={setSelectedMilitary}
           onFunctionChange={setMilitaryFunction}
           onDateChange={setSelectedDate}
-          onShiftDurationChange={setShiftDuration}
           onAddMilitary={handleAddMilitary}
           onEdit={handleEdit}
           onDelete={handleDelete}
