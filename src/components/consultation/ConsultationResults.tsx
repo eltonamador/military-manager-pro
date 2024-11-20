@@ -3,22 +3,17 @@ import { ResultsHeader } from "./results/ResultsHeader";
 import { LoadingState } from "./results/LoadingState";
 import { generatePDF } from "./results/PDFGenerator";
 import { toast } from "sonner";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { getMilitaryTableName } from "@/utils/tableNames";
 
 interface ConsultationResultsProps {
   isLoading: boolean;
   combinedData: any[];
   selectedDate: Date | undefined;
-  onDataChange?: () => void;
 }
 
 const ConsultationResults = ({ 
   isLoading, 
   combinedData,
-  selectedDate,
-  onDataChange
+  selectedDate 
 }: ConsultationResultsProps) => {
   const handleGeneratePDF = async () => {
     const pdfUrl = await generatePDF('consultation-results');
@@ -40,25 +35,15 @@ const ConsultationResults = ({
           });
           toast.success("Compartilhado com sucesso!");
         } catch (error) {
+          // Fallback to WhatsApp if share API fails or is cancelled
           const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message + "\n" + pdfUrl)}`;
           window.open(whatsappUrl, '_blank');
         }
       } else {
+        // Fallback for browsers that don't support the Web Share API
         const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message + "\n" + pdfUrl)}`;
         window.open(whatsappUrl, '_blank');
       }
-    }
-  };
-
-  const handleEdit = () => {
-    if (onDataChange) {
-      onDataChange();
-    }
-  };
-
-  const handleDelete = () => {
-    if (onDataChange) {
-      onDataChange();
     }
   };
 
@@ -66,6 +51,7 @@ const ConsultationResults = ({
     return <LoadingState />;
   }
 
+  // Ensure all data uses the selected date
   const dataWithSelectedDate = combinedData.map(item => ({
     ...item,
     date: selectedDate || item.date
@@ -78,12 +64,7 @@ const ConsultationResults = ({
         onShare={handleShare}
       />
       <div id="consultation-results">
-        <MilitaryTable 
-          militaryList={dataWithSelectedDate} 
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          allowEditing={true}
-        />
+        <MilitaryTable militaryList={dataWithSelectedDate} />
       </div>
     </div>
   );

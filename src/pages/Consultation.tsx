@@ -22,7 +22,7 @@ const Consultation = () => {
     return format(date, 'yyyy-MM-dd');
   };
 
-  const { data: militaryData, isLoading: isMilitaryLoading, refetch } = useQuery({
+  const { data: militaryData, isLoading: isMilitaryLoading } = useQuery({
     queryKey: ["military-service", selectedMilitaryGBMs, selectedDate, selectedVTRs],
     queryFn: async () => {
       if (!selectedDate || selectedMilitaryGBMs.length === 0) return [];
@@ -42,12 +42,12 @@ const Consultation = () => {
         }
 
         const { data: queryData, error } = await query;
-
+        
         if (error) {
           console.error(`Error querying ${tableName}:`, error);
           throw error;
         }
-
+        
         return queryData || [];
       });
 
@@ -77,12 +77,12 @@ const Consultation = () => {
         }
 
         const { data: queryData, error } = await query;
-
+        
         if (error) {
           console.error(`Error querying ${tableName}:`, error);
           throw error;
         }
-
+        
         return queryData || [];
       });
 
@@ -98,7 +98,7 @@ const Consultation = () => {
       if (!selectedDate || selectedOfficerTypes.length === 0) return [];
 
       const formattedDate = formatDateForQuery(selectedDate);
-
+      
       const { data, error } = await supabase
         .from('servico_oficial')
         .select('*')
@@ -184,10 +184,6 @@ const Consultation = () => {
     setSelectedOfficerTypes(types);
   };
 
-  const handleDataChange = () => {
-    refetch();
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="container mx-auto p-2 sm:p-4 space-y-4 sm:space-y-6">
@@ -213,7 +209,6 @@ const Consultation = () => {
             isLoading={isLoading}
             combinedData={combinedData}
             selectedDate={selectedDate}
-            onDataChange={handleDataChange}
           />
         </div>
 
