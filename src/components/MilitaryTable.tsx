@@ -33,7 +33,7 @@ const MilitaryTable = ({
             <TableHead>GBM</TableHead>
             <TableHead>VTR</TableHead>
             <TableHead>Data</TableHead>
-            <TableHead>Duração</TableHead>
+            <TableHead>Alterações</TableHead>
             {showInclusionTime && <TableHead>Horário de Inclusão</TableHead>}
             {(onEdit || onDelete) && <TableHead>Ações</TableHead>}
           </TableRow>
@@ -50,7 +50,7 @@ const MilitaryTable = ({
                   ? format(new Date(military.date), "dd/MM/yyyy", { locale: ptBR })
                   : ""}
               </TableCell>
-              <TableCell>{military.shiftDuration}h</TableCell>
+              <TableCell>{military.alterations || "-"}</TableCell>
               {showInclusionTime && (
                 <TableCell>{military.inclusionTime}</TableCell>
               )}

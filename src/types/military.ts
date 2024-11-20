@@ -4,7 +4,6 @@ export interface Military {
   gbm: string;
   vtr: string;
   date: Date;
-  shiftDuration: string;
   alterations?: string;
   time?: string;
   inclusionTime?: string;

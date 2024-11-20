@@ -21,7 +21,8 @@ export const useConsultationData = (
       const formattedDate = formatDateForQuery(selectedDate);
 
       const promises = selectedMilitaryGBMs.map(async (gbm) => {
-        const tableName = `servico_militar_${gbm.toLowerCase().replace('º', '').replace(' ', '')}`;
+        const formattedGBM = gbm.toLowerCase().replace('º', '').replace(' ', '');
+        const tableName = `servico_militar_${formattedGBM}`;
         const query = supabase
           .from(tableName)
           .select("*")
@@ -56,7 +57,8 @@ export const useConsultationData = (
       const formattedDate = formatDateForQuery(selectedDate);
 
       const promises = selectedVehicleGBMs.map(async (gbm) => {
-        const tableName = `servico_vtrs_${gbm.toLowerCase().replace('º', '').replace(' ', '')}`;
+        const formattedGBM = gbm.toLowerCase().replace('º', '').replace(' ', '');
+        const tableName = `servico_vtrs_${formattedGBM}`;
         const query = supabase
           .from(tableName)
           .select("*")
@@ -114,7 +116,7 @@ export const useConsultationData = (
       gbm: item.GBM || "",
       vtr: item.viatura || "",
       date: item.data ? new Date(item.data) : new Date(),
-      shiftDuration: "24",
+      alterations: item.alteracao_mil || "-",
       time: item.horario_inclusao || ""
     })) || [];
 
@@ -124,7 +126,7 @@ export const useConsultationData = (
       gbm: item.gbm || "",
       vtr: item.alteracao || "",
       date: item.data ? new Date(item.data) : new Date(),
-      shiftDuration: "-",
+      alterations: item.alteracao || "-",
       time: item.hora_inclusao_vtr || ""
     })) || [];
 
@@ -132,9 +134,9 @@ export const useConsultationData = (
       name: item.nome_of_sup || "",
       function: item.tipo || "",
       gbm: "-",
-      vtr: "-",
+      vtr: item.vtr_sup || "-",
       date: item.data_serv_of ? new Date(item.data_serv_of) : new Date(),
-      shiftDuration: "24",
+      alterations: "-",
       time: item.hora_inclusao_sup || ""
     })) || [];
 
