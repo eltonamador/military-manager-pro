@@ -21,11 +21,13 @@ interface Vehicle {
   status: string;
   description: string;
   date: Date;
+  time: string;
 }
 
 const VehicleContainer = () => {
   const [selectedVTR, setSelectedVTR] = useState("");
   const [selectedGBM, setSelectedGBM] = useState("");
+  const [selectedTime, setSelectedTime] = useState("");
   const [status, setStatus] = useState("");
   const [description, setDescription] = useState("");
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -43,6 +45,7 @@ const VehicleContainer = () => {
       status,
       description,
       date: selectedDate,
+      time: selectedTime,
     };
 
     if (editingIndex !== null) {
@@ -98,11 +101,13 @@ const VehicleContainer = () => {
         selectedVTR={selectedVTR}
         selectedGBM={selectedGBM}
         selectedDate={selectedDate}
+        selectedTime={selectedTime}
         status={status}
         description={description}
         onGBMChange={setSelectedGBM}
         onVTRChange={setSelectedVTR}
         onDateChange={setSelectedDate}
+        onTimeChange={setSelectedTime}
         onStatusChange={setStatus}
         onDescriptionChange={setDescription}
         onAddVehicle={handleAddVehicle}

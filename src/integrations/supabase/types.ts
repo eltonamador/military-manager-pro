@@ -351,6 +351,7 @@ export type Database = {
           created_at: string
           data: string | null
           gbm: string | null
+          hora_inclusao_vtr: string | null
           id: number
           status: string | null
           vtr: string | null
@@ -360,6 +361,7 @@ export type Database = {
           created_at?: string
           data?: string | null
           gbm?: string | null
+          hora_inclusao_vtr?: string | null
           id?: number
           status?: string | null
           vtr?: string | null
@@ -369,6 +371,7 @@ export type Database = {
           created_at?: string
           data?: string | null
           gbm?: string | null
+          hora_inclusao_vtr?: string | null
           id?: number
           status?: string | null
           vtr?: string | null
@@ -381,6 +384,7 @@ export type Database = {
           created_at: string
           data: string | null
           gbm: string | null
+          hora_inclusao_vtr: string | null
           id: number
           status: string | null
           vtr: string | null
@@ -390,6 +394,7 @@ export type Database = {
           created_at?: string
           data?: string | null
           gbm?: string | null
+          hora_inclusao_vtr?: string | null
           id?: number
           status?: string | null
           vtr?: string | null
@@ -399,6 +404,7 @@ export type Database = {
           created_at?: string
           data?: string | null
           gbm?: string | null
+          hora_inclusao_vtr?: string | null
           id?: number
           status?: string | null
           vtr?: string | null
@@ -411,6 +417,7 @@ export type Database = {
           created_at: string
           data: string | null
           gbm: string | null
+          hora_inclusao_vtr: string | null
           id: number
           status: string | null
           vtr: string | null
@@ -420,6 +427,7 @@ export type Database = {
           created_at?: string
           data?: string | null
           gbm?: string | null
+          hora_inclusao_vtr?: string | null
           id?: number
           status?: string | null
           vtr?: string | null
@@ -429,6 +437,7 @@ export type Database = {
           created_at?: string
           data?: string | null
           gbm?: string | null
+          hora_inclusao_vtr?: string | null
           id?: number
           status?: string | null
           vtr?: string | null
@@ -441,6 +450,7 @@ export type Database = {
           created_at: string
           data: string | null
           gbm: string | null
+          hora_inclusao_vtr: string | null
           id: number
           status: string | null
           vtr: string | null
@@ -450,6 +460,7 @@ export type Database = {
           created_at?: string
           data?: string | null
           gbm?: string | null
+          hora_inclusao_vtr?: string | null
           id?: number
           status?: string | null
           vtr?: string | null
@@ -459,6 +470,7 @@ export type Database = {
           created_at?: string
           data?: string | null
           gbm?: string | null
+          hora_inclusao_vtr?: string | null
           id?: number
           status?: string | null
           vtr?: string | null
@@ -471,6 +483,7 @@ export type Database = {
           created_at: string
           data: string | null
           gbm: string | null
+          hora_inclusao_vtr: string | null
           id: number
           status: string | null
           vtr: string | null
@@ -480,6 +493,7 @@ export type Database = {
           created_at?: string
           data?: string | null
           gbm?: string | null
+          hora_inclusao_vtr?: string | null
           id?: number
           status?: string | null
           vtr?: string | null
@@ -489,6 +503,7 @@ export type Database = {
           created_at?: string
           data?: string | null
           gbm?: string | null
+          hora_inclusao_vtr?: string | null
           id?: number
           status?: string | null
           vtr?: string | null
@@ -501,6 +516,7 @@ export type Database = {
           created_at: string
           data: string | null
           gbm: string | null
+          hora_inclusao_vtr: string | null
           id: number
           status: string | null
           vtr: string | null
@@ -510,6 +526,7 @@ export type Database = {
           created_at?: string
           data?: string | null
           gbm?: string | null
+          hora_inclusao_vtr?: string | null
           id?: number
           status?: string | null
           vtr?: string | null
@@ -519,6 +536,7 @@ export type Database = {
           created_at?: string
           data?: string | null
           gbm?: string | null
+          hora_inclusao_vtr?: string | null
           id?: number
           status?: string | null
           vtr?: string | null

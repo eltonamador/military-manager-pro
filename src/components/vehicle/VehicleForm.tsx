@@ -15,17 +15,20 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useVTRs } from "@/hooks/useVTRs";
+import { Input } from "@/components/ui/input";
+import { useEffect } from "react";
 
 interface VehicleFormProps {
   selectedVTR: string;
   selectedGBM: string;
   selectedDate: Date;
+  selectedTime: string;
   status: string;
   description: string;
   onGBMChange: (value: string) => void;
   onVTRChange: (value: string) => void;
   onDateChange: (date: Date) => void;
+  onTimeChange: (time: string) => void;
   onStatusChange: (value: string) => void;
   onDescriptionChange: (value: string) => void;
   onAddVehicle: () => void;
@@ -45,17 +48,26 @@ const VehicleForm = ({
   selectedVTR,
   selectedGBM,
   selectedDate,
+  selectedTime,
   status,
   description,
   onGBMChange,
   onVTRChange,
   onDateChange,
+  onTimeChange,
   onStatusChange,
   onDescriptionChange,
   onAddVehicle,
   editingIndex,
 }: VehicleFormProps) => {
-  const { data: vtrOptions, isLoading } = useVTRs();
+  // Set current time when component mounts
+  useEffect(() => {
+    if (!selectedTime) {
+      const now = new Date();
+      const currentTime = format(now, "HH:mm");
+      onTimeChange(currentTime);
+    }
+  }, []);
 
   return (
     <div className="grid grid-cols-1 gap-6 mb-6">
@@ -100,6 +112,13 @@ const VehicleForm = ({
               />
             </PopoverContent>
           </Popover>
+          <Input
+            type="time"
+            id="time"
+            value={selectedTime}
+            onChange={(e) => onTimeChange(e.target.value)}
+            className="hidden"
+          />
         </div>
       </div>
 
@@ -107,14 +126,18 @@ const VehicleForm = ({
         <Label htmlFor="vtr">VTR</Label>
         <Select onValueChange={onVTRChange} value={selectedVTR}>
           <SelectTrigger id="vtr">
-            <SelectValue placeholder={isLoading ? "Carregando VTRs..." : "Selecione a VTR"} />
+            <SelectValue placeholder="Selecione a VTR" />
           </SelectTrigger>
           <SelectContent>
-            {vtrOptions?.map((vtr) => (
-              <SelectItem key={vtr} value={vtr}>
-                {vtr}
-              </SelectItem>
-            ))}
+            <SelectItem value="Nenhuma">Nenhuma</SelectItem>
+            <SelectItem value="ABT">ABT</SelectItem>
+            <SelectItem value="ABS">ABS</SelectItem>
+            <SelectItem value="AR">AR</SelectItem>
+            <SelectItem value="ASE">ASE</SelectItem>
+            <SelectItem value="ATP">ATP</SelectItem>
+            <SelectItem value="AEM">AEM</SelectItem>
+            <SelectItem value="ABSL">ABSL</SelectItem>
+            <SelectItem value="APP">APP</SelectItem>
           </SelectContent>
         </Select>
       </div>
