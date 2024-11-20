@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import OfficerForm from "@/components/officer/OfficerForm";
@@ -10,6 +10,7 @@ import { checkExistingOfficerService } from "@/utils/officerValidation";
 import OfficerSelectionHeader from "@/components/officer/OfficerSelectionHeader";
 import OfficerPreview from "@/components/officer/OfficerPreview";
 import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
 
 const OfficerSelection = () => {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ const OfficerSelection = () => {
   const [selectedOfficers, setSelectedOfficers] = useState<Array<{
     function: string;
     officer: string;
-    vtr: string;
+    vtr?: string;
   }>>([]);
 
   const { data: officerOptions = [], isLoading: isLoadingOfficers } = useQuery({
@@ -76,11 +77,11 @@ const OfficerSelection = () => {
   });
 
   const handleFinalize = async () => {
-    if (!selectedFunction || !selectedOfficer || !selectedDate || !selectedVTR) {
+    if (!selectedFunction || !selectedOfficer || !selectedDate) {
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Por favor, preencha todos os campos.",
+        description: "Por favor, preencha os campos obrigatórios (Função, Oficial e Data).",
       });
       return;
     }
@@ -98,10 +99,12 @@ const OfficerSelection = () => {
       return;
     }
 
+    const currentTime = format(new Date(), "HH:mm");
+
     const newOfficer = {
       function: selectedFunction,
       officer: selectedOfficer,
-      vtr: selectedVTR,
+      ...(selectedVTR && { vtr: selectedVTR }),
     };
 
     const updatedOfficers = [...selectedOfficers, newOfficer];
@@ -129,7 +132,9 @@ const OfficerSelection = () => {
           .insert({
             nome_of_sup: officer.officer,
             tipo: officer.function,
-            data_serv_of: selectedDate.toISOString().split('T')[0]
+            data_serv_of: selectedDate.toISOString().split('T')[0],
+            vtr_sup: officer.vtr || null,
+            hora_inclusao_sup: currentTime
           });
 
         if (servicoError) throw servicoError;
