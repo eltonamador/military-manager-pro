@@ -32,42 +32,37 @@ export const DateTimeSection = ({
   }, []);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <Label>Data do Serviço</Label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant={"outline"}
-              className={cn(
-                "w-full justify-start text-left font-normal",
-                !selectedDate && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {selectedDate ? format(selectedDate, "PPP", { locale: ptBR }) : <span>Selecione uma data</span>}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={onDateChange}
-              initialFocus
-            />
-          </PopoverContent>
-        </Popover>
-      </div>
-      <div>
-        <Label htmlFor="time">Horário da Inclusão</Label>
-        <Input
-          type="time"
-          id="time"
-          value={selectedTime}
-          onChange={(e) => onTimeChange(e.target.value)}
-          className="w-full"
-        />
-      </div>
+    <div>
+      <Label>Data do Serviço</Label>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant={"outline"}
+            className={cn(
+              "w-full justify-start text-left font-normal",
+              !selectedDate && "text-muted-foreground"
+            )}
+          >
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            {selectedDate ? format(selectedDate, "PPP", { locale: ptBR }) : <span>Selecione uma data</span>}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="single"
+            selected={selectedDate}
+            onSelect={onDateChange}
+            initialFocus
+          />
+        </PopoverContent>
+      </Popover>
+      <Input
+        type="time"
+        id="time"
+        value={selectedTime}
+        onChange={(e) => onTimeChange(e.target.value)}
+        className="hidden"
+      />
     </div>
   );
 };
