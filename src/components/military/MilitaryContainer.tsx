@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useVehicleService } from "@/hooks/useVehicleService";
-import VehicleForm from "@/components/vehicle/VehicleForm";
+import MilitaryForm from "@/components/MilitaryForm";
 import VehicleTable from "@/components/VehicleTable";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +17,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { getMilitaryTableName } from "@/utils/tableNames";
+import { Military } from "@/types/military";
 
 interface Vehicle {
   gbm: string;
@@ -89,6 +90,18 @@ const MilitaryContainer = () => {
     }
   };
 
+  const handleAddMilitary = (military: Military) => {
+    setVehicles([...vehicles, military]);
+    toast({
+      title: "Militar adicionado",
+      description: "O militar foi adicionado com sucesso à lista",
+    });
+  };
+
+  const handleEdit = (index: number) => {
+    setEditingIndex(index);
+  };
+
   const handleDelete = (index: number) => {
     const updatedVehicles = vehicles.filter((_, i) => i !== index);
     setVehicles(updatedVehicles);
@@ -107,7 +120,7 @@ const MilitaryContainer = () => {
 
   return (
     <main className="flex-grow bg-white rounded-lg shadow-md p-3 sm:p-6">
-      <VehicleForm
+      <MilitaryForm
         selectedVTR={selectedVTR}
         selectedGBM={selectedGBM}
         selectedDate={selectedDate}
@@ -118,7 +131,7 @@ const MilitaryContainer = () => {
         onDateChange={setSelectedDate}
         onStatusChange={setStatus}
         onDescriptionChange={setDescription}
-        onAddVehicle={handleAddVehicle}
+        onAddMilitary={handleAddMilitary}
         editingIndex={editingIndex}
       />
 
