@@ -17,8 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
+import { checkExistingMilitary } from "@/utils/militaryChecks";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -36,29 +35,6 @@ const Index = () => {
 
   const gbmOptions = ["1°GBM", "2°GBM", "5°GBM", "GAPH", "GMAF", "MCPB"];
   const militaryOptions = [];
-
-  const checkExistingMilitary = async (military: Military) => {
-    const tableName = `servico_militar_${military.gbm.toLowerCase().replace(/[°º]/, '')}`;
-    const formattedDate = format(military.date, 'yyyy-MM-dd');
-
-    const { data, error } = await supabase
-      .from(tableName)
-      .select()
-      .eq('nome_de_guerra', military.name)
-      .eq('data', formattedDate)
-      .single();
-
-    if (error && error.code !== 'PGRST116') {
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Erro ao verificar registros existentes.",
-      });
-      return false;
-    }
-
-    return !!data;
-  };
 
   const handleAddMilitary = async (alterations?: string) => {
     if (!selectedMilitary || !militaryFunction || !selectedDate || !shiftDuration) {
@@ -80,17 +56,25 @@ const Index = () => {
       alterations,
     };
 
-    const exists = await checkExistingMilitary(newMilitary);
-    
-    if (exists) {
-      setPendingMilitary(newMilitary);
-      setShowUpdateDialog(true);
-      return;
-    }
+    try {
+      const exists = await checkExistingMilitary(newMilitary);
+      
+      if (exists) {
+        setPendingMilitary(newMilitary);
+        setShowUpdateDialog(true);
+        return;
+      }
 
-    setMilitaryList([...militaryList, newMilitary]);
-    setSelectedMilitary("");
-    setMilitaryFunction("");
+      setMilitaryList([...militaryList, newMilitary]);
+      setSelectedMilitary("");
+      setMilitaryFunction("");
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Erro ao verificar registros existentes.",
+      });
+    }
   };
 
   const handleUpdateConfirm = () => {
