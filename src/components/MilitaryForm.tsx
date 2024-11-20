@@ -98,6 +98,7 @@ const MilitaryForm = ({
                 <SelectValue placeholder="Selecione a VTR" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="Sem VTR">Sem VTR</SelectItem>
                 {vtrOptions.map((vtr) => (
                   <SelectItem key={vtr} value={vtr}>
                     {vtr}
