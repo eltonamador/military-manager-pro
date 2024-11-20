@@ -10,14 +10,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
 import MilitarySearch from "./military/MilitarySearch";
 import { useState } from "react";
+import { GBMSection } from "./military/form/GBMSection";
+import { DateTimeSection } from "./military/form/DateTimeSection";
 
 interface MilitaryFormProps {
   selectedGBM: string;
@@ -35,7 +31,7 @@ interface MilitaryFormProps {
   onFunctionChange: (value: string) => void;
   onDateChange: (date: Date | undefined) => void;
   onShiftDurationChange: (value: string) => void;
-  onAddMilitary: (alterations?: string) => void;
+  onAddMilitary: (alterations?: string, time?: string) => void;
 }
 
 const militaryFunctionOptions = [
@@ -73,51 +69,22 @@ const MilitaryForm = ({
 }: MilitaryFormProps) => {
   const [hasAlterations, setHasAlterations] = useState(false);
   const [alterations, setAlterations] = useState("");
+  const [selectedTime, setSelectedTime] = useState("");
 
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <Label htmlFor="gbm_mil">GBM_mil</Label>
-          <Select onValueChange={onGBMChange} value={selectedGBM}>
-            <SelectTrigger id="gbm_mil">
-              <SelectValue placeholder="Selecione o GBM" />
-            </SelectTrigger>
-            <SelectContent>
-              {gbmOptions.map((gbm) => (
-                <SelectItem key={gbm} value={gbm}>
-                  {gbm}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <Label>Data do Serviço</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant={"outline"}
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !selectedDate && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {selectedDate ? format(selectedDate, "PPP", { locale: ptBR }) : <span>Selecione uma data</span>}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={onDateChange}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
+        <GBMSection
+          selectedGBM={selectedGBM}
+          gbmOptions={gbmOptions}
+          onGBMChange={onGBMChange}
+        />
+        <DateTimeSection
+          selectedDate={selectedDate}
+          selectedTime={selectedTime}
+          onDateChange={onDateChange}
+          onTimeChange={setSelectedTime}
+        />
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -200,9 +167,9 @@ const MilitaryForm = ({
 
         <div className="md:col-span-2">
           <Button
-            onClick={() => onAddMilitary(alterations)}
+            onClick={() => onAddMilitary(alterations, selectedTime)}
             className="w-full bg-military-orange hover:bg-military-red transition-colors"
-            disabled={!selectedMilitary || !militaryFunction || !selectedDate || !shiftDuration}
+            disabled={!selectedMilitary || !militaryFunction || !selectedDate || !shiftDuration || !selectedTime}
           >
             <Plus className="mr-2 h-4 w-4" /> Adicionar Militar
           </Button>
