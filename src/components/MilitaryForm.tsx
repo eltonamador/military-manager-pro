@@ -10,11 +10,24 @@ import {
 } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import MilitarySearch from "./military/MilitarySearch";
+import { useState } from "react";
+import { checkExistingMilitary } from "@/utils/militaryValidation";
+import { useToast } from "@/hooks/use-toast";
 
 interface MilitaryFormProps {
   selectedGBM: string;
@@ -68,6 +81,36 @@ const MilitaryForm = ({
   onShiftDurationChange,
   onAddMilitary,
 }: MilitaryFormProps) => {
+  const [showDuplicateAlert, setShowDuplicateAlert] = useState(false);
+  const { toast } = useToast();
+
+  const handleAddMilitary = async () => {
+    if (!selectedMilitary || !selectedDate || !selectedGBM) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Por favor, preencha todos os campos obrigatórios.",
+      });
+      return;
+    }
+
+    try {
+      const exists = await checkExistingMilitary(selectedMilitary, selectedDate, selectedGBM);
+      
+      if (exists) {
+        setShowDuplicateAlert(true);
+      } else {
+        onAddMilitary();
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Erro ao verificar registros existentes.",
+      });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -168,7 +211,7 @@ const MilitaryForm = ({
         </div>
         <div className="md:col-span-2">
           <Button
-            onClick={onAddMilitary}
+            onClick={handleAddMilitary}
             className="w-full bg-military-orange hover:bg-military-red transition-colors"
             disabled={!selectedMilitary || !militaryFunction || !selectedDate || !shiftDuration}
           >
@@ -176,6 +219,28 @@ const MilitaryForm = ({
           </Button>
         </div>
       </div>
+
+      <AlertDialog open={showDuplicateAlert} onOpenChange={setShowDuplicateAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Registro Duplicado</AlertDialogTitle>
+            <AlertDialogDescription>
+              Este militar já possui um registro para essa data. Deseja editar as informações existentes?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setShowDuplicateAlert(false);
+                onAddMilitary();
+              }}
+            >
+              Editar Registro
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
