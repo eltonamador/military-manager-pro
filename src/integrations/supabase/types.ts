@@ -119,6 +119,7 @@ export type Database = {
       }
       servico_militar_2gbm: {
         Row: {
+          alteracao_mil: string | null
           created_at: string
           data: string | null
           funcao: string | null
@@ -129,6 +130,7 @@ export type Database = {
           viatura: string | null
         }
         Insert: {
+          alteracao_mil?: string | null
           created_at?: string
           data?: string | null
           funcao?: string | null
@@ -139,6 +141,7 @@ export type Database = {
           viatura?: string | null
         }
         Update: {
+          alteracao_mil?: string | null
           created_at?: string
           data?: string | null
           funcao?: string | null
@@ -152,6 +155,7 @@ export type Database = {
       }
       servico_militar_5gbm: {
         Row: {
+          alteracao_mil: string | null
           created_at: string
           data: string | null
           funcao: string | null
@@ -162,6 +166,7 @@ export type Database = {
           viatura: string | null
         }
         Insert: {
+          alteracao_mil?: string | null
           created_at?: string
           data?: string | null
           funcao?: string | null
@@ -172,6 +177,7 @@ export type Database = {
           viatura?: string | null
         }
         Update: {
+          alteracao_mil?: string | null
           created_at?: string
           data?: string | null
           funcao?: string | null
@@ -185,6 +191,7 @@ export type Database = {
       }
       servico_militar_gaph: {
         Row: {
+          alteracao_mil: string | null
           created_at: string
           data: string | null
           funcao: string | null
@@ -195,6 +202,7 @@ export type Database = {
           viatura: string | null
         }
         Insert: {
+          alteracao_mil?: string | null
           created_at?: string
           data?: string | null
           funcao?: string | null
@@ -205,6 +213,7 @@ export type Database = {
           viatura?: string | null
         }
         Update: {
+          alteracao_mil?: string | null
           created_at?: string
           data?: string | null
           funcao?: string | null
@@ -218,6 +227,7 @@ export type Database = {
       }
       servico_militar_gmaf: {
         Row: {
+          alteracao_mil: string | null
           created_at: string
           data: string | null
           funcao: string | null
@@ -228,6 +238,7 @@ export type Database = {
           viatura: string | null
         }
         Insert: {
+          alteracao_mil?: string | null
           created_at?: string
           data?: string | null
           funcao?: string | null
@@ -238,6 +249,7 @@ export type Database = {
           viatura?: string | null
         }
         Update: {
+          alteracao_mil?: string | null
           created_at?: string
           data?: string | null
           funcao?: string | null
@@ -251,6 +263,7 @@ export type Database = {
       }
       servico_militar_mcpb: {
         Row: {
+          alteracao_mil: string | null
           created_at: string
           data: string | null
           funcao: string | null
@@ -261,6 +274,7 @@ export type Database = {
           viatura: string | null
         }
         Insert: {
+          alteracao_mil?: string | null
           created_at?: string
           data?: string | null
           funcao?: string | null
@@ -271,6 +285,7 @@ export type Database = {
           viatura?: string | null
         }
         Update: {
+          alteracao_mil?: string | null
           created_at?: string
           data?: string | null
           funcao?: string | null

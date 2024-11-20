@@ -2,8 +2,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { Military } from "@/types/military";
 import { format } from "date-fns";
 
+type MilitaryServiceTable = 
+  | "servico_militar_1gbm"
+  | "servico_militar_2gbm"
+  | "servico_militar_5gbm"
+  | "servico_militar_gaph"
+  | "servico_militar_gmaf"
+  | "servico_militar_mcpb";
+
 export const saveMilitaryService = async (military: Military) => {
-  const tableName = `servico_militar_${military.gbm.toLowerCase().replace(/[°º]/, '')}`;
+  const tableName = `servico_militar_${military.gbm.toLowerCase().replace(/[°º]/, '')}` as MilitaryServiceTable;
   
   const { data, error } = await supabase
     .from(tableName)
