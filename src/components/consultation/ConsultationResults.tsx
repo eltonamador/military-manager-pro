@@ -3,6 +3,9 @@ import { ResultsHeader } from "./results/ResultsHeader";
 import { LoadingState } from "./results/LoadingState";
 import { generatePDF } from "./results/PDFGenerator";
 import { toast } from "sonner";
+import { useVTRs } from "@/hooks/useVTRs";
+
+const gbmOptions = ["1º GBM", "2º GBM", "MCPB", "5º GBM", "GAPH", "GMAF"];
 
 interface ConsultationResultsProps {
   isLoading: boolean;
@@ -15,6 +18,8 @@ const ConsultationResults = ({
   combinedData,
   selectedDate 
 }: ConsultationResultsProps) => {
+  const { data: vtrOptions } = useVTRs();
+
   const handleGeneratePDF = async () => {
     const pdfUrl = await generatePDF('consultation-results');
     if (pdfUrl) {
@@ -64,7 +69,11 @@ const ConsultationResults = ({
         onShare={handleShare}
       />
       <div id="consultation-results">
-        <MilitaryTable militaryList={dataWithSelectedDate} />
+        <MilitaryTable 
+          militaryList={dataWithSelectedDate} 
+          gbmOptions={gbmOptions}
+          vtrOptions={vtrOptions || []}
+        />
       </div>
     </div>
   );
