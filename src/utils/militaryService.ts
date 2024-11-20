@@ -4,10 +4,19 @@ import { toast } from "@/hooks/use-toast";
 import { MilitaryTableName } from "./tableNames";
 
 export const getTableName = (gbm: string): MilitaryTableName => {
+  // Handle special cases first
   if (["GAPH", "GMAF", "MCPB"].includes(gbm)) {
     return `servico_militar_${gbm.toLowerCase()}` as MilitaryTableName;
   }
-  return `servico_militar_${gbm.replace(/[°º]/, "")}gbm` as MilitaryTableName;
+  
+  // For GBM cases, remove the degree symbol and any spaces, then convert to lowercase
+  const cleanedGbm = gbm
+    .replace(/[°º]/g, '')
+    .replace(/\s+/g, '')
+    .replace('GBM', '')
+    .toLowerCase();
+    
+  return `servico_militar_${cleanedGbm}gbm` as MilitaryTableName;
 };
 
 export const checkExistingMilitary = async (military: Military) => {
