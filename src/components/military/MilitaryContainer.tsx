@@ -5,9 +5,6 @@ import { Military } from "@/types/military";
 import { useNavigate } from "react-router-dom";
 import { useVTRs } from "@/hooks/useVTRs";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
-import MilitaryUpdateDialog from "./MilitaryUpdateDialog";
-import { checkExistingMilitary, saveMilitaryService } from "@/utils/militaryService";
 
 interface MilitaryContainerProps {
   selectedGBM: string;
@@ -55,8 +52,6 @@ const MilitaryContainer = ({
   const navigate = useNavigate();
   const { toast } = useToast();
   const { data: vtrOptions, isLoading, error } = useVTRs();
-  const [showUpdateDialog, setShowUpdateDialog] = useState(false);
-  const [militaryToUpdate, setMilitaryToUpdate] = useState<Military | null>(null);
 
   if (error) {
     toast({
@@ -66,31 +61,9 @@ const MilitaryContainer = ({
     });
   }
 
-  const handleFinishMilitary = async () => {
-    for (const military of militaryList) {
-      const exists = await checkExistingMilitary(military);
-      
-      if (exists) {
-        setMilitaryToUpdate(military);
-        setShowUpdateDialog(true);
-        return;
-      }
-      
-      await saveMilitaryService(military);
-    }
-    
+  const handleFinishMilitary = () => {
     onFinishOperation();
     navigate("/vehicle-receiving");
-  };
-
-  const handleUpdateConfirm = async () => {
-    if (militaryToUpdate) {
-      await saveMilitaryService(militaryToUpdate, true);
-      setShowUpdateDialog(false);
-      setMilitaryToUpdate(null);
-      onFinishOperation();
-      navigate("/vehicle-receiving");
-    }
   };
 
   return (
@@ -127,12 +100,6 @@ const MilitaryContainer = ({
       >
         Finalizar Militares
       </Button>
-
-      <MilitaryUpdateDialog
-        open={showUpdateDialog}
-        onOpenChange={setShowUpdateDialog}
-        onConfirm={handleUpdateConfirm}
-      />
     </main>
   );
 };

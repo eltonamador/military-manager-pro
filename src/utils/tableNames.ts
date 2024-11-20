@@ -16,10 +16,10 @@ export type VehicleTableName =
 
 export const getMilitaryTableName = (gbm: string): MilitaryTableName => {
   const tableMap: { [key: string]: MilitaryTableName } = {
-    "1°GBM": "servico_militar_1gbm",
-    "2°GBM": "servico_militar_2gbm",
+    "1º GBM": "servico_militar_1gbm",
+    "2º GBM": "servico_militar_2gbm",
     "MCPB": "servico_militar_mcpb",
-    "5°GBM": "servico_militar_5gbm",
+    "5º GBM": "servico_militar_5gbm",
     "GAPH": "servico_militar_gaph",
     "GMAF": "servico_militar_gmaf"
   };
@@ -34,10 +34,10 @@ export const getMilitaryTableName = (gbm: string): MilitaryTableName => {
 
 export const getVehicleTableName = (gbm: string): VehicleTableName => {
   const tableMap: { [key: string]: VehicleTableName } = {
-    "1°GBM": "servico_vtrs_1gbm",
-    "2°GBM": "servico_vtrs_2gbm",
+    "1º GBM": "servico_vtrs_1gbm",
+    "2º GBM": "servico_vtrs_2gbm",
     "MCPB": "servico_vtrs_mcpb",
-    "5°GBM": "servico_vtrs_5gbm",
+    "5º GBM": "servico_vtrs_5gbm",
     "GAPH": "servico_vtrs_gaph",
     "GMAF": "servico_vtrs_gmaf"
   };

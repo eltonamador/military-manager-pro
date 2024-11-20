@@ -9,13 +9,13 @@ export const generatePDF = async (elementId: string) => {
 
     toast.loading("Gerando PDF...");
     
-    // Create PDF with A4 dimensions in landscape orientation (297mm x 210mm)
-    const pdf = new jsPDF('l', 'mm', 'a4');
+    // Create PDF with A4 dimensions (210mm x 297mm)
+    const pdf = new jsPDF('p', 'mm', 'a4');
     
     // Set page margins (20mm on all sides)
     const margin = 20;
-    const pageWidth = 297; // A4 height becomes width in landscape
-    const pageHeight = 210; // A4 width becomes height in landscape
+    const pageWidth = 210;
+    const pageHeight = 297;
     const contentWidth = pageWidth - (margin * 2);
     
     // Header text configuration
@@ -44,8 +44,9 @@ export const generatePDF = async (elementId: string) => {
       scale: 2, // Increase scale for better quality
       useCORS: true,
       logging: false,
-      windowWidth: 2000, // Force wider desktop width for landscape
+      windowWidth: 1920, // Force desktop width for consistent rendering
       onclone: (clonedDoc) => {
+        // Adjust the cloned element styles if needed
         const clonedElement = clonedDoc.getElementById(elementId);
         if (clonedElement) {
           clonedElement.style.width = '100%';

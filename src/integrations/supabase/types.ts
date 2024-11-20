@@ -530,14 +530,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      check_military_service_exists: {
-        Args: {
-          p_nome: string
-          p_data: string
-          p_gbm: string
-        }
-        Returns: boolean
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
