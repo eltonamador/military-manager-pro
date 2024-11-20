@@ -18,14 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { getMilitaryTableName } from "@/utils/tableNames";
 import { Military } from "@/types/military";
-
-interface Vehicle {
-  gbm: string;
-  vtr: string;
-  status: string;
-  description: string;
-  date: Date;
-}
+import { Vehicle } from "@/types/vehicle";
 
 const MilitaryContainer = () => {
   const [selectedVTR, setSelectedVTR] = useState("");
@@ -45,7 +38,6 @@ const MilitaryContainer = () => {
       const tableName = getMilitaryTableName(updatedMilitary.gbm);
       const formattedDate = format(updatedMilitary.date, 'yyyy-MM-dd');
 
-      // Check for existing record
       const { data: existingData, error: checkError } = await supabase
         .from(tableName)
         .select('*')
@@ -55,7 +47,6 @@ const MilitaryContainer = () => {
       if (checkError) throw checkError;
 
       if (existingData && existingData.length > 0) {
-        // Update existing record
         const { error: updateError } = await supabase
           .from(tableName)
           .update({
@@ -75,9 +66,17 @@ const MilitaryContainer = () => {
         });
       }
 
-      // Update local state
+      // Convert Military to Vehicle type
+      const updatedVehicle: Vehicle = {
+        gbm: updatedMilitary.gbm,
+        vtr: updatedMilitary.vtr,
+        status: status,
+        description: description,
+        date: updatedMilitary.date,
+      };
+
       const newList = [...vehicles];
-      newList[index] = updatedMilitary;
+      newList[index] = updatedVehicle;
       setVehicles(newList);
 
     } catch (error) {
@@ -91,7 +90,14 @@ const MilitaryContainer = () => {
   };
 
   const handleAddMilitary = (military: Military) => {
-    setVehicles([...vehicles, military]);
+    const newVehicle: Vehicle = {
+      gbm: military.gbm,
+      vtr: military.vtr,
+      status: status,
+      description: description,
+      date: military.date,
+    };
+    setVehicles([...vehicles, newVehicle]);
     toast({
       title: "Militar adicionado",
       description: "O militar foi adicionado com sucesso à lista",
