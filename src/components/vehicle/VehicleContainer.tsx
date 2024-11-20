@@ -36,6 +36,10 @@ const VehicleContainer = () => {
   const { saveVehicleService } = useVehicleService();
   const navigate = useNavigate();
 
+  // Define GBM and VTR options
+  const gbmOptions = ["1º GBM", "2º GBM", "5º GBM", "GAPH", "GMAF", "MCPB"];
+  const vtrOptions = ["ABT", "ABS", "AR", "ASE", "ATP", "AEM"];
+
   const handleAddVehicle = () => {
     const newVehicle = {
       gbm: selectedGBM,
@@ -100,6 +104,8 @@ const VehicleContainer = () => {
         selectedDate={selectedDate}
         status={status}
         description={description}
+        gbmOptions={gbmOptions}
+        vtrOptions={vtrOptions}
         onGBMChange={setSelectedGBM}
         onVTRChange={setSelectedVTR}
         onDateChange={setSelectedDate}
