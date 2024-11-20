@@ -16,7 +16,10 @@ import { ptBR } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface VehicleFormProps {
   selectedVTR: string;
@@ -60,6 +63,8 @@ const VehicleForm = ({
   onAddVehicle,
   editingIndex,
 }: VehicleFormProps) => {
+  const [showDescription, setShowDescription] = useState(false);
+
   // Set current time when component mounts
   useEffect(() => {
     if (!selectedTime) {
@@ -68,6 +73,20 @@ const VehicleForm = ({
       onTimeChange(currentTime);
     }
   }, []);
+
+  // Fetch VTRs from Supabase
+  const { data: vtrOptions } = useQuery({
+    queryKey: ["vtrs"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("viaturas")
+        .select("prefixo")
+        .order("prefixo");
+
+      if (error) throw error;
+      return data?.map(vtr => vtr.prefixo) || [];
+    },
+  });
 
   return (
     <div className="grid grid-cols-1 gap-6 mb-6">
@@ -130,14 +149,11 @@ const VehicleForm = ({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="Nenhuma">Nenhuma</SelectItem>
-            <SelectItem value="ABT">ABT</SelectItem>
-            <SelectItem value="ABS">ABS</SelectItem>
-            <SelectItem value="AR">AR</SelectItem>
-            <SelectItem value="ASE">ASE</SelectItem>
-            <SelectItem value="ATP">ATP</SelectItem>
-            <SelectItem value="AEM">AEM</SelectItem>
-            <SelectItem value="ABSL">ABSL</SelectItem>
-            <SelectItem value="APP">APP</SelectItem>
+            {vtrOptions?.map((vtr) => (
+              <SelectItem key={vtr} value={vtr}>
+                {vtr}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -156,16 +172,27 @@ const VehicleForm = ({
         </Select>
       </div>
 
-      <div>
-        <Label htmlFor="description">Descrição das Alterações</Label>
-        <Textarea
-          id="description"
-          value={description}
-          onChange={(e) => onDescriptionChange(e.target.value)}
-          placeholder="Descreva as alterações ou observações sobre a VTR"
-          className="min-h-[100px]"
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          id="show-description"
+          checked={showDescription}
+          onCheckedChange={(checked) => setShowDescription(checked as boolean)}
         />
+        <Label htmlFor="show-description">Adicionar descrição das alterações</Label>
       </div>
+
+      {showDescription && (
+        <div>
+          <Label htmlFor="description">Descrição das Alterações</Label>
+          <Textarea
+            id="description"
+            value={description}
+            onChange={(e) => onDescriptionChange(e.target.value)}
+            placeholder="Descreva as alterações ou observações sobre a VTR"
+            className="min-h-[100px]"
+          />
+        </div>
+      )}
 
       <Button
         onClick={onAddVehicle}
