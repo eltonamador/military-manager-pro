@@ -1,12 +1,13 @@
 import { supabase } from "@/integrations/supabase/client";
 import { Military } from "@/types/military";
 import { toast } from "@/hooks/use-toast";
+import { MilitaryTableName } from "./tableNames";
 
-export const getTableName = (gbm: string) => {
+export const getTableName = (gbm: string): MilitaryTableName => {
   if (["GAPH", "GMAF", "MCPB"].includes(gbm)) {
-    return `servico_militar_${gbm.toLowerCase()}` as const;
+    return `servico_militar_${gbm.toLowerCase()}` as MilitaryTableName;
   }
-  return `servico_militar_${gbm.replace("°", "")}gbm`.toLowerCase() as const;
+  return `servico_militar_${gbm.replace(/[°º]/, "")}gbm` as MilitaryTableName;
 };
 
 export const checkExistingMilitary = async (military: Military) => {
