@@ -63,12 +63,12 @@ const VehicleForm = ({
 }: VehicleFormProps) => {
   // Set current time when component mounts
   useEffect(() => {
-    if (!selectedTime) {
+    if (!selectedTime && typeof onTimeChange === 'function') {
       const now = new Date();
       const currentTime = format(now, "HH:mm");
       onTimeChange(currentTime);
     }
-  }, []);
+  }, [selectedTime, onTimeChange]);
 
   return (
     <div className="grid grid-cols-1 gap-6 mb-6">
