@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import { EquipmentStatusSelect } from "./equipment/EquipmentStatusSelect";
 import { EquipmentStatus } from "../types";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Equipment {
   id: number;
@@ -28,6 +29,7 @@ export const VehicleTypeEquipment = ({
   const [equipmentStatuses, setEquipmentStatuses] = useState<{
     [key: string]: { status: string; description: string };
   }>({});
+  const { toast } = useToast();
 
   const { data: equipmentTypes, isLoading } = useQuery({
     queryKey: ["equipmentTypes", vehicleType],
@@ -43,13 +45,41 @@ export const VehicleTypeEquipment = ({
     enabled: !!vehicleType,
   });
 
-  const handleStatusChange = (equipment: string, status: string, description: string = '') => {
+  const handleStatusChange = async (equipment: string, status: string, description: string = '') => {
     const currentTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     
     setEquipmentStatuses(prev => ({
       ...prev,
       [equipment]: { status, description }
     }));
+
+    try {
+      const { error } = await supabase
+        .from('equipment_status')
+        .insert({
+          equipamento: equipment,
+          vtr: selectedVTR,
+          gbm: selectedGBM,
+          status: status,
+          description: description || null,
+          date: selectedDate.toISOString().split('T')[0],
+          time: currentTime,
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Status salvo",
+        description: `Status do equipamento ${equipment} foi salvo com sucesso.`,
+      });
+    } catch (error) {
+      console.error('Error saving equipment status:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao salvar",
+        description: "Ocorreu um erro ao salvar o status do equipamento.",
+      });
+    }
 
     let requiredEquipment;
     if (vehicleType === 'ABS') {
