@@ -7,6 +7,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 
 interface EquipmentStatusSelectProps {
   label: string;
@@ -15,6 +16,9 @@ interface EquipmentStatusSelectProps {
   options: string[];
   onStatusChange: (status: string) => void;
   onDescriptionChange: (description: string) => void;
+  showNumberInput?: boolean;
+  numberValue?: string;
+  onNumberChange?: (value: string) => void;
 }
 
 export const EquipmentStatusSelect = ({
@@ -24,22 +28,37 @@ export const EquipmentStatusSelect = ({
   options,
   onStatusChange,
   onDescriptionChange,
+  showNumberInput = false,
+  numberValue = '',
+  onNumberChange,
 }: EquipmentStatusSelectProps) => {
   return (
     <div className="space-y-2 p-4 bg-gray-50 rounded-md">
       <Label className="font-medium">{label}</Label>
-      <Select onValueChange={onStatusChange} value={status}>
-        <SelectTrigger>
-          <SelectValue placeholder="Selecione o status" />
-        </SelectTrigger>
-        <SelectContent>
-          {options.map((option) => (
-            <SelectItem key={option} value={option.toLowerCase()}>
-              {option}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <div className="flex gap-2">
+        <Select onValueChange={onStatusChange} value={status} className="flex-1">
+          <SelectTrigger>
+            <SelectValue placeholder="Selecione o status" />
+          </SelectTrigger>
+          <SelectContent>
+            {options.map((option) => (
+              <SelectItem key={option} value={option.toLowerCase()}>
+                {option}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {showNumberInput && (
+          <Input
+            type="number"
+            placeholder="Quantidade"
+            value={numberValue}
+            onChange={(e) => onNumberChange?.(e.target.value)}
+            className="w-32"
+            min="0"
+          />
+        )}
+      </div>
       <Textarea
         placeholder="Descrição da alteração (se necessário)"
         onChange={(e) => onDescriptionChange(e.target.value)}

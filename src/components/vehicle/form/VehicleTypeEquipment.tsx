@@ -26,7 +26,7 @@ export const VehicleTypeEquipment = ({
   onStatusChange,
 }: VehicleTypeEquipmentProps) => {
   const [equipmentStatuses, setEquipmentStatuses] = useState<{
-    [key: string]: { status: string; description: string };
+    [key: string]: { status: string; description: string; number?: string };
   }>({});
 
   const { data: equipmentTypes, isLoading } = useQuery({
@@ -43,12 +43,12 @@ export const VehicleTypeEquipment = ({
     enabled: !!vehicleType,
   });
 
-  const handleStatusChange = (equipment: string, status: string, description: string = '') => {
+  const handleStatusChange = (equipment: string, status: string, description: string = '', number?: string) => {
     const currentTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     
     setEquipmentStatuses(prev => ({
       ...prev,
-      [equipment]: { status, description }
+      [equipment]: { status, description, number }
     }));
 
     let requiredEquipment;
@@ -63,7 +63,9 @@ export const VehicleTypeEquipment = ({
       gbm: selectedGBM,
       equipamento: equipName,
       status: equipName === equipment ? status : (equipmentStatuses[equipName]?.status || 'operante'),
-      description: equipName === equipment ? (description || null) : (equipmentStatuses[equipName]?.description || null),
+      description: equipName === equipment 
+        ? (description || (number ? `Quantidade: ${number} metros` : null)) 
+        : (equipmentStatuses[equipName]?.description || null),
       date: selectedDate.toISOString().split('T')[0],
       time: currentTime,
     }));
@@ -90,6 +92,10 @@ export const VehicleTypeEquipment = ({
     return ['Operante', 'Parcialmente operante', 'Não operante'];
   };
 
+  const shouldShowNumberInput = (equipment: string) => {
+    return equipment.includes('Mangueiras');
+  };
+
   const equipmentList = vehicleType === 'ABS' 
     ? ['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor']
     : ['Sistema de LGE', 'Mangueiras 1 1/2\' (metros)', 'Mangueiras 2 1/2\' (metros)'];
@@ -106,9 +112,17 @@ export const VehicleTypeEquipment = ({
             label={equipment}
             status={equipmentStatuses[equipment]?.status || ''}
             description={equipmentStatuses[equipment]?.description || ''}
-            onStatusChange={(status) => handleStatusChange(equipment, status, equipmentStatuses[equipment]?.description)}
-            onDescriptionChange={(description) => handleStatusChange(equipment, equipmentStatuses[equipment]?.status || '', description)}
+            onStatusChange={(status) => handleStatusChange(equipment, status, equipmentStatuses[equipment]?.description, equipmentStatuses[equipment]?.number)}
+            onDescriptionChange={(description) => handleStatusChange(equipment, equipmentStatuses[equipment]?.status || '', description, equipmentStatuses[equipment]?.number)}
             options={getEquipmentOptions(equipment)}
+            showNumberInput={shouldShowNumberInput(equipment)}
+            numberValue={equipmentStatuses[equipment]?.number || ''}
+            onNumberChange={(value) => handleStatusChange(
+              equipment,
+              equipmentStatuses[equipment]?.status || '',
+              equipmentStatuses[equipment]?.description || '',
+              value
+            )}
           />
         ))}
       </div>
