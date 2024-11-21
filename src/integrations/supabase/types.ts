@@ -17,6 +17,7 @@ export type Database = {
           equipment_type_id: number | null
           gbm: string
           id: number
+          partial_status: string | null
           status: string
           time: string
           vtr: string
@@ -28,6 +29,7 @@ export type Database = {
           equipment_type_id?: number | null
           gbm: string
           id?: number
+          partial_status?: string | null
           status: string
           time: string
           vtr: string
@@ -39,6 +41,7 @@ export type Database = {
           equipment_type_id?: number | null
           gbm?: string
           id?: number
+          partial_status?: string | null
           status?: string
           time?: string
           vtr?: string

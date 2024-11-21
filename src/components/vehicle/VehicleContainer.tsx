@@ -1,22 +1,13 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useVehicleService } from "@/hooks/useVehicleService";
 import VehicleForm from "@/components/vehicle/VehicleForm";
 import VehicleTable from "@/components/VehicleTable";
 import { Button } from "@/components/ui/button";
-import { VehicleTypeEquipment } from "./form/VehicleTypeEquipment";
-import { supabase } from "@/integrations/supabase/client";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { EquipmentStatusForm } from "./form/EquipmentStatusForm";
+import { FinishOperationDialog } from "./FinishOperationDialog";
 
 interface Vehicle {
   gbm: string;
@@ -43,10 +34,10 @@ const VehicleContainer = () => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [showGoodServiceDialog, setShowGoodServiceDialog] = useState(false);
+  const [equipmentStatuses, setEquipmentStatuses] = useState<EquipmentStatus[]>([]);
   
   const { toast } = useToast();
   const { saveVehicleService } = useVehicleService();
-  const navigate = useNavigate();
 
   // Fetch vehicle type
   const { data: vehicleType } = useQuery({
@@ -66,38 +57,8 @@ const VehicleContainer = () => {
     enabled: !!selectedVTR,
   });
 
-  const handleSaveEquipmentStatus = async (equipmentStatuses: EquipmentStatus[]) => {
-    try {
-      const currentTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-      
-      for (const status of equipmentStatuses) {
-        const { error } = await supabase
-          .from('equipment_status')
-          .insert({
-            equipment_type_id: status.equipmentId,
-            vtr: selectedVTR,
-            gbm: selectedGBM,
-            status: status.status,
-            description: status.description,
-            date: selectedDate.toISOString().split('T')[0],
-            time: currentTime,
-          });
-
-        if (error) throw error;
-      }
-
-      toast({
-        title: "Status dos equipamentos salvos",
-        description: "Os status dos equipamentos foram registrados com sucesso",
-      });
-    } catch (error) {
-      console.error('Error saving equipment status:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao salvar",
-        description: "Ocorreu um erro ao salvar o status dos equipamentos",
-      });
-    }
+  const handleSaveEquipmentStatus = async (statuses: EquipmentStatus[]) => {
+    setEquipmentStatuses(statuses);
   };
 
   const handleAddVehicle = () => {
@@ -151,9 +112,40 @@ const VehicleContainer = () => {
   };
 
   const handleFinishOperation = async () => {
-    const success = await saveVehicleService(vehicles, selectedDate);
-    if (success) {
+    try {
+      // First save the vehicles
+      const success = await saveVehicleService(vehicles, selectedDate);
+      if (!success) return;
+
+      // Then save equipment statuses
+      if (equipmentStatuses.length > 0) {
+        const currentTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        
+        for (const status of equipmentStatuses) {
+          const { error } = await supabase
+            .from('equipment_status')
+            .insert({
+              equipment_type_id: status.equipmentId,
+              vtr: selectedVTR,
+              gbm: selectedGBM,
+              status: status.status,
+              description: status.description,
+              date: selectedDate.toISOString().split('T')[0],
+              time: currentTime,
+            });
+
+          if (error) throw error;
+        }
+      }
+
       setShowGoodServiceDialog(true);
+    } catch (error) {
+      console.error('Error saving data:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao salvar",
+        description: "Ocorreu um erro ao salvar os dados",
+      });
     }
   };
 
@@ -184,15 +176,13 @@ const VehicleContainer = () => {
         />
       </div>
 
-      {selectedGBM && selectedVTR && vehicleType && (
-        <VehicleTypeEquipment
-          selectedGBM={selectedGBM}
-          selectedVTR={selectedVTR}
-          selectedDate={selectedDate}
-          vehicleType={vehicleType}
-          onSave={handleSaveEquipmentStatus}
-        />
-      )}
+      <EquipmentStatusForm
+        selectedGBM={selectedGBM}
+        selectedVTR={selectedVTR}
+        selectedDate={selectedDate}
+        vehicleType={vehicleType}
+        onStatusChange={handleSaveEquipmentStatus}
+      />
 
       <Button
         onClick={handleFinishOperation}
@@ -202,24 +192,10 @@ const VehicleContainer = () => {
         Finalizar VTRs
       </Button>
 
-      <AlertDialog open={showGoodServiceDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Bom Serviço!</AlertDialogTitle>
-            <AlertDialogDescription>
-              Agradecemos pelo seu trabalho. Tenha um excelente serviço!
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction onClick={() => {
-              setShowGoodServiceDialog(false);
-              navigate("/login");
-            }}>
-              OK
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <FinishOperationDialog 
+        open={showGoodServiceDialog}
+        onOpenChange={setShowGoodServiceDialog}
+      />
     </main>
   );
 };
