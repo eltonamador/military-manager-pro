@@ -10,25 +10,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+import { useVehicleState } from "../VehicleStateProvider";
 
 interface Equipment {
   id: number;
   name: string;
 }
 
-interface EquipmentStatus {
-  equipmentId: number;
-  status: string;
-  description: string;
-}
-
 interface VehicleTypeEquipmentProps {
   selectedGBM: string;
   selectedVTR: string;
   selectedDate: Date;
-  vehicleType: string;
-  onSave: (equipmentStatuses: EquipmentStatus[]) => void;
+  vehicleType: string | null;
 }
 
 export const VehicleTypeEquipment = ({
@@ -36,8 +29,9 @@ export const VehicleTypeEquipment = ({
   selectedVTR,
   selectedDate,
   vehicleType,
-  onSave,
 }: VehicleTypeEquipmentProps) => {
+  const { setEquipmentStatuses } = useVehicleState();
+
   const { data: equipmentTypes, isLoading } = useQuery({
     queryKey: ["equipmentTypes", vehicleType],
     queryFn: async () => {
@@ -68,79 +62,48 @@ export const VehicleTypeEquipment = ({
     ['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor'].includes(eq.name)
   );
 
-  const abtEquipment = equipmentTypes?.filter(eq => 
-    ['LGE', 'Mangueiras'].includes(eq.name)
-  );
+  const relevantEquipment = vehicleType === 'ABS' ? absEquipment : [];
 
-  const relevantEquipment = vehicleType === 'ABS' ? absEquipment : abtEquipment;
+  const handleStatusChange = (equipmentId: number, status: string, description: string = '') => {
+    setEquipmentStatuses(prev => {
+      const existingIndex = prev.findIndex(item => item.equipmentId === equipmentId);
+      if (existingIndex >= 0) {
+        const newStatuses = [...prev];
+        newStatuses[existingIndex] = {
+          ...newStatuses[existingIndex],
+          status,
+          description,
+        };
+        return newStatuses;
+      }
+      return [...prev, { equipmentId, status, description }];
+    });
+  };
 
   return (
     <div className="space-y-4 mt-6 p-4 border border-military-orange/20 rounded-lg">
-      <h3 className="text-lg font-semibold text-gray-900">
-        Checklist de Equipamentos - {vehicleType}
-      </h3>
+      <h3 className="text-lg font-semibold text-gray-900">Checklist de Equipamentos - {vehicleType}</h3>
       <div className="space-y-4">
         {relevantEquipment?.map((equipment) => (
           <div key={equipment.id} className="space-y-2 p-4 bg-gray-50 rounded-md">
             <Label className="font-medium">{equipment.name}</Label>
-            {equipment.name === 'LGE' ? (
-              <Input
-                type="number"
-                placeholder="Quantidade de LGE utilizado (litros)"
-                onChange={(e) => {
-                  const status = e.target.value ? 'operante' : 'não operante';
-                  onSave([{
-                    equipmentId: equipment.id,
-                    status,
-                    description: e.target.value ? `${e.target.value} litros` : '',
-                  }]);
-                }}
-              />
-            ) : equipment.name === 'Mangueiras' ? (
-              <Input
-                type="number"
-                placeholder="Quantidade de mangueiras"
-                onChange={(e) => {
-                  onSave([{
-                    equipmentId: equipment.id,
-                    status: 'operante',
-                    description: e.target.value ? `${e.target.value} unidades` : '',
-                  }]);
-                }}
-              />
-            ) : (
-              <>
-                <Select
-                  onValueChange={(value) =>
-                    onSave([{
-                      equipmentId: equipment.id,
-                      status: value,
-                      description: '',
-                    }])
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="operante">Operante</SelectItem>
-                    <SelectItem value="parcialmente operante">Parcialmente Operante</SelectItem>
-                    <SelectItem value="não operante">Não Operante</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Textarea
-                  placeholder="Descrição da alteração (se necessário)"
-                  onChange={(e) =>
-                    onSave([{
-                      equipmentId: equipment.id,
-                      status: 'operante',
-                      description: e.target.value,
-                    }])
-                  }
-                  className="h-20"
-                />
-              </>
-            )}
+            <Select
+              onValueChange={(value) => handleStatusChange(equipment.id, value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="operante">Operante</SelectItem>
+                <SelectItem value="parcialmente operante">Parcialmente Operante</SelectItem>
+                <SelectItem value="não operante">Não Operante</SelectItem>
+              </SelectContent>
+            </Select>
+            <Textarea
+              placeholder="Descrição da alteração (se necessário)"
+              onChange={(e) => handleStatusChange(equipment.id, 'operante', e.target.value)}
+              className="h-20"
+            />
           </div>
         ))}
       </div>
