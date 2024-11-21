@@ -88,7 +88,7 @@ export const VehicleTypeEquipment = ({
                 type="number"
                 placeholder="Quantidade de LGE utilizado (litros)"
                 onChange={(e) => {
-                  const status = e.target.value ? 'utilizado' : 'não utilizado';
+                  const status = e.target.value ? 'operante' : 'não operante';
                   onSave([{
                     equipmentId: equipment.id,
                     status,
@@ -103,7 +103,7 @@ export const VehicleTypeEquipment = ({
                 onChange={(e) => {
                   onSave([{
                     equipmentId: equipment.id,
-                    status: 'verificado',
+                    status: 'operante',
                     description: e.target.value ? `${e.target.value} unidades` : '',
                   }]);
                 }}
@@ -124,8 +124,8 @@ export const VehicleTypeEquipment = ({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="operante">Operante</SelectItem>
-                    <SelectItem value="parcialmente">Parcialmente Operante</SelectItem>
-                    <SelectItem value="inoperante">Inoperante</SelectItem>
+                    <SelectItem value="parcialmente operante">Parcialmente Operante</SelectItem>
+                    <SelectItem value="não operante">Não Operante</SelectItem>
                   </SelectContent>
                 </Select>
                 <Textarea
@@ -133,7 +133,7 @@ export const VehicleTypeEquipment = ({
                   onChange={(e) =>
                     onSave([{
                       equipmentId: equipment.id,
-                      status: 'verificado',
+                      status: 'operante',
                       description: e.target.value,
                     }])
                   }
