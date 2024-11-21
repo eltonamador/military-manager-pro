@@ -52,8 +52,7 @@ const Index = () => {
       gbm: selectedGBM,
       vtr: selectedVTR,
       date: selectedDate,
-      alterations: alterations || '-',
-      equipmentStatus: [], // Initialize empty equipment status array
+      alterations,
     };
 
     try {
