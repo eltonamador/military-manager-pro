@@ -104,6 +104,7 @@ const LoginForm = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required 
+                className="w-full"
               />
             </div>
             <div>
@@ -115,6 +116,7 @@ const LoginForm = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required 
+                className="w-full"
               />
             </div>
             <Button 

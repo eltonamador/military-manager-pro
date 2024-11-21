@@ -97,12 +97,12 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen military-gradient flex flex-col items-center justify-center p-4 animate-fadeIn">
+    <div className="min-h-screen military-gradient flex flex-col items-center justify-center p-2 sm:p-4 animate-fadeIn">
       <div className="w-full max-w-md bg-white rounded-lg shadow-xl overflow-hidden">
-        <div className="bg-military-red p-4 text-white text-center font-bold">
+        <div className="bg-military-red p-3 sm:p-4 text-white text-center font-bold">
           CADASTRO DE USUÁRIO / CBMAP
         </div>
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <div className="mb-6 flex justify-center">
             <div className="w-24 h-24 rounded-full bg-military-orange flex items-center justify-center">
               <User className="w-12 h-12 text-white" />
@@ -117,6 +117,7 @@ const Register = () => {
                 value={formData.warName}
                 onChange={handleChange}
                 required 
+                className="w-full"
               />
             </div>
             <div>
@@ -127,6 +128,7 @@ const Register = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required 
+                className="w-full"
               />
             </div>
             <div>
@@ -137,6 +139,7 @@ const Register = () => {
                 value={formData.phone}
                 onChange={handleChange}
                 required 
+                className="w-full"
               />
             </div>
             <div>
@@ -147,6 +150,7 @@ const Register = () => {
                 value={formData.password}
                 onChange={handleChange}
                 required 
+                className="w-full"
               />
             </div>
             <div>
@@ -157,6 +161,7 @@ const Register = () => {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required 
+                className="w-full"
               />
             </div>
             <Button 

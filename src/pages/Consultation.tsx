@@ -76,7 +76,7 @@ const Consultation = () => {
           onOfficerTypeChange={handleOfficerTypeChange}
         />
 
-        <Separator className="my-6 sm:my-8" />
+        <Separator className="my-4 sm:my-6" />
 
         <div className="rounded-lg bg-white shadow-lg p-3 sm:p-6 border border-gray-200 overflow-x-auto">
           <ConsultationResults 
@@ -89,7 +89,7 @@ const Consultation = () => {
         <div className="flex justify-center pt-4">
           <Button 
             onClick={() => navigate("/login")}
-            className="bg-military-orange hover:bg-military-red transition-colors text-white font-bold text-lg px-8 py-3"
+            className="w-full sm:w-auto bg-military-orange hover:bg-military-red transition-colors text-white font-bold text-lg px-8 py-3"
           >
             Finalizar
           </Button>

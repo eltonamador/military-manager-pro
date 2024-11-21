@@ -40,55 +40,57 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                session ? (
-                  <Navigate to="/officer-selection" replace />
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              }
-            />
-            <Route path="/login" element={<LoginForm />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/consultation" element={<Consultation />} />
-            <Route
-              path="/vehicle-receiving"
-              element={
-                session ? (
-                  <VehicleReceiving />
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              }
-            />
-            <Route
-              path="/officer-selection"
-              element={
-                session ? (
-                  <OfficerSelection />
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              }
-            />
-            <Route
-              path="/index"
-              element={
-                session ? (
-                  <Index />
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              }
-            />
-          </Routes>
-        </BrowserRouter>
+        <div className="min-h-screen w-full">
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  session ? (
+                    <Navigate to="/officer-selection" replace />
+                  ) : (
+                    <Navigate to="/login" replace />
+                  )
+                }
+              />
+              <Route path="/login" element={<LoginForm />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/consultation" element={<Consultation />} />
+              <Route
+                path="/vehicle-receiving"
+                element={
+                  session ? (
+                    <VehicleReceiving />
+                  ) : (
+                    <Navigate to="/login" replace />
+                  )
+                }
+              />
+              <Route
+                path="/officer-selection"
+                element={
+                  session ? (
+                    <OfficerSelection />
+                  ) : (
+                    <Navigate to="/login" replace />
+                  )
+                }
+              />
+              <Route
+                path="/index"
+                element={
+                  session ? (
+                    <Index />
+                  ) : (
+                    <Navigate to="/login" replace />
+                  )
+                }
+              />
+            </Routes>
+          </BrowserRouter>
+        </div>
       </TooltipProvider>
     </QueryClientProvider>
   );

@@ -123,13 +123,13 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen military-gradient p-4">
+    <div className="min-h-screen military-gradient p-2 sm:p-4">
       <div className="container mx-auto space-y-4">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
           <Button
             onClick={() => navigate("/officer-selection")}
             variant="outline"
-            className="bg-white hover:bg-red-50 transition-colors"
+            className="w-full sm:w-auto bg-white hover:bg-red-50 transition-colors"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Oficiais
@@ -137,7 +137,7 @@ const Index = () => {
           <Button
             onClick={() => navigate("/vehicle-receiving")}
             variant="outline"
-            className="bg-white hover:bg-red-50 transition-colors"
+            className="w-full sm:w-auto bg-white hover:bg-red-50 transition-colors"
           >
             VTRs
             <ArrowRight className="ml-2 h-4 w-4" />
@@ -169,14 +169,14 @@ const Index = () => {
         />
 
         <AlertDialog open={showUpdateDialog} onOpenChange={setShowUpdateDialog}>
-          <AlertDialogContent>
+          <AlertDialogContent className="sm:max-w-[425px]">
             <AlertDialogHeader>
               <AlertDialogTitle>Militar já cadastrado</AlertDialogTitle>
               <AlertDialogDescription>
                 Já existe um registro para este militar na data selecionada. Deseja atualizar os dados?
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <AlertDialogFooter>
+            <AlertDialogFooter className="flex-col sm:flex-row gap-2">
               <AlertDialogCancel onClick={() => {
                 setShowUpdateDialog(false);
                 setPendingMilitary(null);
