@@ -3,6 +3,8 @@ import { ResultsHeader } from "./results/ResultsHeader";
 import { LoadingState } from "./results/LoadingState";
 import { generatePDF } from "./results/PDFGenerator";
 import { toast } from "sonner";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 interface ConsultationResultsProps {
   isLoading: boolean;
@@ -22,29 +24,33 @@ const ConsultationResults = ({
     }
   };
 
-  const handleShare = async () => {
-    const pdfUrl = await generatePDF('consultation-results');
-    if (pdfUrl) {
-      const message = "Relatório do Serviço Operacional - CBMAP";
-      if (navigator.share) {
-        try {
-          await navigator.share({
-            title: 'Relatório CBMAP',
-            text: message,
-            url: pdfUrl
-          });
-          toast.success("Compartilhado com sucesso!");
-        } catch (error) {
-          // Fallback to WhatsApp if share API fails or is cancelled
-          const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message + "\n" + pdfUrl)}`;
-          window.open(whatsappUrl, '_blank');
-        }
-      } else {
-        // Fallback for browsers that don't support the Web Share API
-        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message + "\n" + pdfUrl)}`;
-        window.open(whatsappUrl, '_blank');
+  const formatDataAsText = () => {
+    const dateStr = selectedDate 
+      ? format(selectedDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })
+      : "Data não selecionada";
+
+    let message = `*Relatório do Serviço Operacional - CBMAP*\n`;
+    message += `*Data:* ${dateStr}\n\n`;
+    message += `*Militares de Serviço:*\n`;
+
+    combinedData.forEach((military, index) => {
+      message += `\n${index + 1}. *${military.name}*\n`;
+      message += `   GBM: ${military.gbm}\n`;
+      message += `   Função: ${military.function}\n`;
+      message += `   VTR: ${military.vtr}\n`;
+      if (military.time) {
+        message += `   Horário de Inclusão: ${military.time}\n`;
       }
-    }
+    });
+
+    return message;
+  };
+
+  const handleShare = async () => {
+    const message = formatDataAsText();
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+    toast.success("Compartilhando via WhatsApp");
   };
 
   if (isLoading) {
