@@ -59,29 +59,17 @@ export const VehicleTypeEquipment = ({
       [equipment.name]: { status, description }
     }));
 
-    // Convert the statuses object to an array of EquipmentStatus
-    const statusesArray = Object.entries(equipmentStatuses).map(([equipName, data]) => ({
+    // Create an array with all three equipment statuses
+    const requiredEquipment = ['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor'];
+    const statusesArray = requiredEquipment.map(equipName => ({
       vtr: selectedVTR,
       gbm: selectedGBM,
       equipamento: equipName,
-      status: data.status,
-      description: data.description || null,
+      status: equipName === equipment.name ? status : (equipmentStatuses[equipName]?.status || 'operante'),
+      description: equipName === equipment.name ? (description || null) : (equipmentStatuses[equipName]?.description || null),
       date: selectedDate.toISOString().split('T')[0],
       time: currentTime,
     }));
-
-    // Add the current equipment if it's not in the statuses yet
-    if (!equipmentStatuses[equipment.name]) {
-      statusesArray.push({
-        vtr: selectedVTR,
-        gbm: selectedGBM,
-        equipamento: equipment.name,
-        status,
-        description: description || null,
-        date: selectedDate.toISOString().split('T')[0],
-        time: currentTime,
-      });
-    }
 
     onStatusChange(statusesArray);
   };
@@ -106,13 +94,14 @@ export const VehicleTypeEquipment = ({
 
   return (
     <div className="space-y-4 mt-6 p-4 border border-military-orange/20 rounded-lg">
-      <h3 className="text-lg font-semibold text-gray-900">Checklist de Equipamentos - {vehicleType}</h3>
+      <h3 className="text-lg font-semibold text-gray-900">Checklist de Equipamentos - {vehicleType} - {selectedVTR}</h3>
       <div className="space-y-4">
         {relevantEquipment?.map((equipment) => (
           <div key={equipment.id} className="space-y-2 p-4 bg-gray-50 rounded-md">
             <Label className="font-medium">{equipment.name}</Label>
             <Select
               onValueChange={(value) => handleStatusChange(equipment, value)}
+              value={equipmentStatuses[equipment.name]?.status}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione o status" />
@@ -126,6 +115,7 @@ export const VehicleTypeEquipment = ({
             <Textarea
               placeholder="Descrição da alteração (se necessário)"
               onChange={(e) => handleStatusChange(equipment, equipmentStatuses[equipment.name]?.status || 'operante', e.target.value)}
+              value={equipmentStatuses[equipment.name]?.description || ''}
               className="h-20"
             />
           </div>
