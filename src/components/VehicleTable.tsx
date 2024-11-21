@@ -7,32 +7,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, ArrowUpDown, ChevronDown, ChevronUp } from "lucide-react";
+import { Pencil, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useState } from "react";
-
-interface Vehicle {
-  gbm: string;
-  vtr: string;
-  status: string;
-  description: string;
-  date: Date;
-  equipmentStatuses?: Array<{
-    equipamento: string;
-    status: string;
-    description: string | null;
-  }>;
-}
+import { Vehicle } from "./vehicle/types";
+import { SortButton } from "./vehicle/table/SortButton";
+import { EquipmentChecklist } from "./vehicle/table/EquipmentChecklist";
+import { SortField, SortOrder } from "./vehicle/table/types";
 
 interface VehicleTableProps {
   vehicleList: Vehicle[];
   onEdit: (index: number) => void;
   onDelete: (index: number) => void;
 }
-
-type SortField = 'gbm' | 'vtr' | 'status' | 'description' | 'date';
-type SortOrder = 'asc' | 'desc';
 
 const VehicleTable = ({ vehicleList, onEdit, onDelete }: VehicleTableProps) => {
   const [sortField, setSortField] = useState<SortField>('gbm');
@@ -67,69 +55,25 @@ const VehicleTable = ({ vehicleList, onEdit, onDelete }: VehicleTableProps) => {
     }
   });
 
-  const SortButton = ({ field, label }: { field: SortField; label: string }) => (
-    <Button
-      variant="ghost"
-      onClick={() => handleSort(field)}
-      className="hover:bg-military-orange/10 text-gray-700 font-medium w-full justify-start p-1"
-    >
-      {label}
-      <ArrowUpDown className="ml-1 h-4 w-4" />
-    </Button>
-  );
-
-  const renderEquipmentChecklist = (vehicle: Vehicle, index: number) => {
-    if (!vehicle.equipmentStatuses?.length) return null;
-
-    const vehicleType = vehicle.vtr.startsWith('ABS') ? 'ABS' : 'ABT';
-
-    return (
-      <TableRow className="bg-gray-50/50">
-        <TableCell colSpan={6} className="py-4">
-          <div className="space-y-4">
-            <h4 className="font-semibold text-gray-700">
-              Checklist de Equipamentos - {vehicleType}
-            </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {vehicle.equipmentStatuses.map((equipment, idx) => (
-                <div key={idx} className="bg-white p-3 rounded-md shadow-sm border border-gray-100">
-                  <p className="font-medium text-gray-700">{equipment.equipamento}</p>
-                  {equipment.equipamento.includes('Mangueiras') ? (
-                    <p className="text-gray-600 mt-1">{equipment.description}</p>
-                  ) : (
-                    <p className="text-gray-600 mt-1">Status: {equipment.status}</p>
-                  )}
-                  {equipment.description && !equipment.equipamento.includes('Mangueiras') && (
-                    <p className="text-gray-500 text-sm mt-1">{equipment.description}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </TableCell>
-      </TableRow>
-    );
-  };
-
   return (
     <div className="rounded-xl border border-military-orange/20 shadow-sm overflow-hidden">
       <Table>
         <TableHeader className="bg-gradient-to-r from-military-orange/10 to-military-red/10">
           <TableRow className="hover:bg-transparent border-b border-military-orange/20">
             <TableHead className="font-semibold w-[80px] py-2">
-              <SortButton field="gbm" label="GBM" />
+              <SortButton field="gbm" label="GBM" onSort={handleSort} />
             </TableHead>
             <TableHead className="font-semibold w-[100px] py-2">
-              <SortButton field="vtr" label="VTR" />
+              <SortButton field="vtr" label="VTR" onSort={handleSort} />
             </TableHead>
             <TableHead className="font-semibold w-[100px] py-2">
-              <SortButton field="status" label="Status" />
+              <SortButton field="status" label="Status" onSort={handleSort} />
             </TableHead>
             <TableHead className="font-semibold w-[200px] py-2">
-              <SortButton field="description" label="Descrição" />
+              <SortButton field="description" label="Descrição" onSort={handleSort} />
             </TableHead>
             <TableHead className="font-semibold w-[100px] py-2">
-              <SortButton field="date" label="Data" />
+              <SortButton field="date" label="Data" onSort={handleSort} />
             </TableHead>
             <TableHead className="text-right font-semibold w-[80px] py-2">Ações</TableHead>
           </TableRow>
@@ -191,7 +135,9 @@ const VehicleTable = ({ vehicleList, onEdit, onDelete }: VehicleTableProps) => {
                   </Button>
                 </TableCell>
               </TableRow>
-              {expandedRows.includes(index) && renderEquipmentChecklist(vehicle, index)}
+              {expandedRows.includes(index) && (
+                <EquipmentChecklist vehicle={vehicle} index={index} />
+              )}
             </>
           ))}
           {sortedList.length === 0 && (

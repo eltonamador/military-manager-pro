@@ -5,6 +5,11 @@ export interface Vehicle {
   description: string;
   date: Date;
   time: string;
+  equipmentStatuses?: Array<{
+    equipamento: string;
+    status: string;
+    description: string | null;
+  }>;
 }
 
 export interface EquipmentStatus {
