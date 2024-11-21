@@ -10,19 +10,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { EquipmentStatus } from "../types";
 
 interface Equipment {
   id: number;
   name: string;
-}
-
-interface EquipmentStatus {
-  vtr: string;
-  gbm: string;
-  equipamento: string;
-  status: string;
-  description: string | null;
-  date: string;
 }
 
 interface VehicleTypeEquipmentProps {

@@ -8,7 +8,11 @@ export interface Vehicle {
 }
 
 export interface EquipmentStatus {
-  equipmentId: number;
+  vtr: string;
+  gbm: string;
+  equipamento: string;
   status: string;
-  description: string;
+  description: string | null;
+  date: string;
+  time: string;
 }
