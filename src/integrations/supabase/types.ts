@@ -630,6 +630,7 @@ export type Database = {
           id: number
           prefixo: string | null
           status: string | null
+          tipo: string | null
         }
         Insert: {
           alteracao?: string | null
@@ -637,6 +638,7 @@ export type Database = {
           id?: number
           prefixo?: string | null
           status?: string | null
+          tipo?: string | null
         }
         Update: {
           alteracao?: string | null
@@ -644,6 +646,7 @@ export type Database = {
           id?: number
           prefixo?: string | null
           status?: string | null
+          tipo?: string | null
         }
         Relationships: []
       }
