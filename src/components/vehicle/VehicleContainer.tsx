@@ -73,14 +73,6 @@ const VehicleContainerContent = () => {
         onDescriptionChange={setDescription}
       />
 
-      <Button
-        onClick={handleAddVehicle}
-        className="w-full bg-military-orange hover:bg-military-red transition-colors mb-6"
-        disabled={!selectedGBM || !selectedVTR || !status}
-      >
-        + Adicionar VTR
-      </Button>
-
       <div className="overflow-x-auto">
         <VehicleTable
           vehicleList={vehicles}
