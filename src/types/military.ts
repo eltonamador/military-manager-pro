@@ -10,7 +10,7 @@ export interface Military {
   gbm: string;
   vtr: string;
   date: Date;
-  alterations: string;
+  alterations?: string;
   time?: string;
-  equipmentStatus: EquipmentStatus[];
+  equipmentStatus?: EquipmentStatus[];
 }

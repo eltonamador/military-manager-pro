@@ -6,28 +6,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-interface EquipmentStatus {
-  equipment: string;
-  status: string;
-  description: string;
-}
+import { type Military } from "@/types/military";
 
 interface MilitaryTableProps {
-  militaryList: Array<{
-    name: string;
-    function: string;
-    gbm: string;
-    vtr: string;
-    date: Date;
-    alterations: string;
-    time?: string;
-    equipmentStatus: EquipmentStatus[];
-  }>;
+  militaryList: Military[];
   showInclusionTime?: boolean;
+  onEdit?: (index: number) => void;
+  onDelete?: (index: number) => void;
 }
 
-const MilitaryTable = ({ militaryList, showInclusionTime = false }: MilitaryTableProps) => {
+const MilitaryTable = ({ 
+  militaryList, 
+  showInclusionTime = false,
+  onEdit,
+  onDelete 
+}: MilitaryTableProps) => {
   return (
     <Table>
       <TableHeader>
@@ -46,8 +39,8 @@ const MilitaryTable = ({ militaryList, showInclusionTime = false }: MilitaryTabl
             <TableCell className="font-medium">{item.name}</TableCell>
             <TableCell>{item.function}</TableCell>
             <TableCell>{item.gbm}</TableCell>
-            <TableCell>{item.alterations}</TableCell>
-            {showInclusionTime && <TableCell>{item.time}</TableCell>}
+            <TableCell>{item.alterations || '-'}</TableCell>
+            {showInclusionTime && <TableCell>{item.time || '-'}</TableCell>}
             <TableCell>
               {item.equipmentStatus && item.equipmentStatus.length > 0 ? (
                 <div className="space-y-2">
