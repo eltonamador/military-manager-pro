@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { EquipmentStatus } from "../types";
+import { useState } from "react";
 
 interface Equipment {
   id: number;
@@ -32,6 +33,10 @@ export const VehicleTypeEquipment = ({
   vehicleType,
   onStatusChange,
 }: VehicleTypeEquipmentProps) => {
+  const [equipmentStatuses, setEquipmentStatuses] = useState<{
+    [key: string]: { status: string; description: string };
+  }>({});
+
   const { data: equipmentTypes, isLoading } = useQuery({
     queryKey: ["equipmentTypes", vehicleType],
     queryFn: async () => {
@@ -49,15 +54,36 @@ export const VehicleTypeEquipment = ({
   const handleStatusChange = (equipment: Equipment, status: string, description: string = '') => {
     const currentTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     
-    onStatusChange([{
+    setEquipmentStatuses(prev => ({
+      ...prev,
+      [equipment.name]: { status, description }
+    }));
+
+    // Convert the statuses object to an array of EquipmentStatus
+    const statusesArray = Object.entries(equipmentStatuses).map(([equipName, data]) => ({
       vtr: selectedVTR,
       gbm: selectedGBM,
-      equipamento: equipment.name,
-      status,
-      description: description || null,
+      equipamento: equipName,
+      status: data.status,
+      description: data.description || null,
       date: selectedDate.toISOString().split('T')[0],
       time: currentTime,
-    }]);
+    }));
+
+    // Add the current equipment if it's not in the statuses yet
+    if (!equipmentStatuses[equipment.name]) {
+      statusesArray.push({
+        vtr: selectedVTR,
+        gbm: selectedGBM,
+        equipamento: equipment.name,
+        status,
+        description: description || null,
+        date: selectedDate.toISOString().split('T')[0],
+        time: currentTime,
+      });
+    }
+
+    onStatusChange(statusesArray);
   };
 
   if (!vehicleType || (vehicleType !== 'ABS' && vehicleType !== 'ABT')) {
@@ -99,7 +125,7 @@ export const VehicleTypeEquipment = ({
             </Select>
             <Textarea
               placeholder="Descrição da alteração (se necessário)"
-              onChange={(e) => handleStatusChange(equipment, "operante", e.target.value)}
+              onChange={(e) => handleStatusChange(equipment, equipmentStatuses[equipment.name]?.status || 'operante', e.target.value)}
               className="h-20"
             />
           </div>
