@@ -12,15 +12,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { getMilitaryTableName, getVehicleTableName } from "@/utils/tableNames";
-
-interface Military {
-  name: string;
-  function: string;
-  gbm: string;
-  vtr: string;
-  date: Date;
-  shiftDuration: string;
-}
+import { Military } from "@/types/military";
 
 interface Vehicle {
   gbm: string;
@@ -28,6 +20,7 @@ interface Vehicle {
   status: string;
   description: string;
   date: Date;
+  time: string;
 }
 
 interface FinalReportProps {
@@ -77,7 +70,9 @@ const FinalReport = ({
           gbm: item.GBM || '',
           vtr: item.viatura || '',
           date: item.data ? new Date(item.data) : new Date(),
-          shiftDuration: '24',
+          alterations: item.alteracao_mil || '-',
+          time: item.horario_inclusao || '',
+          equipmentStatus: [],
         }));
         setServiceMilitaryList(formattedMilitaryData);
       } catch (error) {
