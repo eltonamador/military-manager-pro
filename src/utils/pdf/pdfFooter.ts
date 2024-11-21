@@ -6,16 +6,19 @@ export const addFooter = (pdf: jsPDF, pageNumber: number, totalPages: number) =>
   
   // Add footer line
   pdf.setDrawColor(243, 113, 33);
-  pdf.setLineWidth(0.2);
-  pdf.line(margin, pageHeight - margin - 10, pageWidth - margin, pageHeight - margin - 10);
+  pdf.setLineWidth(0.3);
+  pdf.line(margin, pageHeight - margin - 15, pageWidth - margin, pageHeight - margin - 15);
   
   // Add page number
   pdf.setFont("helvetica", "normal");
   pdf.setFontSize(10);
   pdf.setTextColor(100, 100, 100);
+  
+  const pageText = `Página ${pageNumber} de ${totalPages}`;
+  const textWidth = pdf.getStringUnitWidth(pageText) * 10 / pdf.internal.scaleFactor;
   pdf.text(
-    `Página ${pageNumber} de ${totalPages}`,
-    pageWidth - margin - 25,
-    pageHeight - margin
+    pageText,
+    (pageWidth - textWidth) / 2,
+    pageHeight - margin - 5
   );
 };
