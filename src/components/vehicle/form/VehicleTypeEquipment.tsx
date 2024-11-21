@@ -5,6 +5,7 @@ import { EquipmentStatusSelect } from "./equipment/EquipmentStatusSelect";
 import { EquipmentStatus } from "../types";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 
 interface Equipment {
   id: number;
@@ -45,41 +46,11 @@ export const VehicleTypeEquipment = ({
     enabled: !!vehicleType,
   });
 
-  const handleStatusChange = async (equipment: string, status: string, description: string = '') => {
-    const currentTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    
+  const handleStatusChange = (equipment: string, status: string, description: string = '') => {
     setEquipmentStatuses(prev => ({
       ...prev,
       [equipment]: { status, description }
     }));
-
-    try {
-      const { error } = await supabase
-        .from('equipment_status')
-        .insert({
-          equipamento: equipment,
-          vtr: selectedVTR,
-          gbm: selectedGBM,
-          status: status,
-          description: description || null,
-          date: selectedDate.toISOString().split('T')[0],
-          time: currentTime,
-        });
-
-      if (error) throw error;
-
-      toast({
-        title: "Status salvo",
-        description: `Status do equipamento ${equipment} foi salvo com sucesso.`,
-      });
-    } catch (error) {
-      console.error('Error saving equipment status:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao salvar",
-        description: "Ocorreu um erro ao salvar o status do equipamento.",
-      });
-    }
 
     let requiredEquipment;
     if (vehicleType === 'ABS') {
@@ -95,10 +66,48 @@ export const VehicleTypeEquipment = ({
       status: equipName === equipment ? status : (equipmentStatuses[equipName]?.status || 'operante'),
       description: equipName === equipment ? (description || null) : (equipmentStatuses[equipName]?.description || null),
       date: selectedDate.toISOString().split('T')[0],
-      time: currentTime,
+      time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
     }));
 
     onStatusChange(statusesArray);
+  };
+
+  const saveEquipmentStatuses = async () => {
+    const currentTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    
+    try {
+      const equipmentList = vehicleType === 'ABS' 
+        ? ['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor']
+        : ['Sistema de LGE', 'Mangueiras 1 1/2\' (metros)', 'Mangueiras 2 1/2\' (metros)'];
+
+      const statusesToSave = equipmentList.map(equipment => ({
+        equipamento: equipment,
+        vtr: selectedVTR,
+        gbm: selectedGBM,
+        status: equipmentStatuses[equipment]?.status || 'operante',
+        description: equipmentStatuses[equipment]?.description || null,
+        date: selectedDate.toISOString().split('T')[0],
+        time: currentTime,
+      }));
+
+      const { error } = await supabase
+        .from('equipment_status')
+        .insert(statusesToSave);
+
+      if (error) throw error;
+
+      toast({
+        title: "Checklist salvo",
+        description: `Checklist da ${selectedVTR} foi salvo com sucesso.`,
+      });
+    } catch (error) {
+      console.error('Error saving equipment statuses:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao salvar",
+        description: "Ocorreu um erro ao salvar o checklist dos equipamentos.",
+      });
+    }
   };
 
   if (!vehicleType || (vehicleType !== 'ABS' && vehicleType !== 'ABT')) {
@@ -126,9 +135,17 @@ export const VehicleTypeEquipment = ({
 
   return (
     <div className="space-y-4 mt-6 p-4 border border-military-orange/20 rounded-lg">
-      <h3 className="text-lg font-semibold text-gray-900">
-        Checklist de Equipamentos - {selectedVTR}
-      </h3>
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold text-gray-900">
+          Checklist de Equipamentos - {selectedVTR}
+        </h3>
+        <Button
+          onClick={saveEquipmentStatuses}
+          className="bg-military-orange hover:bg-military-red transition-colors"
+        >
+          Salvar Checklist
+        </Button>
+      </div>
       <div className="space-y-4">
         {equipmentList.map((equipment) => (
           <EquipmentStatusSelect
