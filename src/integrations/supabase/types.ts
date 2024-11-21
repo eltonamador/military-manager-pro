@@ -14,10 +14,9 @@ export type Database = {
           created_at: string | null
           date: string
           description: string | null
-          equipment_type_id: number | null
+          equipamento: string | null
           gbm: string
           id: number
-          partial_status: string | null
           status: string
           time: string
           vtr: string
@@ -26,10 +25,9 @@ export type Database = {
           created_at?: string | null
           date: string
           description?: string | null
-          equipment_type_id?: number | null
+          equipamento?: string | null
           gbm: string
           id?: number
-          partial_status?: string | null
           status: string
           time: string
           vtr: string
@@ -38,23 +36,14 @@ export type Database = {
           created_at?: string | null
           date?: string
           description?: string | null
-          equipment_type_id?: number | null
+          equipamento?: string | null
           gbm?: string
           id?: number
-          partial_status?: string | null
           status?: string
           time?: string
           vtr?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "equipment_status_equipment_type_id_fkey"
-            columns: ["equipment_type_id"]
-            isOneToOne: false
-            referencedRelation: "equipment_types"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       equipment_types: {
         Row: {

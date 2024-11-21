@@ -46,6 +46,22 @@ export const VehicleTypeEquipment = ({
     enabled: !!vehicleType,
   });
 
+  const handleStatusChange = (equipmentId: number, status: string) => {
+    onStatusChange([{
+      equipmentId,
+      status,
+      description: ""
+    }]);
+  };
+
+  const handleDescriptionChange = (equipmentId: number, description: string) => {
+    onStatusChange([{
+      equipmentId,
+      status: "operante", // Default status
+      description
+    }]);
+  };
+
   if (!vehicleType || (vehicleType !== 'ABS' && vehicleType !== 'ABT')) {
     return null;
   }
@@ -63,15 +79,6 @@ export const VehicleTypeEquipment = ({
   );
 
   const relevantEquipment = vehicleType === 'ABS' ? absEquipment : [];
-
-  const handleStatusChange = (equipmentId: number, status: string, description: string = '') => {
-    const newStatus: EquipmentStatus = {
-      equipmentId,
-      status,
-      description
-    };
-    onStatusChange([newStatus]);
-  };
 
   return (
     <div className="space-y-4 mt-6 p-4 border border-military-orange/20 rounded-lg">
@@ -94,7 +101,7 @@ export const VehicleTypeEquipment = ({
             </Select>
             <Textarea
               placeholder="Descrição da alteração (se necessário)"
-              onChange={(e) => handleStatusChange(equipment.id, 'operante', e.target.value)}
+              onChange={(e) => handleDescriptionChange(equipment.id, e.target.value)}
               className="h-20"
             />
           </div>
