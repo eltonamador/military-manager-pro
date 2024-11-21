@@ -139,17 +139,9 @@ export const VehicleTypeEquipment = ({
 
   return (
     <div className="space-y-4 mt-6 p-4 border border-military-orange/20 rounded-lg">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-gray-900">
-          Checklist de Equipamentos - {selectedVTR}
-        </h3>
-        <Button
-          onClick={saveEquipmentStatuses}
-          className="bg-military-orange hover:bg-military-red transition-colors"
-        >
-          Salvar Checklist
-        </Button>
-      </div>
+      <h3 className="text-lg font-semibold text-gray-900">
+        Checklist de Equipamentos - {selectedVTR}
+      </h3>
       <div className="space-y-4">
         {equipmentList.map((equipment) => (
           <EquipmentStatusSelect
@@ -163,6 +155,12 @@ export const VehicleTypeEquipment = ({
           />
         ))}
       </div>
+      <Button
+        onClick={saveEquipmentStatuses}
+        className="w-full mt-4 bg-military-orange hover:bg-military-red transition-colors"
+      >
+        Salvar Checklist
+      </Button>
     </div>
   );
 };
