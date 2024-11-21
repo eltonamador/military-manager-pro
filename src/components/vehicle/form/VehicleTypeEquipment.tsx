@@ -124,6 +124,7 @@ export const VehicleTypeEquipment = ({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="operante">Operante</SelectItem>
+                    <SelectItem value="parcialmente">Parcialmente Operante</SelectItem>
                     <SelectItem value="inoperante">Inoperante</SelectItem>
                   </SelectContent>
                 </Select>
