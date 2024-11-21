@@ -7,6 +7,7 @@ interface EquipmentStatusFormProps {
   selectedDate: Date;
   vehicleType: string | null;
   onStatusChange: (statuses: EquipmentStatus[]) => void;
+  onSaveChecklist: () => void;
 }
 
 export const EquipmentStatusForm = ({
@@ -15,8 +16,9 @@ export const EquipmentStatusForm = ({
   selectedDate,
   vehicleType,
   onStatusChange,
+  onSaveChecklist,
 }: EquipmentStatusFormProps) => {
-  if (!selectedGBM || !selectedVTR || !vehicleType || (vehicleType !== 'ABS' && vehicleType !== 'ABT')) {
+  if (!selectedGBM || !selectedVTR || !vehicleType) {
     return null;
   }
 
@@ -27,6 +29,7 @@ export const EquipmentStatusForm = ({
       selectedDate={selectedDate}
       vehicleType={vehicleType}
       onStatusChange={onStatusChange}
+      onSaveChecklist={onSaveChecklist}
     />
   );
 };

@@ -18,6 +18,7 @@ interface VehicleTypeEquipmentProps {
   selectedDate: Date;
   vehicleType: string;
   onStatusChange: (statuses: EquipmentStatus[]) => void;
+  onSaveChecklist: () => void;
 }
 
 export const VehicleTypeEquipment = ({
@@ -26,6 +27,7 @@ export const VehicleTypeEquipment = ({
   selectedDate,
   vehicleType,
   onStatusChange,
+  onSaveChecklist,
 }: VehicleTypeEquipmentProps) => {
   const [equipmentStatuses, setEquipmentStatuses] = useState<{
     [key: string]: { status: string; description: string };
@@ -100,6 +102,8 @@ export const VehicleTypeEquipment = ({
         title: "Checklist salvo",
         description: `Checklist da ${selectedVTR} foi salvo com sucesso.`,
       });
+      
+      onSaveChecklist(); // Call the callback after successful save
     } catch (error) {
       console.error('Error saving equipment statuses:', error);
       toast({

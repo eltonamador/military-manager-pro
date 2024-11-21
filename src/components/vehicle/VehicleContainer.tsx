@@ -8,8 +8,10 @@ import { FinishOperationDialog } from "./FinishOperationDialog";
 import { VehicleStateProvider, useVehicleState } from "./VehicleStateProvider";
 import { useVehicleOperations } from "./VehicleOperations";
 import { Plus } from "lucide-react";
+import { useState } from "react";
 
 const VehicleContainerContent = () => {
+  const [isChecklistSaved, setIsChecklistSaved] = useState(false);
   const {
     selectedVTR,
     selectedGBM,
@@ -55,6 +57,10 @@ const VehicleContainerContent = () => {
     enabled: !!selectedVTR,
   });
 
+  const handleChecklistSave = () => {
+    setIsChecklistSaved(true);
+  };
+
   return (
     <main className="flex-grow bg-white rounded-lg shadow-md p-3 sm:p-6">
       <VehicleForm
@@ -82,22 +88,23 @@ const VehicleContainerContent = () => {
         />
       </div>
 
-      <Button
-        onClick={handleAddVehicle}
-        className="w-full mt-4 bg-military-orange hover:bg-military-red transition-colors"
-        disabled={!selectedGBM || !selectedVTR || !status}
-      >
-        <Plus className="mr-2 h-4 w-4" />
-        Adicionar VTR
-      </Button>
-
       <EquipmentStatusForm
         selectedGBM={selectedGBM}
         selectedVTR={selectedVTR}
         selectedDate={selectedDate}
         vehicleType={vehicleType}
         onStatusChange={setEquipmentStatuses}
+        onSaveChecklist={handleChecklistSave}
       />
+
+      <Button
+        onClick={handleAddVehicle}
+        className="w-full mt-4 bg-military-orange hover:bg-military-red transition-colors"
+        disabled={!selectedGBM || !selectedVTR || !status || !isChecklistSaved}
+      >
+        <Plus className="mr-2 h-4 w-4" />
+        Adicionar VTR
+      </Button>
 
       <Button
         onClick={async () => {
