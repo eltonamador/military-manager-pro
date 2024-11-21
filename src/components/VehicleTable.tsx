@@ -7,14 +7,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { Pencil, Trash2, ArrowUpDown } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useState } from "react";
-import { Vehicle } from "./vehicle/types";
-import { SortButton } from "./vehicle/table/SortButton";
-import { EquipmentChecklist } from "./vehicle/table/EquipmentChecklist";
-import { SortField, SortOrder } from "./vehicle/table/types";
+
+interface Vehicle {
+  gbm: string;
+  vtr: string;
+  status: string;
+  description: string;
+  date: Date;
+}
 
 interface VehicleTableProps {
   vehicleList: Vehicle[];
@@ -22,10 +26,12 @@ interface VehicleTableProps {
   onDelete: (index: number) => void;
 }
 
+type SortField = 'gbm' | 'vtr' | 'status' | 'description' | 'date';
+type SortOrder = 'asc' | 'desc';
+
 const VehicleTable = ({ vehicleList, onEdit, onDelete }: VehicleTableProps) => {
   const [sortField, setSortField] = useState<SortField>('gbm');
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
-  const [expandedRows, setExpandedRows] = useState<number[]>([]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -34,14 +40,6 @@ const VehicleTable = ({ vehicleList, onEdit, onDelete }: VehicleTableProps) => {
       setSortField(field);
       setSortOrder('asc');
     }
-  };
-
-  const toggleRow = (index: number) => {
-    setExpandedRows(prev => 
-      prev.includes(index) 
-        ? prev.filter(i => i !== index)
-        : [...prev, index]
-    );
   };
 
   const sortedList = [...vehicleList].sort((a, b) => {
@@ -55,90 +53,70 @@ const VehicleTable = ({ vehicleList, onEdit, onDelete }: VehicleTableProps) => {
     }
   });
 
+  const SortButton = ({ field, label }: { field: SortField; label: string }) => (
+    <Button
+      variant="ghost"
+      onClick={() => handleSort(field)}
+      className="hover:bg-military-orange/10 text-gray-700 font-medium w-full justify-start p-1"
+    >
+      {label}
+      <ArrowUpDown className="ml-1 h-4 w-4" />
+    </Button>
+  );
+
   return (
     <div className="rounded-xl border border-military-orange/20 shadow-sm overflow-hidden">
       <Table>
         <TableHeader className="bg-gradient-to-r from-military-orange/10 to-military-red/10">
           <TableRow className="hover:bg-transparent border-b border-military-orange/20">
             <TableHead className="font-semibold w-[80px] py-2">
-              <SortButton field="gbm" label="GBM" onSort={handleSort} />
+              <SortButton field="gbm" label="GBM" />
             </TableHead>
             <TableHead className="font-semibold w-[100px] py-2">
-              <SortButton field="vtr" label="VTR" onSort={handleSort} />
+              <SortButton field="vtr" label="VTR" />
             </TableHead>
             <TableHead className="font-semibold w-[100px] py-2">
-              <SortButton field="status" label="Status" onSort={handleSort} />
+              <SortButton field="status" label="Status" />
             </TableHead>
             <TableHead className="font-semibold w-[200px] py-2">
-              <SortButton field="description" label="Descrição" onSort={handleSort} />
+              <SortButton field="description" label="Descrição" />
             </TableHead>
             <TableHead className="font-semibold w-[100px] py-2">
-              <SortButton field="date" label="Data" onSort={handleSort} />
+              <SortButton field="date" label="Data" />
             </TableHead>
             <TableHead className="text-right font-semibold w-[80px] py-2">Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {sortedList.map((vehicle, index) => (
-            <>
-              <TableRow 
-                key={`row-${index}`}
-                className="hover:bg-military-orange/5 transition-colors duration-200 even:bg-gray-100/80 cursor-pointer"
-                onClick={() => toggleRow(index)}
-              >
-                <TableCell className="font-medium text-center py-1.5">{vehicle.gbm}</TableCell>
-                <TableCell className="text-center py-1.5">{vehicle.vtr}</TableCell>
-                <TableCell className="py-1.5">{vehicle.status}</TableCell>
-                <TableCell className="py-1.5">{vehicle.description}</TableCell>
-                <TableCell className="py-1.5">
-                  {vehicle.date ? format(vehicle.date, "dd/MM/yyyy", { locale: ptBR }) : ""}
-                </TableCell>
-                <TableCell className="text-right space-x-1 py-1.5">
-                  {vehicle.equipmentStatuses?.length > 0 && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="hover:bg-military-orange/10 h-7 w-7"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleRow(index);
-                      }}
-                    >
-                      {expandedRows.includes(index) ? (
-                        <ChevronUp className="h-4 w-4 text-military-orange" />
-                      ) : (
-                        <ChevronDown className="h-4 w-4 text-military-orange" />
-                      )}
-                    </Button>
-                  )}
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onEdit(index);
-                    }}
-                    variant="ghost"
-                    size="icon"
-                    className="hover:bg-military-orange/10 h-7 w-7"
-                  >
-                    <Pencil className="h-4 w-4 text-military-orange" />
-                  </Button>
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDelete(index);
-                    }}
-                    variant="ghost"
-                    size="icon"
-                    className="hover:bg-military-orange/10 h-7 w-7"
-                  >
-                    <Trash2 className="h-4 w-4 text-military-orange" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-              {expandedRows.includes(index) && (
-                <EquipmentChecklist vehicle={vehicle} index={index} />
-              )}
-            </>
+            <TableRow 
+              key={index}
+              className="hover:bg-military-orange/5 transition-colors duration-200 even:bg-gray-100/80"
+            >
+              <TableCell className="font-medium text-center py-1.5">{vehicle.gbm}</TableCell>
+              <TableCell className="text-center py-1.5">{vehicle.vtr}</TableCell>
+              <TableCell className="py-1.5">{vehicle.status}</TableCell>
+              <TableCell className="py-1.5">{vehicle.description}</TableCell>
+              <TableCell className="py-1.5">{vehicle.date ? format(vehicle.date, "dd/MM/yyyy", { locale: ptBR }) : ""}</TableCell>
+              <TableCell className="text-right space-x-1 py-1.5">
+                <Button
+                  onClick={() => onEdit(index)}
+                  variant="ghost"
+                  size="icon"
+                  className="hover:bg-military-orange/10 h-7 w-7"
+                >
+                  <Pencil className="h-4 w-4 text-military-orange" />
+                </Button>
+                <Button
+                  onClick={() => onDelete(index)}
+                  variant="ghost"
+                  size="icon"
+                  className="hover:bg-military-orange/10 h-7 w-7"
+                >
+                  <Trash2 className="h-4 w-4 text-military-orange" />
+                </Button>
+              </TableCell>
+            </TableRow>
           ))}
           {sortedList.length === 0 && (
             <TableRow>
