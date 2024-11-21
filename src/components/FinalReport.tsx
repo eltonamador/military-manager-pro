@@ -11,7 +11,8 @@ import { Send, Edit } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { getMilitaryTableName, getVehicleTableName } from "@/utils/tableNames";
+import { getMilitaryTableName } from "@/utils/tableNames";
+import { Vehicle } from "@/components/vehicle/types";
 
 interface Military {
   name: string;
@@ -20,14 +21,6 @@ interface Military {
   vtr: string;
   date: Date;
   shiftDuration: string;
-}
-
-interface Vehicle {
-  gbm: string;
-  vtr: string;
-  status: string;
-  description: string;
-  date: Date;
 }
 
 interface FinalReportProps {
