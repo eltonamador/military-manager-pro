@@ -88,7 +88,7 @@ const LoginForm = () => {
           <div className="mb-6 flex justify-center">
             <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden">
               <img 
-                src="/escaladohj2.webp" 
+                src="/lovable-uploads/73842b01-ef22-417c-9f9c-133c31d53cee.png"
                 alt="Logo CBMAP" 
                 className="w-full h-full object-cover"
               />
