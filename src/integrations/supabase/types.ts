@@ -9,6 +9,68 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      equipment_status: {
+        Row: {
+          created_at: string | null
+          date: string
+          description: string | null
+          equipment_type_id: number | null
+          gbm: string
+          id: number
+          status: string
+          time: string
+          vtr: string
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          description?: string | null
+          equipment_type_id?: number | null
+          gbm: string
+          id?: number
+          status: string
+          time: string
+          vtr: string
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          description?: string | null
+          equipment_type_id?: number | null
+          gbm?: string
+          id?: number
+          status?: string
+          time?: string
+          vtr?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipment_status_equipment_type_id_fkey"
+            columns: ["equipment_type_id"]
+            isOneToOne: false
+            referencedRelation: "equipment_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      equipment_types: {
+        Row: {
+          created_at: string | null
+          id: number
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          name?: string
+        }
+        Relationships: []
+      }
       militares_geral: {
         Row: {
           created_at: string | null

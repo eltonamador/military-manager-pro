@@ -5,6 +5,8 @@ import { useVehicleService } from "@/hooks/useVehicleService";
 import VehicleForm from "@/components/vehicle/VehicleForm";
 import VehicleTable from "@/components/VehicleTable";
 import { Button } from "@/components/ui/button";
+import { EquipmentChecklist } from "./form/EquipmentChecklist";
+import { supabase } from "@/integrations/supabase/client";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,6 +24,12 @@ interface Vehicle {
   description: string;
   date: Date;
   time: string;
+}
+
+interface EquipmentStatus {
+  equipmentId: number;
+  status: string;
+  description: string;
 }
 
 const VehicleContainer = () => {
@@ -88,6 +96,40 @@ const VehicleContainer = () => {
     });
   };
 
+  const handleSaveEquipmentStatus = async (equipmentStatuses: EquipmentStatus[]) => {
+    try {
+      const currentTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      
+      for (const status of equipmentStatuses) {
+        const { error } = await supabase
+          .from('equipment_status')
+          .insert({
+            equipment_type_id: status.equipmentId,
+            vtr: selectedVTR,
+            gbm: selectedGBM,
+            status: status.status,
+            description: status.description,
+            date: selectedDate.toISOString().split('T')[0],
+            time: currentTime,
+          });
+
+        if (error) throw error;
+      }
+
+      toast({
+        title: "Status dos equipamentos salvos",
+        description: "Os status dos equipamentos foram registrados com sucesso",
+      });
+    } catch (error) {
+      console.error('Error saving equipment status:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao salvar",
+        description: "Ocorreu um erro ao salvar o status dos equipamentos",
+      });
+    }
+  };
+
   const handleFinishOperation = async () => {
     const success = await saveVehicleService(vehicles, selectedDate);
     if (success) {
@@ -122,9 +164,18 @@ const VehicleContainer = () => {
         />
       </div>
 
+      {selectedGBM && selectedVTR && (
+        <EquipmentChecklist
+          selectedGBM={selectedGBM}
+          selectedVTR={selectedVTR}
+          selectedDate={selectedDate}
+          onSave={handleSaveEquipmentStatus}
+        />
+      )}
+
       <Button
         onClick={handleFinishOperation}
-        className="w-full mt-6 bg-military-red hover:bg-military-orange transition-colors"
+        className="w-full mt-6 bg-military-orange hover:bg-military-red transition-colors text-white font-bold text-lg py-6"
         disabled={vehicles.length === 0}
       >
         Finalizar VTRs
