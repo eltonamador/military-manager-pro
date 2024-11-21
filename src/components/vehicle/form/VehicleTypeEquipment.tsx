@@ -10,11 +10,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { EquipmentStatus } from "../types";
 
 interface Equipment {
   id: number;
   name: string;
+}
+
+interface EquipmentStatus {
+  vtr: string;
+  gbm: string;
+  equipamento: string;
+  status: string;
+  description: string | null;
+  date: string;
 }
 
 interface VehicleTypeEquipmentProps {
@@ -46,19 +54,17 @@ export const VehicleTypeEquipment = ({
     enabled: !!vehicleType,
   });
 
-  const handleStatusChange = (equipmentId: number, status: string) => {
+  const handleStatusChange = (equipment: Equipment, status: string, description: string = '') => {
+    const currentTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    
     onStatusChange([{
-      equipmentId,
+      vtr: selectedVTR,
+      gbm: selectedGBM,
+      equipamento: equipment.name,
       status,
-      description: ""
-    }]);
-  };
-
-  const handleDescriptionChange = (equipmentId: number, description: string) => {
-    onStatusChange([{
-      equipmentId,
-      status: "operante", // Default status
-      description
+      description: description || null,
+      date: selectedDate.toISOString().split('T')[0],
+      time: currentTime,
     }]);
   };
 
@@ -88,20 +94,20 @@ export const VehicleTypeEquipment = ({
           <div key={equipment.id} className="space-y-2 p-4 bg-gray-50 rounded-md">
             <Label className="font-medium">{equipment.name}</Label>
             <Select
-              onValueChange={(value) => handleStatusChange(equipment.id, value)}
+              onValueChange={(value) => handleStatusChange(equipment, value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione o status" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="operante">Operante</SelectItem>
-                <SelectItem value="parcialmente operante">Parcialmente Operante</SelectItem>
+                <SelectItem value="verificado">Verificado</SelectItem>
                 <SelectItem value="não operante">Não Operante</SelectItem>
               </SelectContent>
             </Select>
             <Textarea
               placeholder="Descrição da alteração (se necessário)"
-              onChange={(e) => handleDescriptionChange(equipment.id, e.target.value)}
+              onChange={(e) => handleStatusChange(equipment, "operante", e.target.value)}
               className="h-20"
             />
           </div>
