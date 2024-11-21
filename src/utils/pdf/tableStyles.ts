@@ -14,15 +14,14 @@ export const applyTableStyles = (tableElement: HTMLElement | null) => {
   rows.forEach((row, index) => {
     if (index === 0) {
       row.classList.add(
-        'bg-military-orange/20',
-        'text-gray-800',
-        'font-semibold'
+        'bg-gray-100',
+        'text-black',
+        'font-bold'
       );
     } else {
       row.classList.add(
-        index % 2 === 0 ? 'bg-gray-50' : 'bg-white',
         'border-b',
-        'border-military-orange/20'
+        'border-gray-300'
       );
     }
   });
@@ -34,7 +33,8 @@ export const applyTableStyles = (tableElement: HTMLElement | null) => {
       'px-4',
       'py-2',
       'text-sm',
-      'border-military-orange/10'
+      'border',
+      'border-gray-300'
     );
   });
 };

@@ -2,63 +2,74 @@ import { jsPDF } from "jspdf";
 import { PDF_CONFIG, getContentWidth } from "./pdfConfig";
 
 export const addHeader = async (pdf: jsPDF): Promise<number> => {
-  const { margin, headerHeight } = PDF_CONFIG;
+  const { margin, headerHeight, logos } = PDF_CONFIG;
   let currentY = margin;
 
-  // Add logo
+  // Add logos
   try {
-    const logoImg = new Image();
-    logoImg.src = "/escaladohj2.webp";
+    // Left logo
+    const leftLogoImg = new Image();
+    leftLogoImg.src = logos.left;
     await new Promise((resolve, reject) => {
-      logoImg.onload = resolve;
-      logoImg.onerror = reject;
+      leftLogoImg.onload = resolve;
+      leftLogoImg.onerror = reject;
     });
-    pdf.addImage(logoImg, "WEBP", margin, currentY, 20, 20);
-  } catch (error) {
-    console.error("Failed to load logo:", error);
-  }
+    pdf.addImage(leftLogoImg, "PNG", margin, currentY, 25, 25);
 
-  currentY += 25;
-  pdf.setLineWidth(0.5);
-  pdf.line(margin, currentY, PDF_CONFIG.pageWidth - margin, currentY);
+    // Right logo
+    const rightLogoImg = new Image();
+    rightLogoImg.src = logos.right;
+    await new Promise((resolve, reject) => {
+      rightLogoImg.onload = resolve;
+      rightLogoImg.onerror = reject;
+    });
+    pdf.addImage(rightLogoImg, "PNG", PDF_CONFIG.pageWidth - margin - 25, currentY, 25, 25);
+  } catch (error) {
+    console.error("Failed to load logos:", error);
+  }
 
   // Header text
   currentY += 10;
   pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(16);
-  pdf.setTextColor(PDF_CONFIG.textColors.primary);
-  
-  const headerText = "CORPO DE BOMBEIROS MILITAR DO AMAPÁ";
-  const headerWidth = pdf.getStringUnitWidth(headerText) * 16 / pdf.internal.scaleFactor;
-  const headerX = (PDF_CONFIG.pageWidth - headerWidth) / 2;
-  pdf.text(headerText, headerX, currentY);
+  pdf.setFontSize(14);
+  pdf.setTextColor(0, 0, 0);
 
-  // Subheaders
-  pdf.setFontSize(12);
-  pdf.setTextColor(PDF_CONFIG.textColors.secondary);
-  
-  currentY += 10;
-  const subHeaders = [
-    "COMANDO OPERACIONAL",
-    "MILITARES E VIATURAS NO SERVIÇO OPERACIONAL"
+  const headers = [
+    "ESTADO DO AMAPÁ",
+    "CORPO DE BOMBEIROS MILITAR",
+    "DIRETORIA DE INTELIGÊNCIA E OPERAÇÕES"
   ];
 
-  for (const text of subHeaders) {
-    const width = pdf.getStringUnitWidth(text) * 12 / pdf.internal.scaleFactor;
-    pdf.text(text, (PDF_CONFIG.pageWidth - width) / 2, currentY);
-    currentY += 10;
-  }
+  headers.forEach(text => {
+    const textWidth = pdf.getStringUnitWidth(text) * 14 / pdf.internal.scaleFactor;
+    const textX = (PDF_CONFIG.pageWidth - textWidth) / 2;
+    currentY += 8;
+    pdf.text(text, textX, currentY);
+  });
 
-  // Date
-  currentY += 5;
-  pdf.setFontSize(10);
-  pdf.setTextColor(PDF_CONFIG.textColors.tertiary);
-  const currentDate = new Date().toLocaleDateString('pt-BR', {
+  // Add line under header
+  currentY += 10;
+  pdf.setLineWidth(0.5);
+  pdf.line(margin, currentY, PDF_CONFIG.pageWidth - margin, currentY);
+
+  // Add report title
+  currentY += 10;
+  const reportDate = new Date().toLocaleDateString('pt-BR', {
     day: '2-digit',
-    month: '2-digit',
+    month: 'long',
     year: 'numeric'
   });
-  pdf.text(`Data: ${currentDate}`, margin, currentY);
+  
+  pdf.setFontSize(12);
+  const reportTitle = "RELATÓRIO DO SERVIÇO OPERACIONAL";
+  const titleWidth = pdf.getStringUnitWidth(reportTitle) * 12 / pdf.internal.scaleFactor;
+  pdf.text(reportTitle, (PDF_CONFIG.pageWidth - titleWidth) / 2, currentY);
 
-  return currentY + 10;
+  currentY += 8;
+  pdf.setFontSize(10);
+  const dateText = `Macapá-AP, ${reportDate}`;
+  const dateWidth = pdf.getStringUnitWidth(dateText) * 10 / pdf.internal.scaleFactor;
+  pdf.text(dateText, (PDF_CONFIG.pageWidth - dateWidth) / 2, currentY);
+
+  return currentY + 15;
 };
