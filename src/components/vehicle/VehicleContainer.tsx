@@ -7,7 +7,6 @@ import { EquipmentStatusForm } from "./form/EquipmentStatusForm";
 import { FinishOperationDialog } from "./FinishOperationDialog";
 import { VehicleStateProvider, useVehicleState } from "./VehicleStateProvider";
 import { useVehicleOperations } from "./VehicleOperations";
-import { Plus } from "lucide-react";
 
 const VehicleContainerContent = () => {
   const {
@@ -74,6 +73,14 @@ const VehicleContainerContent = () => {
         onDescriptionChange={setDescription}
       />
 
+      <Button
+        onClick={handleAddVehicle}
+        className="w-full bg-military-orange hover:bg-military-red transition-colors mb-6"
+        disabled={!selectedGBM || !selectedVTR || !status}
+      >
+        + Adicionar VTR
+      </Button>
+
       <div className="overflow-x-auto">
         <VehicleTable
           vehicleList={vehicles}
@@ -81,15 +88,6 @@ const VehicleContainerContent = () => {
           onDelete={handleDelete}
         />
       </div>
-
-      <Button
-        onClick={handleAddVehicle}
-        className="w-full mt-4 bg-military-orange hover:bg-military-red transition-colors"
-        disabled={!selectedGBM || !selectedVTR || !status}
-      >
-        <Plus className="mr-2 h-4 w-4" />
-        Adicionar VTR
-      </Button>
 
       <EquipmentStatusForm
         selectedGBM={selectedGBM}
