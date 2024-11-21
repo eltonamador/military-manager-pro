@@ -51,7 +51,13 @@ export const VehicleTypeEquipment = ({
       [equipment]: { status, description }
     }));
 
-    const requiredEquipment = ['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor'];
+    let requiredEquipment;
+    if (vehicleType === 'ABS') {
+      requiredEquipment = ['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor'];
+    } else if (vehicleType === 'ABT') {
+      requiredEquipment = ['Sistema de LGE', 'Mangueiras 1 1/2\' (metros)', 'Mangueiras 2 1/2\' (metros)'];
+    }
+
     const statusesArray = requiredEquipment.map(equipName => ({
       vtr: selectedVTR,
       gbm: selectedGBM,
@@ -65,7 +71,7 @@ export const VehicleTypeEquipment = ({
     onStatusChange(statusesArray);
   };
 
-  if (!vehicleType || vehicleType !== 'ABS') {
+  if (!vehicleType || (vehicleType !== 'ABS' && vehicleType !== 'ABT')) {
     return null;
   }
 
@@ -77,13 +83,24 @@ export const VehicleTypeEquipment = ({
     );
   }
 
+  const getEquipmentOptions = (equipment: string) => {
+    if (equipment === 'Sistema de LGE') {
+      return ['Operante', 'Nao operante', 'Inoperante'];
+    }
+    return ['Operante', 'Parcialmente operante', 'Não operante'];
+  };
+
+  const equipmentList = vehicleType === 'ABS' 
+    ? ['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor']
+    : ['Sistema de LGE', 'Mangueiras 1 1/2\' (metros)', 'Mangueiras 2 1/2\' (metros)'];
+
   return (
     <div className="space-y-4 mt-6 p-4 border border-military-orange/20 rounded-lg">
       <h3 className="text-lg font-semibold text-gray-900">
         Checklist de Equipamentos - {selectedVTR}
       </h3>
       <div className="space-y-4">
-        {['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor'].map((equipment) => (
+        {equipmentList.map((equipment) => (
           <EquipmentStatusSelect
             key={equipment}
             label={equipment}
@@ -91,6 +108,7 @@ export const VehicleTypeEquipment = ({
             description={equipmentStatuses[equipment]?.description || ''}
             onStatusChange={(status) => handleStatusChange(equipment, status, equipmentStatuses[equipment]?.description)}
             onDescriptionChange={(description) => handleStatusChange(equipment, equipmentStatuses[equipment]?.status || '', description)}
+            options={getEquipmentOptions(equipment)}
           />
         ))}
       </div>

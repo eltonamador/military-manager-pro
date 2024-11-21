@@ -12,6 +12,7 @@ interface EquipmentStatusSelectProps {
   label: string;
   status: string;
   description: string;
+  options: string[];
   onStatusChange: (status: string) => void;
   onDescriptionChange: (description: string) => void;
 }
@@ -20,6 +21,7 @@ export const EquipmentStatusSelect = ({
   label,
   status,
   description,
+  options,
   onStatusChange,
   onDescriptionChange,
 }: EquipmentStatusSelectProps) => {
@@ -31,9 +33,11 @@ export const EquipmentStatusSelect = ({
           <SelectValue placeholder="Selecione o status" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="operante">Operante</SelectItem>
-          <SelectItem value="parcialmente">Parcialmente Operante</SelectItem>
-          <SelectItem value="não operante">Não Operante</SelectItem>
+          {options.map((option) => (
+            <SelectItem key={option} value={option.toLowerCase()}>
+              {option}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
       <Textarea
