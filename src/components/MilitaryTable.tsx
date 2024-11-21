@@ -1,5 +1,3 @@
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import {
   Table,
   TableBody,
@@ -8,88 +6,68 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Military } from "@/types/military";
+
+interface EquipmentStatus {
+  equipment: string;
+  status: string;
+  description: string;
+}
 
 interface MilitaryTableProps {
-  militaryList: Military[];
-  onEdit?: (index: number) => void;
-  onDelete?: (index: number) => void;
+  militaryList: Array<{
+    name: string;
+    function: string;
+    gbm: string;
+    vtr: string;
+    date: Date;
+    alterations: string;
+    time?: string;
+    equipmentStatus: EquipmentStatus[];
+  }>;
   showInclusionTime?: boolean;
 }
 
-const MilitaryTable = ({ 
-  militaryList, 
-  onEdit, 
-  onDelete,
-  showInclusionTime = false 
-}: MilitaryTableProps) => {
+const MilitaryTable = ({ militaryList, showInclusionTime = false }: MilitaryTableProps) => {
   return (
-    <div className="border rounded-lg">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Nome</TableHead>
-            <TableHead>Função</TableHead>
-            <TableHead>GBM</TableHead>
-            <TableHead>VTR</TableHead>
-            <TableHead>Data</TableHead>
-            <TableHead>Alterações</TableHead>
-            {showInclusionTime && <TableHead>Horário de Inclusão</TableHead>}
-            {(onEdit || onDelete) && <TableHead>Ações</TableHead>}
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Nome/VTR</TableHead>
+          <TableHead>Função/Status</TableHead>
+          <TableHead>GBM</TableHead>
+          <TableHead>Alterações</TableHead>
+          {showInclusionTime && <TableHead>Horário</TableHead>}
+          <TableHead>Equipamentos</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {militaryList.map((item, index) => (
+          <TableRow key={index}>
+            <TableCell className="font-medium">{item.name}</TableCell>
+            <TableCell>{item.function}</TableCell>
+            <TableCell>{item.gbm}</TableCell>
+            <TableCell>{item.alterations}</TableCell>
+            {showInclusionTime && <TableCell>{item.time}</TableCell>}
+            <TableCell>
+              {item.equipmentStatus && item.equipmentStatus.length > 0 ? (
+                <div className="space-y-2">
+                  {item.equipmentStatus.map((eq, idx) => (
+                    <div key={idx} className="text-sm">
+                      <span className="font-semibold">{eq.equipment}</span>: {eq.status}
+                      {eq.description && (
+                        <span className="text-gray-500 ml-1">({eq.description})</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                "-"
+              )}
+            </TableCell>
           </TableRow>
-        </TableHeader>
-        <TableBody>
-          {militaryList.map((military, index) => {
-            // Check if this entry is a VTR (vehicle) by checking if the name matches a VTR pattern
-            const isVehicle = /^[A-Z]+-\d+$/.test(military.name);
-            
-            return (
-              <TableRow key={index}>
-                <TableCell>{military.name}</TableCell>
-                <TableCell>{military.function}</TableCell>
-                <TableCell>{military.gbm}</TableCell>
-                <TableCell>
-                  {/* Only show VTR if it's not a vehicle entry */}
-                  {!isVehicle ? military.vtr : ""}
-                </TableCell>
-                <TableCell>
-                  {military.date
-                    ? format(new Date(military.date), "dd/MM/yyyy", { locale: ptBR })
-                    : ""}
-                </TableCell>
-                <TableCell>
-                  {/* For vehicles, show VTR in alterations. For others, show alterations */}
-                  {isVehicle ? military.vtr : (military.alterations || "-")}
-                </TableCell>
-                {showInclusionTime && (
-                  <TableCell>{military.inclusionTime}</TableCell>
-                )}
-                {(onEdit || onDelete) && (
-                  <TableCell className="flex gap-2">
-                    {onEdit && (
-                      <button
-                        onClick={() => onEdit(index)}
-                        className="text-blue-600 hover:text-blue-800"
-                      >
-                        Editar
-                      </button>
-                    )}
-                    {onDelete && (
-                      <button
-                        onClick={() => onDelete(index)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        Excluir
-                      </button>
-                    )}
-                  </TableCell>
-                )}
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </div>
+        ))}
+      </TableBody>
+    </Table>
   );
 };
 

@@ -10,6 +10,7 @@ const formatDateForQuery = (date: Date) => {
 type MilitaryServiceTable = Database["public"]["Tables"]["servico_militar_1gbm"]["Row"];
 type VehicleServiceTable = Database["public"]["Tables"]["servico_vtrs_1gbm"]["Row"];
 type OfficerServiceTable = Database["public"]["Tables"]["servico_oficial"]["Row"];
+type EquipmentStatusTable = Database["public"]["Tables"]["equipment_status"]["Row"];
 
 const getMilitaryTableName = (gbm: string) => {
   const formattedGBM = gbm.toLowerCase().replace('º', '').replace(' ', '');
@@ -122,6 +123,39 @@ export const useConsultationData = (
     enabled: !!selectedDate && selectedOfficerTypes.length > 0,
   });
 
+  const { data: equipmentData, isLoading: isEquipmentLoading } = useQuery({
+    queryKey: ["equipment-status", selectedVehicleGBMs, selectedDate, selectedVTRs],
+    queryFn: async () => {
+      if (!selectedDate || (selectedVehicleGBMs.length === 0 && selectedVTRs.length === 0)) return [];
+
+      const formattedDate = formatDateForQuery(selectedDate);
+      
+      const query = supabase
+        .from('equipment_status')
+        .select('*')
+        .eq('date', formattedDate);
+
+      if (selectedVehicleGBMs.length > 0) {
+        query.in('gbm', selectedVehicleGBMs);
+      }
+
+      if (selectedVTRs.length > 0) {
+        const vtrConditions = selectedVTRs.map(prefix => `vtr.ilike.${prefix}%`);
+        query.or(vtrConditions.join(','));
+      }
+
+      const { data, error } = await query;
+      
+      if (error) {
+        console.error('Error querying equipment status:', error);
+        throw error;
+      }
+
+      return (data || []) as EquipmentStatusTable[];
+    },
+    enabled: !!selectedDate && (selectedVehicleGBMs.length > 0 || selectedVTRs.length > 0),
+  });
+
   const formatData = () => {
     const formattedMilitaryData = militaryData?.map(item => ({
       name: item.nome_de_guerra || "",
@@ -130,7 +164,8 @@ export const useConsultationData = (
       vtr: item.viatura || "",
       date: item.data ? new Date(item.data) : new Date(),
       alterations: item.alteracao_mil || "-",
-      time: item.horario_inclusao || ""
+      time: item.horario_inclusao || "",
+      equipmentStatus: []
     })) || [];
 
     const formattedVehicleData = vehicleData?.map(item => ({
@@ -140,7 +175,14 @@ export const useConsultationData = (
       vtr: item.alteracao || "",
       date: item.data ? new Date(item.data) : new Date(),
       alterations: item.alteracao || "-",
-      time: item.hora_inclusao_vtr || ""
+      time: item.hora_inclusao_vtr || "",
+      equipmentStatus: equipmentData
+        ?.filter(eq => eq.vtr === item.vtr)
+        ?.map(eq => ({
+          equipment: eq.equipamento || "",
+          status: eq.status || "",
+          description: eq.description || "-"
+        })) || []
     })) || [];
 
     const formattedOfficerData = officerData?.map(item => ({
@@ -150,7 +192,8 @@ export const useConsultationData = (
       vtr: item.vtr_sup || "-",
       date: item.data_serv_of ? new Date(item.data_serv_of) : new Date(),
       alterations: "-",
-      time: item.hora_inclusao_sup || ""
+      time: item.hora_inclusao_sup || "",
+      equipmentStatus: []
     })) || [];
 
     return [...formattedMilitaryData, ...formattedVehicleData, ...formattedOfficerData];
@@ -158,6 +201,6 @@ export const useConsultationData = (
 
   return {
     data: formatData(),
-    isLoading: isMilitaryLoading || isVehicleLoading || isOfficerLoading
+    isLoading: isMilitaryLoading || isVehicleLoading || isOfficerLoading || isEquipmentLoading
   };
 };
