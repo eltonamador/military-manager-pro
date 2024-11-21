@@ -1,10 +1,5 @@
 import { VehicleTypeEquipment } from "./VehicleTypeEquipment";
-
-interface EquipmentStatus {
-  equipmentId: number;
-  status: string;
-  description: string;
-}
+import { EquipmentStatus } from "../types";
 
 interface EquipmentStatusFormProps {
   selectedGBM: string;
@@ -31,7 +26,7 @@ export const EquipmentStatusForm = ({
       selectedVTR={selectedVTR}
       selectedDate={selectedDate}
       vehicleType={vehicleType}
-      onSave={onStatusChange}
+      onStatusChange={onStatusChange}
     />
   );
 };

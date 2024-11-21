@@ -20,6 +20,13 @@ const VehicleContainerContent = () => {
     editingIndex,
     showGoodServiceDialog,
     setShowGoodServiceDialog,
+    setSelectedGBM,
+    setSelectedVTR,
+    setSelectedTime,
+    setStatus,
+    setDescription,
+    setSelectedDate,
+    setEquipmentStatuses,
   } = useVehicleState();
 
   const {
@@ -58,6 +65,12 @@ const VehicleContainerContent = () => {
         description={description}
         onAddVehicle={handleAddVehicle}
         editingIndex={editingIndex}
+        onGBMChange={setSelectedGBM}
+        onVTRChange={setSelectedVTR}
+        onDateChange={setSelectedDate}
+        onTimeChange={setSelectedTime}
+        onStatusChange={setStatus}
+        onDescriptionChange={setDescription}
       />
 
       <div className="overflow-x-auto">
@@ -73,6 +86,7 @@ const VehicleContainerContent = () => {
         selectedVTR={selectedVTR}
         selectedDate={selectedDate}
         vehicleType={vehicleType}
+        onStatusChange={setEquipmentStatuses}
       />
 
       <Button

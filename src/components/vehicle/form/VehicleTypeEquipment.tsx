@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useVehicleState } from "../VehicleStateProvider";
+import { EquipmentStatus } from "../types";
 
 interface Equipment {
   id: number;
@@ -21,7 +21,8 @@ interface VehicleTypeEquipmentProps {
   selectedGBM: string;
   selectedVTR: string;
   selectedDate: Date;
-  vehicleType: string | null;
+  vehicleType: string;
+  onStatusChange: (statuses: EquipmentStatus[]) => void;
 }
 
 export const VehicleTypeEquipment = ({
@@ -29,9 +30,8 @@ export const VehicleTypeEquipment = ({
   selectedVTR,
   selectedDate,
   vehicleType,
+  onStatusChange,
 }: VehicleTypeEquipmentProps) => {
-  const { setEquipmentStatuses } = useVehicleState();
-
   const { data: equipmentTypes, isLoading } = useQuery({
     queryKey: ["equipmentTypes", vehicleType],
     queryFn: async () => {
@@ -65,19 +65,12 @@ export const VehicleTypeEquipment = ({
   const relevantEquipment = vehicleType === 'ABS' ? absEquipment : [];
 
   const handleStatusChange = (equipmentId: number, status: string, description: string = '') => {
-    setEquipmentStatuses(prev => {
-      const existingIndex = prev.findIndex(item => item.equipmentId === equipmentId);
-      if (existingIndex >= 0) {
-        const newStatuses = [...prev];
-        newStatuses[existingIndex] = {
-          ...newStatuses[existingIndex],
-          status,
-          description,
-        };
-        return newStatuses;
-      }
-      return [...prev, { equipmentId, status, description }];
-    });
+    const newStatus: EquipmentStatus = {
+      equipmentId,
+      status,
+      description
+    };
+    onStatusChange([newStatus]);
   };
 
   return (
