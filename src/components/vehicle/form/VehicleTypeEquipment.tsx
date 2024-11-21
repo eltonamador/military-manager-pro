@@ -5,7 +5,6 @@ import { EquipmentStatusSelect } from "./equipment/EquipmentStatusSelect";
 import { EquipmentStatus } from "../types";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
 
 interface Equipment {
   id: number;
@@ -72,44 +71,6 @@ export const VehicleTypeEquipment = ({
     onStatusChange(statusesArray);
   };
 
-  const saveEquipmentStatuses = async () => {
-    const currentTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    
-    try {
-      const equipmentList = vehicleType === 'ABS' 
-        ? ['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor']
-        : ['Sistema de LGE', 'Mangueiras 1 1/2\' (metros)', 'Mangueiras 2 1/2\' (metros)'];
-
-      const statusesToSave = equipmentList.map(equipment => ({
-        equipamento: equipment,
-        vtr: selectedVTR,
-        gbm: selectedGBM,
-        status: equipmentStatuses[equipment]?.status || 'operante',
-        description: equipmentStatuses[equipment]?.description || null,
-        date: selectedDate.toISOString().split('T')[0],
-        time: currentTime,
-      }));
-
-      const { error } = await supabase
-        .from('equipment_status')
-        .insert(statusesToSave);
-
-      if (error) throw error;
-
-      toast({
-        title: "Checklist salvo",
-        description: `Checklist da ${selectedVTR} foi salvo com sucesso.`,
-      });
-    } catch (error) {
-      console.error('Error saving equipment statuses:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao salvar",
-        description: "Ocorreu um erro ao salvar o checklist dos equipamentos.",
-      });
-    }
-  };
-
   if (!vehicleType || (vehicleType !== 'ABS' && vehicleType !== 'ABT')) {
     return null;
   }
@@ -139,12 +100,6 @@ export const VehicleTypeEquipment = ({
         <h3 className="text-lg font-semibold text-gray-900">
           Checklist de Equipamentos - {selectedVTR}
         </h3>
-        <Button
-          onClick={saveEquipmentStatuses}
-          className="bg-military-orange hover:bg-military-red transition-colors"
-        >
-          Salvar Checklist
-        </Button>
       </div>
       <div className="space-y-4">
         {equipmentList.map((equipment) => (

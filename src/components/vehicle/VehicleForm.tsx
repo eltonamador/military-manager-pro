@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -11,13 +10,14 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CalendarIcon, Plus } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
 import { VTRSelect } from "./form/VTRSelect";
 import { StatusSelect } from "./form/StatusSelect";
 import { DescriptionField } from "./form/DescriptionField";
+import { Button } from "../ui/button";
 
 interface VehicleFormProps {
   selectedVTR: string;
@@ -58,7 +58,6 @@ const VehicleForm = ({
   onTimeChange,
   onStatusChange,
   onDescriptionChange,
-  onAddVehicle,
   editingIndex,
 }: VehicleFormProps) => {
   // Set current time when component mounts
@@ -126,15 +125,6 @@ const VehicleForm = ({
       <VTRSelect selectedVTR={selectedVTR} onVTRChange={onVTRChange} />
       <StatusSelect status={status} onStatusChange={onStatusChange} />
       <DescriptionField description={description} onDescriptionChange={onDescriptionChange} />
-
-      <Button
-        onClick={onAddVehicle}
-        className="w-full bg-military-orange hover:bg-military-red transition-colors"
-        disabled={!selectedGBM || !selectedVTR || !status}
-      >
-        <Plus className="mr-2 h-4 w-4" />
-        {editingIndex !== null ? "Atualizar VTR" : "Adicionar VTR"}
-      </Button>
     </div>
   );
 };
