@@ -7,6 +7,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 
 interface EquipmentStatusSelectProps {
   label: string;
@@ -25,6 +26,8 @@ export const EquipmentStatusSelect = ({
   onStatusChange,
   onDescriptionChange,
 }: EquipmentStatusSelectProps) => {
+  const showNumberInput = label.includes("Mangueiras");
+
   return (
     <div className="space-y-2 p-4 bg-gray-50 rounded-md">
       <Label className="font-medium">{label}</Label>
@@ -40,12 +43,23 @@ export const EquipmentStatusSelect = ({
           ))}
         </SelectContent>
       </Select>
-      <Textarea
-        placeholder="Descrição da alteração (se necessário)"
-        onChange={(e) => onDescriptionChange(e.target.value)}
-        value={description}
-        className="h-20"
-      />
+      {showNumberInput ? (
+        <Input
+          type="number"
+          placeholder="Digite a quantidade em metros"
+          value={description.replace(/\D/g, '')}
+          onChange={(e) => onDescriptionChange(`Quantidade: ${e.target.value} metros`)}
+          min={0}
+          className="mt-2"
+        />
+      ) : (
+        <Textarea
+          placeholder="Descrição da alteração (se necessário)"
+          onChange={(e) => onDescriptionChange(e.target.value)}
+          value={description}
+          className="h-20"
+        />
+      )}
     </div>
   );
 };
