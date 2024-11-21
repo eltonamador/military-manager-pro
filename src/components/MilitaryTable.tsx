@@ -25,9 +25,11 @@ interface MilitaryTableProps {
     equipmentStatus: EquipmentStatus[];
   }>;
   showInclusionTime?: boolean;
+  onEdit?: (index: number) => void;
+  onDelete?: (index: number) => void;
 }
 
-const MilitaryTable = ({ militaryList, showInclusionTime = false }: MilitaryTableProps) => {
+const MilitaryTable = ({ militaryList, showInclusionTime = false, onEdit, onDelete }: MilitaryTableProps) => {
   return (
     <Table>
       <TableHeader>
@@ -38,6 +40,7 @@ const MilitaryTable = ({ militaryList, showInclusionTime = false }: MilitaryTabl
           <TableHead>Alterações</TableHead>
           {showInclusionTime && <TableHead>Horário</TableHead>}
           <TableHead>Equipamentos</TableHead>
+          {(onEdit || onDelete) && <TableHead>Ações</TableHead>}
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -64,6 +67,26 @@ const MilitaryTable = ({ militaryList, showInclusionTime = false }: MilitaryTabl
                 "-"
               )}
             </TableCell>
+            {(onEdit || onDelete) && (
+              <TableCell className="space-x-2">
+                {onEdit && (
+                  <button
+                    onClick={() => onEdit(index)}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    Editar
+                  </button>
+                )}
+                {onDelete && (
+                  <button
+                    onClick={() => onDelete(index)}
+                    className="text-red-600 hover:text-red-800"
+                  >
+                    Excluir
+                  </button>
+                )}
+              </TableCell>
+            )}
           </TableRow>
         ))}
       </TableBody>
