@@ -89,28 +89,18 @@ const VehicleContainerContent = () => {
         onStatusChange={setEquipmentStatuses}
       />
 
-      <div className="space-y-4 mt-6">
-        <Button
-          onClick={handleAddVehicle}
-          className="w-full bg-military-orange hover:bg-military-red transition-colors text-white font-bold text-lg py-6"
-          disabled={!selectedVTR || !selectedGBM || !status}
-        >
-          + Adicionar VTR
-        </Button>
-
-        <Button
-          onClick={async () => {
-            const success = await handleFinishOperation();
-            if (success) {
-              setShowGoodServiceDialog(true);
-            }
-          }}
-          className="w-full bg-military-orange hover:bg-military-red transition-colors text-white font-bold text-lg py-6"
-          disabled={vehicles.length === 0}
-        >
-          Finalizar VTRs
-        </Button>
-      </div>
+      <Button
+        onClick={async () => {
+          const success = await handleFinishOperation();
+          if (success) {
+            setShowGoodServiceDialog(true);
+          }
+        }}
+        className="w-full mt-6 bg-military-orange hover:bg-military-red transition-colors text-white font-bold text-lg py-6"
+        disabled={vehicles.length === 0}
+      >
+        Finalizar VTRs
+      </Button>
 
       <FinishOperationDialog 
         open={showGoodServiceDialog}
