@@ -84,7 +84,7 @@ export const useVehicleOperations = () => {
           const { error } = await supabase
             .from('equipment_status')
             .insert({
-              equipment_type_id: status.equipmentId,
+              equipamento: status.equipamento,
               vtr: selectedVTR,
               gbm: selectedGBM,
               status: status.status,
