@@ -61,6 +61,9 @@ const VehicleContainerContent = () => {
     setIsChecklistSaved(true);
   };
 
+  // Check if VTR is ABT or ABS or ABS-232
+  const isSpecialVTR = selectedVTR?.includes('ABT') || selectedVTR?.includes('ABS');
+
   return (
     <main className="flex-grow bg-white rounded-lg shadow-md p-3 sm:p-6">
       <VehicleForm
