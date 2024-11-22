@@ -1,11 +1,5 @@
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import Select from 'react-select';
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -16,7 +10,7 @@ interface VTRSelectProps {
 
 export const VTRSelect = ({ selectedVTR, onVTRChange }: VTRSelectProps) => {
   // Fetch VTRs from Supabase
-  const { data: vtrOptions } = useQuery({
+  const { data: vtrOptions, isLoading } = useQuery({
     queryKey: ["vtrs"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -29,21 +23,45 @@ export const VTRSelect = ({ selectedVTR, onVTRChange }: VTRSelectProps) => {
     },
   });
 
+  const options = vtrOptions?.map(vtr => ({ value: vtr, label: vtr })) || [];
+
   return (
     <div>
       <Label htmlFor="vtr">VTR</Label>
-      <Select onValueChange={onVTRChange} value={selectedVTR}>
-        <SelectTrigger id="vtr">
-          <SelectValue placeholder="Selecione a VTR" />
-        </SelectTrigger>
-        <SelectContent>
-          {vtrOptions?.map((vtr) => (
-            <SelectItem key={vtr} value={vtr}>
-              {vtr}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <Select
+        inputId="vtr"
+        options={options}
+        value={selectedVTR ? { value: selectedVTR, label: selectedVTR } : null}
+        onChange={(option) => onVTRChange(option ? option.value : '')}
+        placeholder="DIGITE a VTR"
+        isClearable
+        isLoading={isLoading}
+        className="mt-1"
+        styles={{
+          control: (base) => ({
+            ...base,
+            minHeight: '40px',
+            borderRadius: '6px',
+            borderColor: 'hsl(var(--border))',
+            '&:hover': {
+              borderColor: 'hsl(var(--border))',
+            },
+          }),
+          menu: (base) => ({
+            ...base,
+            backgroundColor: 'hsl(var(--background))',
+            border: '1px solid hsl(var(--border))',
+          }),
+          option: (base, state) => ({
+            ...base,
+            backgroundColor: state.isFocused ? 'hsl(var(--accent))' : 'transparent',
+            color: state.isFocused ? 'hsl(var(--accent-foreground))' : 'inherit',
+            '&:active': {
+              backgroundColor: 'hsl(var(--accent))',
+            },
+          }),
+        }}
+      />
     </div>
   );
 };
