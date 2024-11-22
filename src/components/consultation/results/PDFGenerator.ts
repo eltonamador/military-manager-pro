@@ -46,43 +46,52 @@ export const generatePDF = async (elementId: string) => {
     const imgWidth = contentWidth;
     const imgHeight = (canvas.height * contentWidth) / canvas.width;
     
-    // Add content image
+    // Calculate the available space on the first page
+    const availableHeight = pageHeight - contentStartY - (margin * 2);
+    
+    // Add content to first page
     pdf.addImage(
       canvas.toDataURL('image/png'),
       'PNG',
       margin,
       contentStartY,
       imgWidth,
-      imgHeight
+      imgHeight,
+      undefined,
+      'FAST'
     );
 
-    // Handle multiple pages if needed
-    if (contentStartY + imgHeight > pageHeight - margin) {
-      const firstPageHeight = pageHeight - contentStartY;
-      const remainingHeight = imgHeight - firstPageHeight;
+    // If content exceeds first page, create additional pages
+    if (imgHeight > availableHeight) {
+      let remainingHeight = imgHeight - availableHeight;
+      let currentPage = 1;
       
-      let currentY = 0;
-      while (currentY < remainingHeight) {
+      while (remainingHeight > 0) {
+        // Add new page
         pdf.addPage();
-        const heightOnThisPage = Math.min(
-          pageHeight - (margin * 2),
-          remainingHeight - currentY
-        );
+        currentPage++;
         
+        // Calculate dimensions for this page
+        const pageContentHeight = Math.min(remainingHeight, pageHeight - (margin * 3));
+        
+        // Add portion of content to new page
         pdf.addImage(
           canvas.toDataURL('image/png'),
           'PNG',
           margin,
-          margin - currentY,
+          margin,
           imgWidth,
-          imgHeight
+          imgHeight,
+          undefined,
+          'FAST',
+          -currentPage * (pageHeight - (margin * 3))
         );
         
-        currentY += heightOnThisPage;
+        remainingHeight -= pageContentHeight;
       }
     }
 
-    // Add page numbers
+    // Add page numbers to all pages
     const totalPages = pdf.getNumberOfPages();
     for (let i = 1; i <= totalPages; i++) {
       pdf.setPage(i);
