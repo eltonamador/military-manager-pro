@@ -21,6 +21,18 @@ interface VehicleTypeEquipmentProps {
   onSaveChecklist: () => void;
 }
 
+const getEquipmentListByType = (vehicleType: string) => {
+  switch (vehicleType) {
+    case 'ABS':
+    case 'ABS-232':
+      return ['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor'];
+    case 'ABT':
+      return ['Sistema de LGE', 'Mangueiras 1 1/2\' (metros)', 'Mangueiras 2 1/2\' (metros)'];
+    default:
+      return [];
+  }
+};
+
 export const VehicleTypeEquipment = ({
   selectedGBM,
   selectedVTR,
@@ -34,12 +46,8 @@ export const VehicleTypeEquipment = ({
   }>({});
   const { toast } = useToast();
 
-  // Set default status as "operante" for all equipment when component mounts
   useEffect(() => {
-    const equipmentList = (vehicleType === 'ABS' || vehicleType === 'ABS-232')
-      ? ['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor']
-      : ['Sistema de LGE', 'Mangueiras 1 1/2\' (metros)', 'Mangueiras 2 1/2\' (metros)'];
-
+    const equipmentList = getEquipmentListByType(vehicleType);
     const defaultStatuses = equipmentList.reduce((acc, equipment) => ({
       ...acc,
       [equipment]: { status: 'operante', description: '' }
@@ -47,7 +55,6 @@ export const VehicleTypeEquipment = ({
 
     setEquipmentStatuses(defaultStatuses);
     
-    // Trigger initial status change
     const statusesArray = equipmentList.map(equipName => ({
       vtr: selectedVTR,
       gbm: selectedGBM,
@@ -80,14 +87,8 @@ export const VehicleTypeEquipment = ({
       [equipment]: { status, description }
     }));
 
-    let requiredEquipment;
-    if (vehicleType === 'ABS' || vehicleType === 'ABS-232') {
-      requiredEquipment = ['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor'];
-    } else if (vehicleType === 'ABT') {
-      requiredEquipment = ['Sistema de LGE', 'Mangueiras 1 1/2\' (metros)', 'Mangueiras 2 1/2\' (metros)'];
-    }
-
-    const statusesArray = requiredEquipment.map(equipName => ({
+    const equipmentList = getEquipmentListByType(vehicleType);
+    const statusesArray = equipmentList.map(equipName => ({
       vtr: selectedVTR,
       gbm: selectedGBM,
       equipamento: equipName,
@@ -104,10 +105,7 @@ export const VehicleTypeEquipment = ({
     const currentTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     
     try {
-      const equipmentList = (vehicleType === 'ABS' || vehicleType === 'ABS-232')
-        ? ['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor']
-        : ['Sistema de LGE', 'Mangueiras 1 1/2\' (metros)', 'Mangueiras 2 1/2\' (metros)'];
-
+      const equipmentList = getEquipmentListByType(vehicleType);
       const statusesToSave = equipmentList.map(equipment => ({
         equipamento: equipment,
         vtr: selectedVTR,
@@ -140,7 +138,7 @@ export const VehicleTypeEquipment = ({
     }
   };
 
-  if (!vehicleType || (vehicleType !== 'ABS' && vehicleType !== 'ABS-232' && vehicleType !== 'ABT')) {
+  if (!vehicleType || !['ABS', 'ABS-232', 'ABT'].includes(vehicleType)) {
     return null;
   }
 
@@ -159,9 +157,7 @@ export const VehicleTypeEquipment = ({
     return ['Operante', 'Parcialmente operante', 'Não operante'];
   };
 
-  const equipmentList = (vehicleType === 'ABS' || vehicleType === 'ABS-232')
-    ? ['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor']
-    : ['Sistema de LGE', 'Mangueiras 1 1/2\' (metros)', 'Mangueiras 2 1/2\' (metros)'];
+  const equipmentList = getEquipmentListByType(vehicleType);
 
   return (
     <div className="space-y-4 mt-6 p-4 border border-military-orange/20 rounded-lg">
