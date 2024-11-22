@@ -58,6 +58,7 @@ const VehicleForm = ({
   onTimeChange,
   onStatusChange,
   onDescriptionChange,
+  onAddVehicle,
   editingIndex,
 }: VehicleFormProps) => {
   // Set current time when component mounts
@@ -68,6 +69,9 @@ const VehicleForm = ({
       onTimeChange(currentTime);
     }
   }, [selectedTime, onTimeChange]);
+
+  // Check if VTR is ABT or ABS
+  const isSpecialVTR = selectedVTR?.includes('ABT') || selectedVTR?.includes('ABS');
 
   return (
     <div className="grid grid-cols-1 gap-6 mb-6">
@@ -125,6 +129,12 @@ const VehicleForm = ({
       <VTRSelect selectedVTR={selectedVTR} onVTRChange={onVTRChange} />
       <StatusSelect status={status} onStatusChange={onStatusChange} />
       <DescriptionField description={description} onDescriptionChange={onDescriptionChange} />
+      
+      {!isSpecialVTR && selectedVTR && (
+        <Button onClick={onAddVehicle} className="w-full">
+          Adicionar VTR
+        </Button>
+      )}
     </div>
   );
 };
