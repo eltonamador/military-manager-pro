@@ -36,7 +36,7 @@ export const VehicleTypeEquipment = ({
 
   // Set default status as "operante" for all equipment when component mounts
   useEffect(() => {
-    const equipmentList = vehicleType === 'ABS' || vehicleType === 'ABS-232'
+    const equipmentList = vehicleType === 'ABS' 
       ? ['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor']
       : ['Sistema de LGE', 'Mangueiras 1 1/2\' (metros)', 'Mangueiras 2 1/2\' (metros)'];
 
@@ -81,7 +81,7 @@ export const VehicleTypeEquipment = ({
     }));
 
     let requiredEquipment;
-    if (vehicleType === 'ABS' || vehicleType === 'ABS-232') {
+    if (vehicleType === 'ABS') {
       requiredEquipment = ['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor'];
     } else if (vehicleType === 'ABT') {
       requiredEquipment = ['Sistema de LGE', 'Mangueiras 1 1/2\' (metros)', 'Mangueiras 2 1/2\' (metros)'];
@@ -104,7 +104,7 @@ export const VehicleTypeEquipment = ({
     const currentTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     
     try {
-      const equipmentList = vehicleType === 'ABS' || vehicleType === 'ABS-232'
+      const equipmentList = vehicleType === 'ABS' 
         ? ['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor']
         : ['Sistema de LGE', 'Mangueiras 1 1/2\' (metros)', 'Mangueiras 2 1/2\' (metros)'];
 
@@ -140,7 +140,7 @@ export const VehicleTypeEquipment = ({
     }
   };
 
-  if (!vehicleType || (vehicleType !== 'ABS' && vehicleType !== 'ABT' && vehicleType !== 'ABS-232')) {
+  if (!vehicleType || (vehicleType !== 'ABS' && vehicleType !== 'ABT')) {
     return null;
   }
 
@@ -159,7 +159,7 @@ export const VehicleTypeEquipment = ({
     return ['Operante', 'Parcialmente operante', 'Não operante'];
   };
 
-  const equipmentList = vehicleType === 'ABS' || vehicleType === 'ABS-232'
+  const equipmentList = vehicleType === 'ABS' 
     ? ['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor']
     : ['Sistema de LGE', 'Mangueiras 1 1/2\' (metros)', 'Mangueiras 2 1/2\' (metros)'];
 
