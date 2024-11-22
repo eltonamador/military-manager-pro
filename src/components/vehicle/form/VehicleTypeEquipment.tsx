@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 import { EquipmentStatusSelect } from "./equipment/EquipmentStatusSelect";
 import { EquipmentStatus } from "../types";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 
@@ -33,6 +33,32 @@ export const VehicleTypeEquipment = ({
     [key: string]: { status: string; description: string };
   }>({});
   const { toast } = useToast();
+
+  // Set default status as "operante" for all equipment when component mounts
+  useEffect(() => {
+    const equipmentList = vehicleType === 'ABS' 
+      ? ['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor']
+      : ['Sistema de LGE', 'Mangueiras 1 1/2\' (metros)', 'Mangueiras 2 1/2\' (metros)'];
+
+    const defaultStatuses = equipmentList.reduce((acc, equipment) => ({
+      ...acc,
+      [equipment]: { status: 'operante', description: '' }
+    }), {});
+
+    setEquipmentStatuses(defaultStatuses);
+    
+    // Trigger initial status change
+    const statusesArray = equipmentList.map(equipName => ({
+      vtr: selectedVTR,
+      gbm: selectedGBM,
+      equipamento: equipName,
+      status: 'operante',
+      description: null,
+      date: selectedDate.toISOString().split('T')[0],
+      time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+    }));
+    onStatusChange(statusesArray);
+  }, [selectedVTR, selectedGBM, selectedDate, vehicleType, onStatusChange]);
 
   const { data: equipmentTypes, isLoading } = useQuery({
     queryKey: ["equipmentTypes", vehicleType],
@@ -103,7 +129,7 @@ export const VehicleTypeEquipment = ({
         description: `Checklist da ${selectedVTR} foi salvo com sucesso.`,
       });
       
-      onSaveChecklist(); // Call the callback after successful save
+      onSaveChecklist();
     } catch (error) {
       console.error('Error saving equipment statuses:', error);
       toast({
@@ -147,7 +173,7 @@ export const VehicleTypeEquipment = ({
           <EquipmentStatusSelect
             key={equipment}
             label={equipment}
-            status={equipmentStatuses[equipment]?.status || ''}
+            status={equipmentStatuses[equipment]?.status || 'operante'}
             description={equipmentStatuses[equipment]?.description || ''}
             onStatusChange={(status) => handleStatusChange(equipment, status, equipmentStatuses[equipment]?.description)}
             onDescriptionChange={(description) => handleStatusChange(equipment, equipmentStatuses[equipment]?.status || '', description)}
