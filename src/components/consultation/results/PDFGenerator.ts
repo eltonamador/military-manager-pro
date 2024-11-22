@@ -15,7 +15,7 @@ export const generatePDF = async (elementId: string) => {
     }
 
     const pdf = setupPDFDocument();
-    const { margin, pageHeight } = PDF_CONFIG;
+    const { margin, pageHeight, contentBottomMargin } = PDF_CONFIG;
     
     // Add header and get the Y position where content should start
     const contentStartY = await addHeader(pdf);
@@ -46,52 +46,45 @@ export const generatePDF = async (elementId: string) => {
     const imgWidth = contentWidth;
     const imgHeight = (canvas.height * contentWidth) / canvas.width;
     
-    // Calculate the available space on the first page
-    const availableHeight = pageHeight - contentStartY - (margin * 2);
+    // Add content image with respect to bottom margin
+    const maxContentHeight = pageHeight - contentStartY - contentBottomMargin;
     
-    // Add content to first page
     pdf.addImage(
       canvas.toDataURL('image/png'),
       'PNG',
       margin,
       contentStartY,
       imgWidth,
-      imgHeight,
-      undefined,
-      'FAST'
+      Math.min(imgHeight, maxContentHeight)
     );
 
-    // If content exceeds first page, create additional pages
-    if (imgHeight > availableHeight) {
-      let remainingHeight = imgHeight - availableHeight;
-      let currentPage = 1;
+    // Handle multiple pages if needed
+    if (imgHeight > maxContentHeight) {
+      const firstPageHeight = maxContentHeight;
+      const remainingHeight = imgHeight - firstPageHeight;
       
-      while (remainingHeight > 0) {
-        // Add new page
+      let currentY = 0;
+      while (currentY < remainingHeight) {
         pdf.addPage();
-        currentPage++;
+        const heightOnThisPage = Math.min(
+          pageHeight - margin * 2 - contentBottomMargin,
+          remainingHeight - currentY
+        );
         
-        // Calculate dimensions for this page
-        const pageContentHeight = Math.min(remainingHeight, pageHeight - (margin * 3));
-        
-        // Add portion of content to new page
         pdf.addImage(
           canvas.toDataURL('image/png'),
           'PNG',
           margin,
-          margin,
+          margin - currentY,
           imgWidth,
-          imgHeight,
-          undefined,
-          'FAST',
-          -currentPage * (pageHeight - (margin * 3))
+          imgHeight
         );
         
-        remainingHeight -= pageContentHeight;
+        currentY += heightOnThisPage;
       }
     }
 
-    // Add page numbers to all pages
+    // Add page numbers
     const totalPages = pdf.getNumberOfPages();
     for (let i = 1; i <= totalPages; i++) {
       pdf.setPage(i);
