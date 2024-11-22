@@ -42,10 +42,14 @@ const militaryFunctionOptions = [
   "Resgateiro 2",
   "Socorrista",
   "Cmdt de GU",
+  "Cmdt de GU/Condutor",
   "Cmdt de 1º linha",
   "ajudante de 1º linha",
   "Cmdt de 2º linha",
-  "ajudante de 2º linha"
+  "ajudante de 2º linha",
+  "GV 1",
+  "GV 2",
+  "Piloto"
 ];
 
 const shiftDurationOptions = ["6", "8", "12", "24"];
