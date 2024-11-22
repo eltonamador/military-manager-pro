@@ -11,6 +11,7 @@ import OfficerSelectionHeader from "@/components/officer/OfficerSelectionHeader"
 import OfficerPreview from "@/components/officer/OfficerPreview";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
+import { Officer, saveOfficerService, validateOfficerSelection } from "@/components/officer/OfficerValidation";
 
 const OfficerSelection = () => {
   const navigate = useNavigate();
@@ -19,11 +20,7 @@ const OfficerSelection = () => {
   const [selectedOfficer, setSelectedOfficer] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedVTR, setSelectedVTR] = useState("");
-  const [selectedOfficers, setSelectedOfficers] = useState<Array<{
-    function: string;
-    officer: string;
-    vtr?: string;
-  }>>([]);
+  const [selectedOfficers, setSelectedOfficers] = useState<Officer[]>([]);
 
   const { data: officerOptions = [], isLoading: isLoadingOfficers } = useQuery({
     queryKey: ["officers", selectedFunction],
@@ -77,11 +74,12 @@ const OfficerSelection = () => {
   });
 
   const handleFinalize = async () => {
-    if (!selectedFunction || !selectedOfficer || !selectedDate) {
+    const validationError = validateOfficerSelection(selectedFunction, selectedOfficer, selectedDate);
+    if (validationError) {
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Por favor, preencha os campos obrigatórios (Função, Oficial e Data).",
+        description: validationError,
       });
       return;
     }
@@ -110,41 +108,31 @@ const OfficerSelection = () => {
     const updatedOfficers = [...selectedOfficers, newOfficer];
     setSelectedOfficers(updatedOfficers);
 
-    const hasSuperior = updatedOfficers.some(off => off.function === "Superior de dia");
-    const hasArea = updatedOfficers.some(off => off.function.includes("Oficial de Área"));
+    try {
+      await saveOfficerService(newOfficer, selectedDate, currentTime);
 
-    if (!hasSuperior || !hasArea) {
-      toast({
-        title: "Oficial Adicionado",
-        description: `Você ainda precisa ${!hasSuperior ? "um Superior de dia" : ""}${!hasSuperior && !hasArea ? " e " : ""}${!hasArea ? "um Oficial de Área" : ""}.`,
-      });
-
+      // Reset form
       setSelectedFunction("");
       setSelectedOfficer("");
       setSelectedVTR("");
-      return;
-    }
 
-    try {
-      for (const officer of updatedOfficers) {
-        const { error: servicoError } = await supabase
-          .from("servico_oficial")
-          .insert({
-            nome_of_sup: officer.officer,
-            tipo: officer.function,
-            data_serv_of: selectedDate.toISOString().split('T')[0],
-            vtr_sup: officer.vtr || null,
-            hora_inclusao_sup: currentTime
-          });
+      // If at least one Area Officer is selected, allow proceeding
+      const hasAreaOfficer = updatedOfficers.some(off => 
+        off.function === "Oficial de Área 1" || off.function === "Oficial de Área 2"
+      );
 
-        if (servicoError) throw servicoError;
+      if (hasAreaOfficer) {
+        toast({
+          title: "Sucesso",
+          description: "Oficiais selecionados com sucesso!",
+        });
+        navigate("/index");
+      } else {
+        toast({
+          title: "Oficial Adicionado",
+          description: "Você ainda precisa selecionar pelo menos um Oficial de Área.",
+        });
       }
-
-      toast({
-        title: "Sucesso",
-        description: "Oficiais selecionados com sucesso!",
-      });
-      navigate("/index");
     } catch (error) {
       console.error("Error saving officers:", error);
       toast({
