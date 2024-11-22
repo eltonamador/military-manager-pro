@@ -70,9 +70,6 @@ const VehicleForm = ({
     }
   }, [selectedTime, onTimeChange]);
 
-  // Check if VTR is ABT, ABS or ABS-232
-  const isSpecialVTR = selectedVTR?.includes('ABT') || selectedVTR?.includes('ABS') || selectedVTR === 'ABS-232';
-
   return (
     <div className="grid grid-cols-1 gap-6 mb-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -130,7 +127,7 @@ const VehicleForm = ({
       <StatusSelect status={status} onStatusChange={onStatusChange} />
       <DescriptionField description={description} onDescriptionChange={onDescriptionChange} />
       
-      {!isSpecialVTR && selectedVTR && (
+      {selectedVTR && (
         <Button onClick={onAddVehicle} className="w-full">
           Adicionar VTR
         </Button>
