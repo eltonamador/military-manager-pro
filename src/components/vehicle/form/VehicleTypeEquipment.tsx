@@ -36,7 +36,7 @@ export const VehicleTypeEquipment = ({
 
   // Set default status as "operante" for all equipment when component mounts
   useEffect(() => {
-    const equipmentList = vehicleType === 'ABS'
+    const equipmentList = (vehicleType === 'ABS' || vehicleType === 'ABS-232')
       ? ['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor']
       : ['Sistema de LGE', 'Mangueiras 1 1/2\' (metros)', 'Mangueiras 2 1/2\' (metros)'];
 
@@ -80,11 +80,14 @@ export const VehicleTypeEquipment = ({
       [equipment]: { status, description }
     }));
 
-    const equipmentList = vehicleType === 'ABS'
-      ? ['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor']
-      : ['Sistema de LGE', 'Mangueiras 1 1/2\' (metros)', 'Mangueiras 2 1/2\' (metros)'];
+    let requiredEquipment;
+    if (vehicleType === 'ABS' || vehicleType === 'ABS-232') {
+      requiredEquipment = ['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor'];
+    } else if (vehicleType === 'ABT') {
+      requiredEquipment = ['Sistema de LGE', 'Mangueiras 1 1/2\' (metros)', 'Mangueiras 2 1/2\' (metros)'];
+    }
 
-    const statusesArray = equipmentList.map(equipName => ({
+    const statusesArray = requiredEquipment.map(equipName => ({
       vtr: selectedVTR,
       gbm: selectedGBM,
       equipamento: equipName,
@@ -101,7 +104,7 @@ export const VehicleTypeEquipment = ({
     const currentTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     
     try {
-      const equipmentList = vehicleType === 'ABS'
+      const equipmentList = (vehicleType === 'ABS' || vehicleType === 'ABS-232')
         ? ['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor']
         : ['Sistema de LGE', 'Mangueiras 1 1/2\' (metros)', 'Mangueiras 2 1/2\' (metros)'];
 
@@ -137,7 +140,7 @@ export const VehicleTypeEquipment = ({
     }
   };
 
-  if (!vehicleType || (vehicleType !== 'ABS' && vehicleType !== 'ABT')) {
+  if (!vehicleType || (vehicleType !== 'ABS' && vehicleType !== 'ABS-232' && vehicleType !== 'ABT')) {
     return null;
   }
 
@@ -156,7 +159,7 @@ export const VehicleTypeEquipment = ({
     return ['Operante', 'Parcialmente operante', 'Não operante'];
   };
 
-  const equipmentList = vehicleType === 'ABS'
+  const equipmentList = (vehicleType === 'ABS' || vehicleType === 'ABS-232')
     ? ['Conjunto Desencarcerador', 'Motosserras', 'Roupa de Apicultor']
     : ['Sistema de LGE', 'Mangueiras 1 1/2\' (metros)', 'Mangueiras 2 1/2\' (metros)'];
 
