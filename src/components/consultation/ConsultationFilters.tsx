@@ -30,7 +30,8 @@ const vtrOptions = [
   { prefix: "ABS", description: "ABS" },
   { prefix: "USB", description: "USB" },
   { prefix: "AEM", description: "AEM" },
-  { prefix: "ACA", description: "ACA" }
+  { prefix: "ACA", description: "ACA" },
+  { prefix: "LANCHA", description: "LANCHA" }
 ];
 
 export const ConsultationFilters = ({
