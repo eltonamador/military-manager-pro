@@ -61,8 +61,6 @@ const VehicleContainerContent = () => {
     setIsChecklistSaved(true);
   };
 
-  const isSpecialVTR = selectedVTR?.includes('ABT') || selectedVTR?.includes('ABS') || selectedVTR === 'ABS-232';
-
   return (
     <main className="flex-grow bg-white rounded-lg shadow-md p-3 sm:p-6">
       <VehicleForm
@@ -102,7 +100,7 @@ const VehicleContainerContent = () => {
       <Button
         onClick={handleAddVehicle}
         className="w-full mt-4 bg-military-orange hover:bg-military-red transition-colors"
-        disabled={!selectedGBM || !selectedVTR || !status || (!isSpecialVTR && !isChecklistSaved)}
+        disabled={!selectedGBM || !selectedVTR || !status || !isChecklistSaved}
       >
         <Plus className="mr-2 h-4 w-4" />
         Adicionar VTR

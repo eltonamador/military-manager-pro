@@ -25,8 +25,7 @@ const MilitaryTable = ({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Nome</TableHead>
-          <TableHead>VTR</TableHead>
+          <TableHead>Nome/VTR</TableHead>
           <TableHead>Função/Status</TableHead>
           <TableHead>GBM</TableHead>
           <TableHead>Alterações</TableHead>
@@ -38,7 +37,6 @@ const MilitaryTable = ({
         {militaryList.map((item, index) => (
           <TableRow key={index}>
             <TableCell className="font-medium">{item.name}</TableCell>
-            <TableCell>{item.vtr || '-'}</TableCell>
             <TableCell>{item.function}</TableCell>
             <TableCell>{item.gbm}</TableCell>
             <TableCell>{item.alterations || '-'}</TableCell>

@@ -70,8 +70,8 @@ const VehicleForm = ({
     }
   }, [selectedTime, onTimeChange]);
 
-  // Check if VTR is ABT, ABS or ABS-232
-  const isSpecialVTR = selectedVTR?.includes('ABT') || selectedVTR?.includes('ABS') || selectedVTR === 'ABS-232';
+  // Check if VTR is ABT or ABS
+  const isSpecialVTR = selectedVTR?.includes('ABT') || selectedVTR?.includes('ABS');
 
   return (
     <div className="grid grid-cols-1 gap-6 mb-6">
