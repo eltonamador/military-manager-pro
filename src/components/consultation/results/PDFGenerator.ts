@@ -15,7 +15,7 @@ export const generatePDF = async (elementId: string) => {
     }
 
     const pdf = setupPDFDocument();
-    const { margin, pageHeight } = PDF_CONFIG;
+    const { margin, pageHeight, contentBottomMargin } = PDF_CONFIG;
     
     // Add header and get the Y position where content should start
     const contentStartY = await addHeader(pdf);
@@ -46,26 +46,28 @@ export const generatePDF = async (elementId: string) => {
     const imgWidth = contentWidth;
     const imgHeight = (canvas.height * contentWidth) / canvas.width;
     
-    // Add content image
+    // Add content image with respect to bottom margin
+    const maxContentHeight = pageHeight - contentStartY - contentBottomMargin;
+    
     pdf.addImage(
       canvas.toDataURL('image/png'),
       'PNG',
       margin,
       contentStartY,
       imgWidth,
-      imgHeight
+      Math.min(imgHeight, maxContentHeight)
     );
 
     // Handle multiple pages if needed
-    if (contentStartY + imgHeight > pageHeight - margin) {
-      const firstPageHeight = pageHeight - contentStartY;
+    if (imgHeight > maxContentHeight) {
+      const firstPageHeight = maxContentHeight;
       const remainingHeight = imgHeight - firstPageHeight;
       
       let currentY = 0;
       while (currentY < remainingHeight) {
         pdf.addPage();
         const heightOnThisPage = Math.min(
-          pageHeight - (margin * 2),
+          pageHeight - margin * 2 - contentBottomMargin,
           remainingHeight - currentY
         );
         

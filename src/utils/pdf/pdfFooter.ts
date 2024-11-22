@@ -2,14 +2,15 @@ import { jsPDF } from "jspdf";
 import { PDF_CONFIG } from "./pdfConfig";
 
 export const addFooter = (pdf: jsPDF, pageNumber: number, totalPages: number) => {
-  const { margin, pageHeight, pageWidth } = PDF_CONFIG;
+  const { margin, pageHeight, pageWidth, footerHeight } = PDF_CONFIG;
   
-  // Add footer line with more space from bottom
+  // Position footer line higher from the bottom
+  const footerLineY = pageHeight - footerHeight;
   pdf.setDrawColor(243, 113, 33);
   pdf.setLineWidth(0.3);
-  pdf.line(margin, pageHeight - margin - 25, pageWidth - margin, pageHeight - margin - 25);
+  pdf.line(margin, footerLineY, pageWidth - margin, footerLineY);
   
-  // Add page number with more space from bottom
+  // Position page numbers with more space from bottom
   pdf.setFont("helvetica", "normal");
   pdf.setFontSize(10);
   pdf.setTextColor(100, 100, 100);
@@ -19,6 +20,6 @@ export const addFooter = (pdf: jsPDF, pageNumber: number, totalPages: number) =>
   pdf.text(
     pageText,
     (pageWidth - textWidth) / 2,
-    pageHeight - margin - 15
+    footerLineY + 10
   );
 };
