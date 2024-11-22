@@ -5,8 +5,7 @@ export const PDF_CONFIG = {
   pageWidth: 210, // A4 width in mm
   pageHeight: 297, // A4 height in mm
   headerHeight: 80,
-  footerHeight: 35,
-  bottomMargin: 40, // New bottom margin configuration
+  footerHeight: 35, // Increased from 20 to 35 for more space
   primaryColor: '#F37121', // Military orange
   textColors: {
     primary: '#232323',
