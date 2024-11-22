@@ -28,7 +28,6 @@ const gbmOptions = [
 const vtrOptions = [
   { prefix: "ABT", description: "ABT" },
   { prefix: "ABS", description: "ABS" },
-  { prefix: "ABS-232", description: "ABS-232" },
   { prefix: "USB", description: "USB" },
   { prefix: "AEM", description: "AEM" },
   { prefix: "ACA", description: "ACA" },
