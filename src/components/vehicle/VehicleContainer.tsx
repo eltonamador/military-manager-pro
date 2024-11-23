@@ -102,10 +102,10 @@ const VehicleContainerContent = () => {
       <Button
         onClick={handleAddVehicle}
         className="w-full mt-4 bg-military-orange hover:bg-military-red transition-colors"
-        disabled={!selectedGBM || !selectedVTR || !status || (isSpecialVTR && !isChecklistSaved)}
+        disabled={!selectedGBM || !selectedVTR || !status || (!isSpecialVTR && !isChecklistSaved)}
       >
         <Plus className="mr-2 h-4 w-4" />
-        {editingIndex !== null ? 'Atualizar VTR' : 'Adicionar VTR'}
+        Adicionar VTR
       </Button>
 
       <Button
