@@ -105,7 +105,7 @@ const VehicleContainerContent = () => {
         disabled={!selectedGBM || !selectedVTR || !status || (isSpecialVTR && !isChecklistSaved)}
       >
         <Plus className="mr-2 h-4 w-4" />
-        Adicionar VTR
+        {editingIndex !== null ? 'Atualizar VTR' : 'Adicionar VTR'}
       </Button>
 
       <Button
