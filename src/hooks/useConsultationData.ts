@@ -38,7 +38,7 @@ export const useConsultationData = (
 
       const promises = selectedMilitaryGBMs.map(async (gbm) => {
         const tableName = getMilitaryTableName(gbm);
-        const query = supabase
+        const query = (supabase as any)
           .from(tableName)
           .select("*")
           .eq('data', formattedDate);
@@ -73,7 +73,7 @@ export const useConsultationData = (
 
       const promises = selectedVehicleGBMs.map(async (gbm) => {
         const tableName = getVehicleTableName(gbm);
-        const query = supabase
+        const query = (supabase as any)
           .from(tableName)
           .select("*")
           .eq('data', formattedDate);
@@ -130,7 +130,7 @@ export const useConsultationData = (
 
       const formattedDate = formatDateForQuery(selectedDate);
       
-      const query = supabase
+      const query = (supabase as any)
         .from('equipment_status')
         .select('*')
         .eq('date', formattedDate);
